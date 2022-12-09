@@ -1,11 +1,10 @@
 'use client'
 
-import React, { Fragment, useEffect, useState } from 'react'
-import { v4 as uuidv4 } from 'uuid'
+import React, { Fragment, useRef, useState } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { BellIcon } from '@heroicons/react/24/outline'
-import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
-import { GetDocuments } from '../../wailsjs/wailsjs/go/ipc/Channel'
+import { MagnifyingGlassIcon, PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
+import { GetDocuments, RequestAddDocument, RequestAddDocumentGroup } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { LogPrint } from '../../wailsjs/wailsjs/runtime/runtime'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 
@@ -15,74 +14,71 @@ type NavigationItem = {
   children: { id: string, name: string }[]
 }
 
-// const navigation: NavigationItem[] = [
-//   {
-//     id: uuidv4(),
-//     name: 'Chapter One',
-//     children: [
-//       { name: 'Overview', id: uuidv4() },
-//       { name: 'Members', id: uuidv4() },
-//       { name: 'Calendar', id: uuidv4() },
-//       { name: 'Settings', id: uuidv4() },
-//     ],
-//   },
-// ]
-
 const userNavigation = [
   { name: 'Your Profile' },
   { name: 'Settings' },
   { name: 'Sign out' },
 ]
 
-const getNavigationProps = (
-  documents: ipc.Document[],
-  documentGroups: ipc.DocumentGroup[]): NavigationItem[] => {
-    const groupsWithDocuments = documentGroups.map(g => {
-      const childrenDocuments = documents
-        .filter(d => d.groupId === g.id)
-        .map(d => ({ id: d.id, name: d.name }))
+const getNavigationProps = (documentsAndGroups: ipc.GetDocumentsResponse): NavigationItem[] => {
+  const { documents, documentGroups } = documentsAndGroups
 
-      return {
-        id: g.id,
-        name: g.name,
-        children: childrenDocuments
-      }
-    })
-
-    const documentsWithoutGroup = documents
-      .filter(d => !d.groupId)
+  const groupsWithDocuments = documentGroups.map(g => {
+    const childrenDocuments = documents
+      .filter(d => d.groupId === g.id)
       .map(d => ({ id: d.id, name: d.name }))
 
-    return [
-      ...groupsWithDocuments,
-      {
-        id: 'Uncategorized',
-        name: 'Uncategorized',
-        children: documentsWithoutGroup
-      }
-    ]
+    return {
+      id: g.id,
+      name: g.name,
+      children: childrenDocuments
+    }
+  })
+
+  const documentsWithoutGroup = documents
+    .filter(d => !d.groupId || d.groupId === 'Uncategorized')
+    .map(d => ({ id: d.id, name: d.name }))
+
+  return [
+    ...groupsWithDocuments,
+    {
+      id: 'Uncategorized',
+      name: 'Uncategorized',
+      children: documentsWithoutGroup
+    }
+  ]
 }
+
+const initDocumentsAndGroups = new ipc.GetDocumentsResponse({ documents: [], documentGroups: [] })
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ')
 }
 
-function WorkspaceNavigation () {
+function WorkspaceNavigation() {
   const [selectedItemId, setSelectedItemId] = useState('')
   const [selectedGroupId, setSelectedGroupId] = useState('')
-  const [documents, setDocuments] = useState([] as ipc.Document[])
-  const [documentGroups, setDocumentGroups] = useState([] as ipc.DocumentGroup[])
-  const [navigation, setNavigation] = useState([] as NavigationItem[])
+  const [isAddNewDocumentInputShowing, setIsAddNewDocumentInputShowing] = useState(false)
+  const [isAddNewGroupInputShowing, setIsAddNewGroupInputShowing] = useState(false)
+  const [documentsAndGroups, setDocumentsAndGroups] = useState(initDocumentsAndGroups)
+  const addDocumentTextInput = useRef<HTMLInputElement>(null)
+  const addGroupTextInput = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    setNavigation(getNavigationProps(documents, documentGroups))
-  }, [documents, documentGroups])
 
-  GetDocuments().then(response => {
-    LogPrint(JSON.stringify(response, null, 2))
-    if (!documents.length) setDocuments(response.documents)
-    if (!documentGroups.length) setDocumentGroups(response.documentGroups)
-  })
+  const navigation = getNavigationProps(documentsAndGroups)
+
+  const updateDocuments = async () => {
+    GetDocuments().then(response => {
+      LogPrint(JSON.stringify(response, null, 2))
+      setDocumentsAndGroups(response)
+      Promise.resolve(response)
+    })
+  }
+
+  if (!documentsAndGroups.documents.length
+    || !documentsAndGroups.documentGroups.length) {
+    updateDocuments()
+  }
 
 
   const getParentGroupIdFromItemId = (itemId: string) => {
@@ -94,69 +90,180 @@ function WorkspaceNavigation () {
     return parentGroupId
   }
 
+  const onAddNewDocumentLineItemClickHandler = (groupId: string) => {
+    setSelectedGroupId(groupId)
+    setIsAddNewDocumentInputShowing(true)
+    setIsAddNewGroupInputShowing(false)
+  }
+
+  const onAddNewGroupLineItemClickHandler = () => {
+    setIsAddNewGroupInputShowing(true)
+    setIsAddNewDocumentInputShowing(false)
+  }
+
   const onItemClickHandler = (itemId: string) => {
     setSelectedItemId(itemId)
     setSelectedGroupId(getParentGroupIdFromItemId(itemId))
+    setIsAddNewDocumentInputShowing(false)
+    setIsAddNewGroupInputShowing(false)
+  }
+
+  const onCancelAddGroupClickHandler = () => {
+    setIsAddNewGroupInputShowing(false)
+  }
+
+  const onCancelAddItemClickHandler = () => {
+    setIsAddNewDocumentInputShowing(false)
+  }
+
+  const onConfirmAddDocumentClickHandler = async (groupId: string) => {
+    const documentName = addDocumentTextInput.current?.value
+    if (!documentName) return
+
+    const response = await RequestAddDocument(groupId, documentName)
+    if (!response.id) return
+
+    let newDocumentsAndGroups = new ipc.GetDocumentsResponse(documentsAndGroups)
+    newDocumentsAndGroups.documents.push(response)
+    setDocumentsAndGroups(newDocumentsAndGroups)
+    setSelectedItemId(response.id)
+    setSelectedGroupId(groupId)
+    setIsAddNewDocumentInputShowing(false)
+  }
+
+  const onConfirmAddGroupClickHandler = async(e: React.MouseEvent) => {
+    const groupName = addGroupTextInput.current?.value
+    if (!groupName) return
+
+    const response = await RequestAddDocumentGroup(groupName)
+    if (!response.id) return
+
+    let newDocumentsAndGroups = new ipc.GetDocumentsResponse(documentsAndGroups)
+    newDocumentsAndGroups.documentGroups.push(response)
+    setDocumentsAndGroups(newDocumentsAndGroups)
+    setSelectedGroupId(response.id)
+    setIsAddNewGroupInputShowing(false)
+  }
+
+  const renderAddGroupInput = () => {
+    return isAddNewGroupInputShowing
+      ? <div className="mt-1 flex rounded-md shadow-sm">
+        <div className="relative flex flex-grow items-stretch focus-within:z-10 text-lg">
+          <input
+            type="text"
+            name="groupName"
+            id="groupName"
+            className="text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            placeholder="Add Group"
+            ref={addGroupTextInput}
+          />
+        </div>
+        <button
+          type="button"
+          onClick={onCancelAddGroupClickHandler}
+          className="bg-gray-900 bg-opacity-5 relative -ml-px inline-flex items-center space-x-2 border border-gray-400  px-1 py-0 text-sm font-medium text-gray-100 hover:text-gray-900 hover:bg-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        >
+          <XMarkIcon className="h-4 w-5" aria-hidden="true" />
+        </button>
+        
+        <button
+          type="button"
+          onClick={onConfirmAddGroupClickHandler}
+          className="bg-gray-900 bg-opacity-5 relative -ml-px inline-flex items-center space-x-2 border border-gray-400  px-1 py-0 text-sm font-medium text-gray-100 hover:text-gray-900 hover:bg-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        >
+          <PlusIcon className="h-4 w-5" aria-hidden="true" />
+        </button>
+      </div>
+      : <a
+        role='button'
+        className={classNames(
+          'text-gray-300 hover:bg-gray-700 hover:text-white',
+          ' group w-full flex items-center pr-2 py-2 text-left font-medium',
+          'text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2'
+        )}
+        onClick={onAddNewGroupLineItemClickHandler}
+      >
+        <PlusIcon className="h-5 w-4" aria-hidden="true" />
+        Add Group
+      </a>
+  }
+
+  const renderAddNewDocument = (groupId: string) => {
+    return isAddNewDocumentInputShowing && selectedGroupId === groupId
+      ? <div className="flex rounded-md shadow-sm">
+        <div className="relative flex flex-grow items-stretch focus-within:z-10 text-lg">
+          <input
+            type="text"
+            name="documentName"
+            id="documentName"
+            className="text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            placeholder="Add Document"
+            ref={addDocumentTextInput}
+          />
+        </div>
+        <button
+          type="button"
+          onClick={onCancelAddItemClickHandler}
+          className="bg-gray-900 bg-opacity-5 relative -ml-px inline-flex items-center space-x-2 border border-gray-400  px-1 py-0 text-sm font-medium text-gray-100 hover:text-gray-900 hover:bg-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        >
+          <XMarkIcon className="h-4 w-5" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          onClick={() => onConfirmAddDocumentClickHandler(groupId)}
+          className="bg-gray-900 bg-opacity-5 relative -ml-px inline-flex items-center space-x-2 rounded-r-md border border-gray-400  px-1 py-0 text-sm font-medium text-gray-100 hover:text-gray-900 hover:bg-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        >
+          <PlusIcon className="h-7 w-5" aria-hidden="true" />
+        </button>
+      </div>
+      : <a
+        role='button'
+        className={classNames(
+          'text-gray-300 hover:bg-gray-700 hover:text-white',
+          ' group w-full flex items-center pr-2 py-2 text-left font-medium',
+          'text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2'
+        )}
+        onClick={() => onAddNewDocumentLineItemClickHandler(groupId)}
+      >
+        <PlusIcon className="h-3 w-4" aria-hidden="true" />
+        Add Document
+      </a>
   }
 
   const renderNavigationItems = () => (
     <nav className="flex-1 space-y-1 px-2 py-4" aria-label='Sidebar'>
-      <div>
-        <a
-          role='button'
-          onClick={() => console.log('Add Group')}
-          className={classNames(
-            'text-gray-300 hover:bg-gray-700 hover:text-white',
-            'group flex items-center px-2 py-2 text-base font-medium rounded-md'
-          )}
-        >
-          Add New Group
-        </a>
-      </div>
+
+      {renderAddGroupInput()}
 
       {navigation.map((item) =>
         <details key={item.name} open={item.id === selectedGroupId}>
           <summary className={classNames(
-                item.id === selectedGroupId
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                'group items-center px-2 py-2 text-base font-medium rounded-md'
-              )}>
-            <a role='button'>
-              {item.name}
-            </a>
+            item.id === selectedGroupId
+              ? 'bg-gray-900 text-white'
+              : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+            'group items-center px-2 py-2 text-base font-medium rounded-md'
+          )}>
+            <a role='button'>{item.name}</a>
           </summary>
           <ul>
             {item.children.map(child => (
               <li key={child.id}>
                 <a
-                role='button'
-                className={classNames(
-                  child.id === selectedItemId
-                    ? 'bg-gray-900 text-white'
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                  'group w-full flex items-center pr-2 py-2 text-left font-medium text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2'
-                )}
-                onClick={() => onItemClickHandler(child.id)}
+                  role='button'
+                  onClick={() => onItemClickHandler(child.id)}
+                  className={classNames(
+                    child.id === selectedItemId
+                      ? 'bg-gray-900 text-white'
+                      : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                    'group w-full flex items-center pr-2 py-2 text-left font-medium text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2'
+                  )}
                 >
-                  { child.name }
+                  {child.name}
                 </a>
               </li>
             ))}
 
-            <li>
-              <a
-              role='button'
-              className={classNames(
-                'text-gray-300 hover:bg-gray-700 hover:text-white',
-              ' group w-full flex items-center pr-2 py-2 text-left font-medium',
-              'text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2'
-              )}
-              onClick={() => console.log('Add New Item')}
-              >
-                Add New Document
-              </a>
-            </li>
+            {renderAddNewDocument(item.id)}
           </ul>
         </details>
       )}
@@ -166,7 +273,7 @@ function WorkspaceNavigation () {
   return (
     <>
       <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
-        {/* Sidebar component, swap this element with another sidebar if you like */}
+        {/* Sidebar component */}
         <div className="flex min-h-0 flex-1 flex-col bg-gray-800 bg-opacity-25">
           <div className="flex h-16 flex-shrink-0 items-center bg-gray-900 px-4 bg-opacity-25">
             <img

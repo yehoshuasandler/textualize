@@ -4,6 +4,7 @@ import (
 	"embed"
 	"log"
 
+	app "textualize/core/App"
 	document "textualize/core/Document"
 	Channel "textualize/ipc"
 
@@ -22,7 +23,7 @@ var icon []byte
 
 func main() {
 	// Create an instance of the app structure
-	app := NewApp()
+	app := app.GetInstance()
 
 	document.InitizeModule()
 	ipcChannel := Channel.GetInstance()
@@ -46,11 +47,11 @@ func main() {
 		Menu:              nil,
 		Logger:            nil,
 		LogLevel:          logger.DEBUG,
-		OnStartup:         app.startup,
-		OnDomReady:        app.domReady,
-		OnBeforeClose:     app.beforeClose,
-		OnShutdown:        app.shutdown,
-		WindowStartState:  options.Normal,
+		OnStartup:         app.Startup,
+		// OnDomReady:        app.domReady,
+		// OnBeforeClose:     app.beforeClose,
+		// OnShutdown:        app.shutdown,
+		WindowStartState: options.Normal,
 		Bind: []interface{}{
 			ipcChannel,
 		},

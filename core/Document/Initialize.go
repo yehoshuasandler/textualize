@@ -3,9 +3,6 @@ package document
 func InitizeModule() {
 	GetDocumentCollection()
 	GetDocumentGroupCollection()
-
-	// TODO: remove when UI allows adding docs
-	createTestData()
 }
 
 func createTestData() {
