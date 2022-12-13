@@ -2,7 +2,10 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"log"
+	"net/http"
+	"os"
 
 	app "textualize/core/App"
 	document "textualize/core/Document"
@@ -11,12 +14,33 @@ import (
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
+	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
 )
 
 //go:embed frontend/out frontend/out/_next/static
 var assets embed.FS
+
+type FileLoader struct {
+	http.Handler
+}
+
+func ClientFileLoader() *FileLoader {
+	return &FileLoader{}
+}
+
+func (h *FileLoader) ServeHTTP(res http.ResponseWriter, req *http.Request) {
+	var err error
+	requestedFilename := req.URL.Path
+	fileData, err := os.ReadFile(requestedFilename)
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		res.Write([]byte(fmt.Sprintf("Could not load file %s", requestedFilename)))
+	}
+
+	res.Write(fileData)
+}
 
 //go:embed build/appicondark.png
 var icon []byte
@@ -43,11 +67,14 @@ func main() {
 		StartHidden:       false,
 		HideWindowOnClose: false,
 		BackgroundColour:  &options.RGBA{R: 255, G: 255, B: 255, A: 255},
-		Assets:            assets,
-		Menu:              nil,
-		Logger:            nil,
-		LogLevel:          logger.DEBUG,
-		OnStartup:         app.Startup,
+		AssetServer: &assetserver.Options{
+			Assets:  assets,
+			Handler: ClientFileLoader(),
+		},
+		Menu:      nil,
+		Logger:    nil,
+		LogLevel:  logger.DEBUG,
+		OnStartup: app.Startup,
 		// OnDomReady:        app.domReady,
 		// OnBeforeClose:     app.beforeClose,
 		// OnShutdown:        app.shutdown,

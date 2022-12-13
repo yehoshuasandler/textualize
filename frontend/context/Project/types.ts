@@ -7,6 +7,9 @@ export type ProjectProps = {
 }
 
 export type ProjectContextType = {
+  getSelectedDocument: () => ipc.Document | undefined
   requestAddDocument: (groupId: string, documentName: string) => Promise<ipc.Document>,
   requestAddDocumentGroup: (groupName: string) => Promise<ipc.Group>,
+  selectedDocumentId: string,
+  setSelectedDocumentId: (id: string) => void,
 } & ProjectProps

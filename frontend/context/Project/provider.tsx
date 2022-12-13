@@ -14,6 +14,7 @@ type Props = { children: ReactNode, projectProps: ProjectProps }
 export function ProjectProvider({ children, projectProps }: Props) {
   const [ documents, setDocuments ] = useState<ipc.Document[]>(projectProps.documents)
   const [ groups, setGroups ] = useState<ipc.Group[]>(projectProps.groups)
+  const [selectedDocumentId, setSelectedDocumentId] = useState<string>('')
 
   const updateDocuments = async () => {
     GetDocuments().then(response => {
@@ -35,14 +36,19 @@ export function ProjectProvider({ children, projectProps }: Props) {
     return response
   }
 
+  const getSelectedDocument = () => documents.find(d => d.id === selectedDocumentId)
+
   if (!documents.length || !groups.length) updateDocuments()
 
   const value = {
     id: '',
     documents,
     groups,
+    getSelectedDocument,
     requestAddDocument,
     requestAddDocumentGroup,
+    selectedDocumentId,
+    setSelectedDocumentId,
   }
 
   return <ProjectContext.Provider value={value}>

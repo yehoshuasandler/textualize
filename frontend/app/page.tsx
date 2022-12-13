@@ -1,5 +1,6 @@
 import 'server-only'
 import MainHead from '../components/MainHead'
+import DocumentRenderer from '../components/workspace/DocumentRenderer'
 import Navigation from '../components/workspace/Navigation'
 
 export default function Home() {
@@ -16,8 +17,8 @@ export default function Home() {
             </div>
             <div className="mx-auto  px-4 sm:px-6 md:px-8">
               <div className="py-4">
-                <div className="h-96 rounded-lg border-4 border-dashed border-gray-200">
-                  {/* Add canvas */}
+                <div className=" min-h-96 rounded-lg border-4 border-dashed border-gray-200">
+                  <DocumentRenderer />
                 </div>
               </div>
             </div>

@@ -43,14 +43,20 @@ function classNames(...classes: any[]) {
 }
 
 function Sidebar() {
-  const [selectedItemId, setSelectedItemId] = useState('')
   const [selectedGroupId, setSelectedGroupId] = useState('')
   const [isAddNewDocumentInputShowing, setIsAddNewDocumentInputShowing] = useState(false)
   const [isAddNewGroupInputShowing, setIsAddNewGroupInputShowing] = useState(false)
   const addDocumentTextInput = useRef<HTMLInputElement>(null)
   const addGroupTextInput = useRef<HTMLInputElement>(null)
 
-  const { documents, groups, requestAddDocument, requestAddDocumentGroup } = useProject()
+  const {
+    documents,
+    groups,
+    requestAddDocument,
+    requestAddDocumentGroup,
+    selectedDocumentId,
+    setSelectedDocumentId
+  } = useProject()
 
   const navigation = getNavigationProps(documents, groups)
 
@@ -75,7 +81,7 @@ function Sidebar() {
   }
 
   const onItemClickHandler = (itemId: string) => {
-    setSelectedItemId(itemId)
+    setSelectedDocumentId(itemId)
     setSelectedGroupId(getParentGroupIdFromItemId(itemId))
     setIsAddNewDocumentInputShowing(false)
     setIsAddNewGroupInputShowing(false)
@@ -96,12 +102,15 @@ function Sidebar() {
     const response = await requestAddDocument(groupId, documentName)
     if (!response.id) return
 
-    setSelectedItemId(response.id)
+
+    setSelectedDocumentId(response.id)
+
+
     setSelectedGroupId(groupId)
     setIsAddNewDocumentInputShowing(false)
   }
 
-  const onConfirmAddGroupClickHandler = async(e: React.MouseEvent) => {
+  const onConfirmAddGroupClickHandler = async (e: React.MouseEvent) => {
     const groupName = addGroupTextInput.current?.value
     if (!groupName) return
 
@@ -132,7 +141,7 @@ function Sidebar() {
         >
           <XMarkIcon className="h-4 w-5" aria-hidden="true" />
         </button>
-        
+
         <button
           type="button"
           onClick={onConfirmAddGroupClickHandler}
@@ -219,7 +228,7 @@ function Sidebar() {
                   role='button'
                   onClick={() => onItemClickHandler(child.id)}
                   className={classNames(
-                    child.id === selectedItemId
+                    child.id === selectedDocumentId
                       ? 'bg-gray-900 text-white'
                       : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                     'group w-full flex items-center pr-2 py-2 text-left font-medium text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2'
