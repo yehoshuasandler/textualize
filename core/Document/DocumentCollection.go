@@ -1,7 +1,7 @@
 package document
 
 type DocumentCollection struct {
-	Documents []Document
+	Documents []Entity
 	ProjectId string
 }
 
@@ -15,6 +15,6 @@ func GetDocumentCollection() *DocumentCollection {
 	return documentCollectionInstance
 }
 
-func (collection *DocumentCollection) AddDocument(document Document) {
+func (collection *DocumentCollection) AddDocument(document Entity) {
 	collection.Documents = append(collection.Documents, document)
 }

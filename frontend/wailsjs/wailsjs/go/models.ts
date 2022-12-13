@@ -20,14 +20,14 @@ export namespace ipc {
 	        this.projectId = source["projectId"];
 	    }
 	}
-	export class DocumentGroup {
+	export class Group {
 	    id: string;
 	    parentId: string;
 	    projectId: string;
 	    name: string;
 	
 	    static createFrom(source: any = {}) {
-	        return new DocumentGroup(source);
+	        return new Group(source);
 	    }
 	
 	    constructor(source: any = {}) {
@@ -40,7 +40,7 @@ export namespace ipc {
 	}
 	export class GetDocumentsResponse {
 	    documents: Document[];
-	    documentGroups: DocumentGroup[];
+	    groups: Group[];
 	
 	    static createFrom(source: any = {}) {
 	        return new GetDocumentsResponse(source);
@@ -49,7 +49,7 @@ export namespace ipc {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.documents = this.convertValues(source["documents"], Document);
-	        this.documentGroups = this.convertValues(source["documentGroups"], DocumentGroup);
+	        this.groups = this.convertValues(source["groups"], Group);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

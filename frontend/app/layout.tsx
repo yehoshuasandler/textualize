@@ -15,7 +15,7 @@ export default function MainAppLayout({ children }: AppLayoutProps) {
         projectProps={{
           id: '',
           documents: [] as ipc.Document[],
-          groups: [] as ipc.DocumentGroup[]
+          groups: [] as ipc.Group[]
         }}>
         {children}
       </ProjectProvider>

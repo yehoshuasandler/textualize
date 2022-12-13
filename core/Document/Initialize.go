@@ -2,19 +2,19 @@ package document
 
 func InitizeModule() {
 	GetDocumentCollection()
-	GetDocumentGroupCollection()
+	GetGroupCollection()
 }
 
 func createTestData() {
 	documentCollection := GetDocumentCollection()
-	documentGroupCollection := GetDocumentGroupCollection()
+	documentGroupCollection := GetGroupCollection()
 
-	documentGroupCollection.AddDocumentGroup(DocumentGroup{
+	documentGroupCollection.AddDocumentGroup(Group{
 		Id:   "XYZ",
 		Name: "Test Group One",
 	})
 
-	documentCollection.AddDocument(Document{
+	documentCollection.AddDocument(Entity{
 		Id:      "ABC",
 		GroupId: "XYZ",
 		Name:    "My First Document",

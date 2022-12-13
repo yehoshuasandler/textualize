@@ -11,7 +11,7 @@ type NavigationItem = {
   children: { id: string, name: string }[]
 }
 
-const getNavigationProps = (documents: ipc.Document[], groups: ipc.DocumentGroup[]): NavigationItem[] => {
+const getNavigationProps = (documents: ipc.Document[], groups: ipc.Group[]): NavigationItem[] => {
   const groupsWithDocuments = groups.map(g => {
     const childrenDocuments = documents
       .filter(d => d.groupId === g.id)

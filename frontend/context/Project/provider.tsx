@@ -13,12 +13,12 @@ export function useProject() {
 type Props = { children: ReactNode, projectProps: ProjectProps }
 export function ProjectProvider({ children, projectProps }: Props) {
   const [ documents, setDocuments ] = useState<ipc.Document[]>(projectProps.documents)
-  const [ groups, setGroups ] = useState<ipc.DocumentGroup[]>(projectProps.groups)
+  const [ groups, setGroups ] = useState<ipc.Group[]>(projectProps.groups)
 
   const updateDocuments = async () => {
     GetDocuments().then(response => {
       setDocuments(response.documents)
-      setGroups(response.documentGroups)
+      setGroups(response.groups)
       Promise.resolve(response)
     })
   }

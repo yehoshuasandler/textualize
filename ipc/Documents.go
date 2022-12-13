@@ -9,17 +9,17 @@ import (
 )
 
 type GetDocumentsResponse struct {
-	Documents      []Document      `json:"documents"`
-	DocumentGroups []DocumentGroup `json:"documentGroups"`
+	Documents []Document `json:"documents"`
+	Groups    []Group    `json:"groups"`
 }
 
 func (c *Channel) GetDocuments() GetDocumentsResponse {
 	documents := document.GetDocumentCollection().Documents
-	documentGroups := document.GetDocumentGroupCollection().DocumentGroups
+	groups := document.GetGroupCollection().Groups
 
 	response := GetDocumentsResponse{
-		DocumentGroups: make([]DocumentGroup, 0),
-		Documents:      make([]Document, 0),
+		Groups:    make([]Group, 0),
+		Documents: make([]Document, 0),
 	}
 
 	for _, d := range documents {
@@ -33,14 +33,14 @@ func (c *Channel) GetDocuments() GetDocumentsResponse {
 		response.Documents = append(response.Documents, jsonDocument)
 	}
 
-	for _, g := range documentGroups {
-		jsonGroup := DocumentGroup{
+	for _, g := range groups {
+		jsonGroup := Group{
 			Id:        g.Id,
 			ParentId:  g.ParentId,
 			ProjectId: g.ProjectId,
 			Name:      g.Name,
 		}
-		response.DocumentGroups = append(response.DocumentGroups, jsonGroup)
+		response.Groups = append(response.Groups, jsonGroup)
 	}
 
 	return response
@@ -62,7 +62,7 @@ func (c *Channel) RequestAddDocument(groupId string, documentName string) Docume
 		return Document{}
 	}
 
-	newDocument := document.Document{
+	newDocument := document.Entity{
 		Id:        uuid.NewString(),
 		Name:      documentName,
 		Path:      filePath,
@@ -83,20 +83,20 @@ func (c *Channel) RequestAddDocument(groupId string, documentName string) Docume
 	return documentResponse
 }
 
-func (c *Channel) RequestAddDocumentGroup(name string) DocumentGroup {
-	newDocumentGroup := document.DocumentGroup{
+func (c *Channel) RequestAddDocumentGroup(name string) Group {
+	newGroup := document.Group{
 		Id:        uuid.NewString(),
 		Name:      name,
 		ProjectId: "something else",
 	}
 
-	document.GetDocumentGroupCollection().AddDocumentGroup(newDocumentGroup)
+	document.GetGroupCollection().AddDocumentGroup(newGroup)
 
-	response := DocumentGroup{
-		Id:        newDocumentGroup.Id,
-		Name:      newDocumentGroup.Name,
-		ParentId:  newDocumentGroup.ParentId,
-		ProjectId: newDocumentGroup.ProjectId,
+	response := Group{
+		Id:        newGroup.Id,
+		Name:      newGroup.Name,
+		ParentId:  newGroup.ParentId,
+		ProjectId: newGroup.ProjectId,
 	}
 
 	return response

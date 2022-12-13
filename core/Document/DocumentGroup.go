@@ -1,28 +1,28 @@
 package document
 
-type DocumentGroup struct {
+type Group struct {
 	Id        string
 	ParentId  string
 	ProjectId string
 	Name      string
 }
 
-type DocumentGroupCollection struct {
-	Id             string
-	DocumentGroups []DocumentGroup
-	ProjectId      string
+type GroupCollection struct {
+	Id        string
+	Groups    []Group
+	ProjectId string
 }
 
-var documentGroupCollectionInstance *DocumentGroupCollection
+var groupCollectionInstance *GroupCollection
 
-func GetDocumentGroupCollection() *DocumentGroupCollection {
-	if documentGroupCollectionInstance == nil {
-		documentGroupCollectionInstance = &DocumentGroupCollection{}
+func GetGroupCollection() *GroupCollection {
+	if groupCollectionInstance == nil {
+		groupCollectionInstance = &GroupCollection{}
 	}
 
-	return documentGroupCollectionInstance
+	return groupCollectionInstance
 }
 
-func (collection *DocumentGroupCollection) AddDocumentGroup(group DocumentGroup) {
-	collection.DocumentGroups = append(collection.DocumentGroups, group)
+func (collection *GroupCollection) AddDocumentGroup(group Group) {
+	collection.Groups = append(collection.Groups, group)
 }

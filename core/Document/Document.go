@@ -1,6 +1,6 @@
 package document
 
-type Document struct {
+type Entity struct {
 	Id        string
 	GroupId   string
 	Name      string
