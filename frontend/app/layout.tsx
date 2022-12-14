@@ -8,15 +8,16 @@ type AppLayoutProps = {
   children: React.ReactNode
 }
 
+const initialProjectProps = {
+  id: '',
+  documents: [] as ipc.Document[],
+  groups: [] as ipc.Group[]
+}
+
 export default function MainAppLayout({ children }: AppLayoutProps) {
   return <html className='bg-gray-100 bg-opacity-0'>
     <body className='min-h-screen' >
-      <ProjectProvider
-        projectProps={{
-          id: '',
-          documents: [] as ipc.Document[],
-          groups: [] as ipc.Group[]
-        }}>
+      <ProjectProvider projectProps={initialProjectProps}>
         {children}
       </ProjectProvider>
     </body>

@@ -102,10 +102,7 @@ function Sidebar() {
     const response = await requestAddDocument(groupId, documentName)
     if (!response.id) return
 
-
     setSelectedDocumentId(response.id)
-
-
     setSelectedGroupId(groupId)
     setIsAddNewDocumentInputShowing(false)
   }
@@ -121,6 +118,10 @@ function Sidebar() {
     setIsAddNewGroupInputShowing(false)
   }
 
+  const onEnterHandler = (event: React.KeyboardEvent<HTMLInputElement>, callback: Function) => {
+    if (event.key === 'Enter') callback()
+  }
+
   const renderAddGroupInput = () => {
     return isAddNewGroupInputShowing
       ? <div className="mt-1 flex rounded-md shadow-sm">
@@ -129,8 +130,13 @@ function Sidebar() {
             type="text"
             name="groupName"
             id="groupName"
+            autoFocus
             className="text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             placeholder="Add Group"
+            onKeyDown={(event) => {
+              onEnterHandler(event,
+              onConfirmAddGroupClickHandler)
+            }}
             ref={addGroupTextInput}
           />
         </div>
@@ -174,6 +180,11 @@ function Sidebar() {
             id="documentName"
             className="text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             placeholder="Add Document"
+            autoFocus
+            onKeyDown={(event) => {
+              onEnterHandler(event,
+              () => onConfirmAddDocumentClickHandler(groupId))
+            }}
             ref={addDocumentTextInput}
           />
         </div>

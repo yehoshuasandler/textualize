@@ -27,7 +27,7 @@ const DocumentRenderer = () => {
 
     const context = canvas.getContext('2d')
     if (!context) return
-    context.drawImage(image, 10, 10, image.width, image.height)
+    context.drawImage(image, 0, 0, image.width, image.height)
   }
 
   useEffect(() => {

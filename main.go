@@ -9,7 +9,7 @@ import (
 
 	app "textualize/core/App"
 	document "textualize/core/Document"
-	Channel "textualize/ipc"
+	ipc "textualize/ipc"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -50,7 +50,7 @@ func main() {
 	app := app.GetInstance()
 
 	document.InitizeModule()
-	ipcChannel := Channel.GetInstance()
+	ipcChannel := ipc.GetInstance()
 
 	// Create application with options
 	err := wails.Run(&options.App{
