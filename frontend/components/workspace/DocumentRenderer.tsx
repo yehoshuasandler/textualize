@@ -159,8 +159,6 @@ const DocumentRenderer = () => {
     <canvas
       className="absolute"
       ref={areaCanvas}
-      // width={canvasSize.width}
-      // height={canvasSize.height}
     />
     <canvas
       className="absolute"
@@ -168,8 +166,6 @@ const DocumentRenderer = () => {
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
-      // width={canvasSize.width}
-      // height={canvasSize.height}
     />
   </div>
 }
