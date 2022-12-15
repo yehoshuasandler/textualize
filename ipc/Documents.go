@@ -116,7 +116,6 @@ func (c *Channel) RequestAddDocumentGroup(name string) Group {
 }
 
 func (c *Channel) RequestAddArea(documentId string, area Area) Area {
-	runtime.LogDebug(app.GetInstance().Context, "RequestAddArea in go")
 	foundDocument := document.GetDocumentCollection().GetDocumentById(documentId)
 
 	var id string
