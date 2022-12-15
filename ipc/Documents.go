@@ -23,12 +23,25 @@ func (c *Channel) GetDocuments() GetDocumentsResponse {
 	}
 
 	for _, d := range documents {
+		jsonAreas := make([]Area, 0)
+		for _, a := range d.Areas {
+			jsonAreas = append(jsonAreas, Area{
+				Id:     a.Id,
+				Name:   a.Name,
+				StartX: a.StartX,
+				StartY: a.StartY,
+				EndX:   a.EndX,
+				EndY:   a.EndY,
+			})
+		}
+
 		jsonDocument := Document{
 			Id:        d.Id,
 			GroupId:   d.GroupId,
 			Name:      d.Name,
 			Path:      d.Path,
 			ProjectId: d.ProjectId,
+			Areas:     jsonAreas,
 		}
 		response.Documents = append(response.Documents, jsonDocument)
 	}
@@ -87,7 +100,7 @@ func (c *Channel) RequestAddDocumentGroup(name string) Group {
 	newGroup := document.Group{
 		Id:        uuid.NewString(),
 		Name:      name,
-		ProjectId: "something else",
+		ProjectId: "something else", // TODO: change me
 	}
 
 	document.GetGroupCollection().AddDocumentGroup(newGroup)
@@ -100,4 +113,27 @@ func (c *Channel) RequestAddDocumentGroup(name string) Group {
 	}
 
 	return response
+}
+
+func (c *Channel) RequestAddArea(documentId string, area Area) Area {
+	runtime.LogDebug(app.GetInstance().Context, "RequestAddArea in go")
+	foundDocument := document.GetDocumentCollection().GetDocumentById(documentId)
+
+	var id string
+	if area.Id == "" {
+		id = uuid.NewString()
+	} else {
+		id = area.Id
+	}
+
+	newArea := document.Area{
+		Id:     id,
+		Name:   area.Name,
+		StartX: area.StartX,
+		EndX:   area.EndX,
+		StartY: area.StartY,
+		EndY:   area.EndY,
+	}
+	foundDocument.AddArea(newArea)
+	return Area(newArea)
 }

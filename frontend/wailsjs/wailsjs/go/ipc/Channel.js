@@ -6,6 +6,10 @@ export function GetDocuments() {
   return window['go']['ipc']['Channel']['GetDocuments']();
 }
 
+export function RequestAddArea(arg1, arg2) {
+  return window['go']['ipc']['Channel']['RequestAddArea'](arg1, arg2);
+}
+
 export function RequestAddDocument(arg1, arg2) {
   return window['go']['ipc']['Channel']['RequestAddDocument'](arg1, arg2);
 }

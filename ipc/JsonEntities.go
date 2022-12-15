@@ -6,6 +6,7 @@ type Document struct {
 	Name      string `json:"name"`
 	Path      string `json:"path"`
 	ProjectId string `json:"projectId"`
+	Areas     []Area `json:"areas"`
 }
 
 type DocumentCollection struct {
@@ -24,4 +25,13 @@ type GroupCollection struct {
 	Id        string  `json:"id"`
 	Groups    []Group `json:"groups"`
 	ProjectId string  `json:"projectId"`
+}
+
+type Area struct {
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	StartX int    `json:"startX"`
+	StartY int    `json:"startY"`
+	EndX   int    `json:"endX"`
+	EndY   int    `json:"endY"`
 }

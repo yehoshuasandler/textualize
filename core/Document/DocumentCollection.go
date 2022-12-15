@@ -19,12 +19,12 @@ func (collection *DocumentCollection) AddDocument(document Entity) {
 	collection.Documents = append(collection.Documents, document)
 }
 
-func (collection *DocumentCollection) GetDocumentById(id string) Entity {
-	var foundDocument Entity
+func (collection *DocumentCollection) GetDocumentById(id string) *Entity {
+	var foundDocument *Entity
 
-	for _, d := range collection.Documents {
+	for index, d := range collection.Documents {
 		if d.Id == id {
-			foundDocument = d
+			foundDocument = &collection.Documents[index]
 			break
 		}
 	}

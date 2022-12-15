@@ -1,8 +1,9 @@
 import { createContext, ReactNode, useContext, useState } from 'react'
-import { GetDocuments, RequestAddDocument, RequestAddDocumentGroup } from '../../wailsjs/wailsjs/go/ipc/Channel'
+import { GetDocuments, RequestAddArea, RequestAddDocument, RequestAddDocumentGroup } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
-import { ProjectContextType, ProjectProps } from './types'
+import { AddAreaProps, ProjectContextType, ProjectProps } from './types'
 import makeDefaultProject from './makeDefaultProject'
+import { LogPrint } from '../../wailsjs/wailsjs/runtime/runtime'
 
 const ProjectContext = createContext<ProjectContextType>(makeDefaultProject())
 
@@ -18,33 +19,41 @@ export function ProjectProvider({ children, projectProps }: Props) {
 
   const updateDocuments = async () => {
     GetDocuments().then(response => {
-      setDocuments(response.documents)
-      setGroups(response.groups)
+      if (response.documents.length) setDocuments(response.documents)
+      if (response.groups.length) setGroups(response.groups)
       Promise.resolve(response)
     })
   }
 
   const requestAddDocument = async (groupId: string, documentName: string) => {
     const response = await RequestAddDocument(groupId, documentName)
-    if (response.id) updateDocuments()
+    if (response.id) await updateDocuments()
     return response
   }
 
   const requestAddDocumentGroup = async (groupName: string) => {
     const response = await RequestAddDocumentGroup(groupName)
-    if (response.id) updateDocuments()
+    if (response.id) await updateDocuments()
+    return response
+  }
+
+  const requestAddArea = async (documentId: string, area: AddAreaProps): Promise<ipc.Area> => {
+    const response = await RequestAddArea(documentId, new ipc.Area(area))
+
+    if (response.id) await updateDocuments()
     return response
   }
 
   const getSelectedDocument = () => documents.find(d => d.id === selectedDocumentId)
 
-  if (!documents.length || !groups.length) updateDocuments()
+  if (!documents.length && !groups.length) updateDocuments()
 
   const value = {
     id: '',
     documents,
     groups,
     getSelectedDocument,
+    requestAddArea,
     requestAddDocument,
     requestAddDocumentGroup,
     selectedDocumentId,

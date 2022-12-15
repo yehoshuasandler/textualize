@@ -4,6 +4,8 @@ import {ipc} from '../models';
 
 export function GetDocuments():Promise<ipc.GetDocumentsResponse>;
 
+export function RequestAddArea(arg1:string,arg2:ipc.Area):Promise<ipc.Area>;
+
 export function RequestAddDocument(arg1:string,arg2:string):Promise<ipc.Document>;
 
 export function RequestAddDocumentGroup(arg1:string):Promise<ipc.Group>;
