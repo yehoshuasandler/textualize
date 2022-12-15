@@ -1,8 +1,7 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef } from "react"
 import { useProject } from "../../context/Project/provider"
-import { ipc } from "../../wailsjs/wailsjs/go/models"
 
 
 const loadImage = (path: string): Promise<HTMLImageElement> => {
@@ -16,14 +15,11 @@ const loadImage = (path: string): Promise<HTMLImageElement> => {
 
 const DocumentRenderer = () => {
   const { getSelectedDocument, requestAddArea } = useProject()
-  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 })
   const selectedDocument = getSelectedDocument()
   const areas = selectedDocument?.areas
   const documentCanvas = useRef<HTMLCanvasElement>(null)
   const areaCanvas = useRef<HTMLCanvasElement>(null)
   const drawingCanvas = useRef<HTMLCanvasElement>(null)
-
-  // console.log('selectedDocument: ', selectedDocument)
 
   let downClickX = 0
   let downClickY = 0
@@ -70,12 +66,10 @@ const DocumentRenderer = () => {
     context.clearRect(0, 0, areaCanvasInstance.width, areaCanvasInstance.height)
 
     areas.forEach(a => {
-      console.log('area: ', a)
       const width = a.endX - a.startX
       const height = a.endY - a.startY
       const x = a.startX
       const y = a.startY
-      console.log(`context.rect: `, x, y, width, height)
       context.rect(x, y, width, height)
       context.lineWidth = 2
       context.strokeStyle = '#dc8dec'
@@ -118,9 +112,7 @@ const DocumentRenderer = () => {
     }
 
     if (selectedDocument?.id)
-      requestAddArea(selectedDocument.id, { startX, startY, endX, endY }).then(response => {
-        console.log('requestAddArea: ', response)
-      }).catch(err => console.log('err requestAddArea :', err))
+      requestAddArea(selectedDocument.id, { startX, startY, endX, endY })
 
     const context = drawingCanvasInstance.getContext('2d')
     context?.clearRect(0, 0, drawingCanvasInstance.width, drawingCanvasInstance.height)
