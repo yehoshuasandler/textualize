@@ -13,6 +13,31 @@ type GetDocumentsResponse struct {
 	Groups    []Group    `json:"groups"`
 }
 
+func (c *Channel) GetDocumentById(id string) Document {
+	foundDocument := document.GetDocumentCollection().GetDocumentById(id)
+	var jsonAreas []Area
+
+	for _, a := range foundDocument.Areas {
+		jsonAreas = append(jsonAreas, Area{
+			Id:     a.Id,
+			Name:   a.Name,
+			StartX: a.StartX,
+			StartY: a.StartY,
+			EndX:   a.EndX,
+			EndY:   a.EndY,
+		})
+	}
+	response := Document{
+		Id:        foundDocument.Id,
+		Name:      foundDocument.Name,
+		GroupId:   foundDocument.GroupId,
+		Path:      foundDocument.Path,
+		ProjectId: foundDocument.ProjectId,
+		Areas:     jsonAreas,
+	}
+	return response
+}
+
 func (c *Channel) GetDocuments() GetDocumentsResponse {
 	documents := document.GetDocumentCollection().Documents
 	groups := document.GetGroupCollection().Groups

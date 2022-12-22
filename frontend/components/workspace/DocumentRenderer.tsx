@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react"
 import { useProject } from "../../context/Project/provider"
-
+import processImageData from "../../useCases/processImageData"
 
 const loadImage = (path: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
@@ -111,8 +111,11 @@ const DocumentRenderer = () => {
       endY = downClickY
     }
 
-    if (selectedDocument?.id)
-      requestAddArea(selectedDocument.id, { startX, startY, endX, endY })
+    if (selectedDocument?.id) {
+      await requestAddArea(selectedDocument.id, { startX, startY, endX, endY })
+      const results = await processImageData(selectedDocument.id)
+      console.log(results)
+    }
 
     const context = drawingCanvasInstance.getContext('2d')
     context?.clearRect(0, 0, drawingCanvasInstance.width, drawingCanvasInstance.height)
