@@ -6,8 +6,6 @@ const nextConfig = {
   // running `wails dev`, so we need to turn off Next.js' gzip compression.
   // See <https://nextjs.org/docs/api-reference/next.config.js/compression>.
   compress: false,
-  swcMinify: true,
-  experimental: { appDir: true },
 }
 
 module.exports = nextConfig

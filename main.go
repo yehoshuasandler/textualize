@@ -19,7 +19,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
 )
 
-//go:embed frontend/out frontend/out/_next/static
+//go:embed all:frontend/out frontend/out/_next/static/*/* frontend/out/_next/static/*/*/*
 var assets embed.FS
 
 type FileLoader struct {
@@ -32,9 +32,14 @@ func ClientFileLoader() *FileLoader {
 
 func (h *FileLoader) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	var err error
+	// Make sure to prefix all local files with this in renderer
+	// requestedFilename := strings.TrimPrefix(req.URL.Path, "/textualizeFileAssets")
 	requestedFilename := req.URL.Path
+	fmt.Println(requestedFilename)
 	fileData, err := os.ReadFile(requestedFilename)
 	if err != nil {
+		fmt.Println("was eror: ")
+		fmt.Println(err)
 		res.WriteHeader(http.StatusBadRequest)
 		res.Write([]byte(fmt.Sprintf("Could not load file %s", requestedFilename)))
 	}
@@ -70,6 +75,9 @@ func main() {
 		AssetServer: &assetserver.Options{
 			Assets:  assets,
 			Handler: ClientFileLoader(),
+		},
+		Debug: options.Debug{
+			OpenInspectorOnStartup: true,
 		},
 		Menu:      nil,
 		Logger:    nil,

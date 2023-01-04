@@ -1,9 +1,10 @@
-import { createContext, ReactNode, useContext, useState } from 'react'
+'use client'
+
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
 import { GetDocuments, RequestAddArea, RequestAddDocument, RequestAddDocumentGroup } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, ProjectContextType, ProjectProps } from './types'
 import makeDefaultProject from './makeDefaultProject'
-import { LogPrint } from '../../wailsjs/wailsjs/runtime/runtime'
 
 const ProjectContext = createContext<ProjectContextType>(makeDefaultProject())
 
@@ -46,7 +47,9 @@ export function ProjectProvider({ children, projectProps }: Props) {
 
   const getSelectedDocument = () => documents.find(d => d.id === selectedDocumentId)
 
-  if (!documents.length && !groups.length) updateDocuments()
+  useEffect(() => {
+    if (!documents.length && !groups.length) updateDocuments()
+  }, [documents.length, groups.length])
 
   const value = {
     id: '',

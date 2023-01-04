@@ -1,16 +1,14 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
-import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
-import AppBar from './AppBar'
 import Sidebar from './Sidebar'
+import TopBar from './TopBar'
 
 function WorkspaceNavigation() {
 
   return (
     <>
+      <TopBar />
       <Sidebar />
-      <AppBar />
     </>
   )
 }

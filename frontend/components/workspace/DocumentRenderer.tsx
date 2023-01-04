@@ -1,17 +1,9 @@
 'use client'
 
-import React, { useEffect, useRef } from "react"
-import { useProject } from "../../context/Project/provider"
-import processImageData from "../../useCases/processImageData"
-
-const loadImage = (path: string): Promise<HTMLImageElement> => {
-  return new Promise((resolve, reject) => {
-    const image = new Image()
-    image.src = path
-    image.onload = () => resolve(image)
-    image.onerror = (error) => reject(error)
-  })
-}
+import React, { useEffect, useRef } from 'react'
+import { useProject } from '../../context/Project/provider'
+import loadImage from '../../useCases/loadImage'
+import processImageData from '../../useCases/processImageData'
 
 const DocumentRenderer = () => {
   const { getSelectedDocument, requestAddArea } = useProject()
@@ -43,7 +35,13 @@ const DocumentRenderer = () => {
   }
 
   const applyDocumentToCanvas = async (path: string) => {
-    const image = await loadImage(path)
+    let image: HTMLImageElement
+    try {
+      image = await loadImage(path)
+    } catch (err) {
+      return
+    }
+
     applyCanvasSizes({ width: image.naturalWidth, height: image.naturalHeight })
 
     const documentCanvasInstance = documentCanvas.current
@@ -57,13 +55,14 @@ const DocumentRenderer = () => {
   }
 
   const applyAreasToCanvas = () => {
-    if (!areas || !areas.length) return
     const areaCanvasInstance = areaCanvas.current
     if (!areaCanvasInstance) return
-    const context = areaCanvasInstance.getContext("2d")
+    const context = areaCanvasInstance.getContext('2d')
     if (!context) return
 
     context.clearRect(0, 0, areaCanvasInstance.width, areaCanvasInstance.height)
+
+    if (!areas || !areas.length) return
 
     areas.forEach(a => {
       const width = a.endX - a.startX
@@ -113,8 +112,9 @@ const DocumentRenderer = () => {
 
     if (selectedDocument?.id) {
       await requestAddArea(selectedDocument.id, { startX, startY, endX, endY })
-      const results = await processImageData(selectedDocument.id)
-      console.log(results)
+      processImageData(selectedDocument.id).then(results => {
+        console.log(results)
+      }).catch(err => console.log(err))
     }
 
     const context = drawingCanvasInstance.getContext('2d')
@@ -156,15 +156,15 @@ const DocumentRenderer = () => {
 
   return <div className="relative">
     <canvas
-      className="absolute"
+      className="absolute border-4 border-dashed border-gray-200"
       ref={documentCanvas}
     />
     <canvas
-      className="absolute"
+      className="absolute border-4 border-transparent"
       ref={areaCanvas}
     />
     <canvas
-      className="absolute"
+      className="absolute border-4 border-transparent"
       ref={drawingCanvas}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}

@@ -1,4 +1,4 @@
-import { ipc } from "../../wailsjs/wailsjs/go/models"
+import { ipc } from '../../wailsjs/wailsjs/go/models'
 
 export type ProjectProps = {
   id: string,

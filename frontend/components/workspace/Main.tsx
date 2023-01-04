@@ -1,24 +1,27 @@
 'use client'
 
-import { useProject } from "../../context/Project/provider"
-import DocumentRenderer from "./DocumentRenderer"
+import { useProject } from '../../context/Project/provider'
+import DocumentRenderer from './DocumentRenderer'
+import NoSelectedDocument from './NoSelectedDocument'
 
 const MainWorkspace = () => {
-  const { getSelectedDocument } = useProject()
+  const { getSelectedDocument, selectedDocumentId } = useProject()
+  
 
-  return <main className=" bg-gray-100 min-h-[calc(100vh-4rem)] ml-64 ">
+  return <main className=" bg-gray-100 min-h-[calc(100vh-118px)] ml-64 overflow-y-scroll">
     <div className='flex-1'>
-      <div className="py-6">
-        <div className="mx-auto px-4 sm:px-6 md:px-8">
-          <h1 className="text-2xl font-semibold text-gray-900">
-            { getSelectedDocument()?.name }
-          </h1>
-        </div>
+      <div className="py-1">
         <div className="mx-auto  px-4 sm:px-6 md:px-8">
-          <div className="py-4">
-            <div className=" min-h-96 border-4 border-dashed border-gray-200">
-              <DocumentRenderer />
+          <div className="py-2">
+            <div className="mx-auto px-4 sm:px-6 md:px-8">
+              <h1 className="text-2xl font-semibold text-gray-900">
+                {getSelectedDocument()?.name || 'Image Processor'}
+              </h1>
             </div>
+            {!selectedDocumentId
+              ? <NoSelectedDocument />
+              : <DocumentRenderer />
+            }
           </div>
         </div>
       </div>

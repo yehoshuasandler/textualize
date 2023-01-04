@@ -1,9 +1,9 @@
-import 'server-only'
-import MainHead from '../components/MainHead'
+import { NextPage } from 'next'
+import MainHead from '../components/head'
 import MainWorkspace from '../components/workspace/Main'
 import Navigation from '../components/workspace/Navigation'
 
-export default function Home() {
+const Home: NextPage = () => {
   return (
     <>
       <MainHead />
@@ -12,3 +12,6 @@ export default function Home() {
     </>
   )
 }
+
+export default Home
+
