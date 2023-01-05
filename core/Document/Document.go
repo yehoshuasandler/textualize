@@ -21,3 +21,14 @@ type Area struct {
 func (e *Entity) AddArea(a Area) {
 	e.Areas = append(e.Areas, a)
 }
+
+func (e *Entity) GetAreaById(areaId string) *Area {
+	var foundArea *Area
+
+	for index, a := range e.Areas {
+		if a.Id == areaId {
+			foundArea = &e.Areas[index]
+		}
+	}
+	return foundArea
+}

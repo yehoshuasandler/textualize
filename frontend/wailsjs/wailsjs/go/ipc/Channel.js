@@ -21,3 +21,7 @@ export function RequestAddDocument(arg1, arg2) {
 export function RequestAddDocumentGroup(arg1) {
   return window['go']['ipc']['Channel']['RequestAddDocumentGroup'](arg1);
 }
+
+export function RequestUpdateArea(arg1) {
+  return window['go']['ipc']['Channel']['RequestUpdateArea'](arg1);
+}

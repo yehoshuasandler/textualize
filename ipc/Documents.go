@@ -161,3 +161,31 @@ func (c *Channel) RequestAddArea(documentId string, area Area) Area {
 	foundDocument.AddArea(newArea)
 	return Area(newArea)
 }
+
+func (c *Channel) RequestUpdateArea(updatedArea Area) Area {
+	documentOfArea := document.GetDocumentCollection().GetDocumentByAreaId(updatedArea.Id)
+
+	if documentOfArea.Id == "" {
+		return Area{}
+	}
+
+	areaToUpdate := documentOfArea.GetAreaById((updatedArea.Id))
+
+	if areaToUpdate.Id == "" {
+		return Area{}
+	}
+
+	// TODO: add more prop changes when needed
+	if updatedArea.Name != "" {
+		areaToUpdate.Name = updatedArea.Name
+	}
+
+	return Area{
+		Id:     updatedArea.Id,
+		Name:   updatedArea.Name,
+		StartX: updatedArea.StartX,
+		StartY: updatedArea.StartY,
+		EndX:   updatedArea.EndX,
+		EndY:   updatedArea.EndY,
+	}
+}

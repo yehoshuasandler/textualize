@@ -31,3 +31,17 @@ func (collection *DocumentCollection) GetDocumentById(id string) *Entity {
 
 	return foundDocument
 }
+
+func (collection *DocumentCollection) GetDocumentByAreaId(areaId string) *Entity {
+	var foundDocument *Entity
+
+	for dIndex, d := range collection.Documents {
+		for _, a := range d.Areas {
+			if a.Id == areaId {
+				foundDocument = &collection.Documents[dIndex]
+			}
+		}
+	}
+
+	return foundDocument
+}

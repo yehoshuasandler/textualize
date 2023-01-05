@@ -5,35 +5,47 @@ import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { useProject } from '../../context/Project/provider'
 
-type NavigationItem = {
+type GroupNavigationItem = {
   id: string,
   name: string,
-  children: { id: string, name: string }[]
+  documents: {
+    id: string,
+    name: string,
+    areas: { id: string, name: string }[]
+  }[]
 }
 
-const getNavigationProps = (documents: ipc.Document[], groups: ipc.Group[]): NavigationItem[] => {
+const getNavigationProps = (documents: ipc.Document[], groups: ipc.Group[]): GroupNavigationItem[] => {
   const groupsWithDocuments = groups.map(g => {
     const childrenDocuments = documents
       .filter(d => d.groupId === g.id)
-      .map(d => ({ id: d.id, name: d.name }))
+      .map(d => ({
+        id: d.id,
+        name: d.name,
+        areas: d.areas.map(a => ({ id: a.id, name: a.name }))
+      }))
 
     return {
       id: g.id,
       name: g.name,
-      children: childrenDocuments
+      documents: childrenDocuments
     }
   })
 
   const documentsWithoutGroup = documents
     .filter(d => !d.groupId || d.groupId === 'Uncategorized')
-    .map(d => ({ id: d.id, name: d.name }))
+    .map(d => ({
+      id: d.id,
+      name: d.name,
+      areas: d.areas.map(a => ({ id: a.id, name: a.name }))
+    }))
 
   return [
     ...groupsWithDocuments,
     {
       id: 'Uncategorized',
       name: 'Uncategorized',
-      children: documentsWithoutGroup
+      documents: documentsWithoutGroup
     }
   ]
 }
@@ -44,29 +56,48 @@ function classNames(...classes: any[]) {
 
 function Sidebar() {
   const [selectedGroupId, setSelectedGroupId] = useState('')
+  const [selectedAreaId, setSelectedAreaId] = useState('')
   const [isAddNewDocumentInputShowing, setIsAddNewDocumentInputShowing] = useState(false)
   const [isAddNewGroupInputShowing, setIsAddNewGroupInputShowing] = useState(false)
+  const [isEditAreaNameInputShowing, setIsEditAreaNameInputShowing] = useState(false)
   const addDocumentTextInput = useRef<HTMLInputElement>(null)
   const addGroupTextInput = useRef<HTMLInputElement>(null)
+  const editAreaNameTextInput = useRef<HTMLInputElement>(null)
 
   const {
     documents,
     groups,
+    getAreaById,
+    requestUpdateArea,
     requestAddDocument,
     requestAddDocumentGroup,
     selectedDocumentId,
-    setSelectedDocumentId
+    setSelectedDocumentId,
   } = useProject()
 
   const navigation = getNavigationProps(documents, groups)
 
-  const getParentGroupIdFromItemId = (itemId: string) => {
-    let parentGroupId = ''
-    navigation.forEach(n => {
-      const foundItem = n.children.find(c => c.id === itemId)
-      if (foundItem) parentGroupId = n.id
+  const getGroupIdFromDocumentId = (itemId: string) => {
+    let groupId = ''
+    navigation.forEach(g => {
+      const foundDocument = g.documents.find(d => d.id === itemId)
+      if (foundDocument) groupId = g.id
     })
-    return parentGroupId
+    return groupId
+  }
+
+  // const getGroupIdFromAreaId = (areaId: string) => {
+  //   return navigation.find(g => g.documents.map(d => d.areas.map(a => a.id)).flat().includes(areaId))?.id
+  // }
+
+  const getDocumentIdFromAreaId = (areaId: string) => {
+    let documentId = ''
+    navigation.map(g => g.documents).flat().forEach(d => {
+      const doesDocumentIncludeArea = d.areas.map(a => a.id).includes(areaId)
+      if (doesDocumentIncludeArea) documentId = d.id
+    })
+
+    return documentId
   }
 
   const onAddNewDocumentLineItemClickHandler = (groupId: string) => {
@@ -80,9 +111,28 @@ function Sidebar() {
     setIsAddNewDocumentInputShowing(false)
   }
 
-  const onItemClickHandler = (itemId: string) => {
+  const onAreaClick = (areaId: string) => {
+    getDocumentIdFromAreaId(areaId)
+    setSelectedDocumentId(getDocumentIdFromAreaId(areaId) || '')
+    setSelectedAreaId(areaId)
+    console.log('single click')
+  }
+
+  const onAreaDoubleclick = (areaId: string) => {
+    const documentIdOfArea = getDocumentIdFromAreaId(areaId)
+    setIsEditAreaNameInputShowing(true)
+    // const groupIdOfArea = getGroupIdFromAreaId(areaId)
+    console.log(documentIdOfArea, selectedDocumentId)
+    console.log('double click')
+  }
+
+  const onAreaInputBlur = () => {
+    setIsEditAreaNameInputShowing(false)
+  }
+
+  const onDocumentClickHandler = (itemId: string) => {
     setSelectedDocumentId(itemId)
-    setSelectedGroupId(getParentGroupIdFromItemId(itemId))
+    setSelectedGroupId(getGroupIdFromDocumentId(itemId))
     setIsAddNewDocumentInputShowing(false)
     setIsAddNewGroupInputShowing(false)
   }
@@ -93,6 +143,20 @@ function Sidebar() {
 
   const onCancelAddItemClickHandler = () => {
     setIsAddNewDocumentInputShowing(false)
+  }
+
+  const onConfirmAreaNameChangeHandler = async (areaDetails: { areaId: string, areaName: string }) => {
+    console.log(areaDetails)
+    const { areaId, areaName } = areaDetails
+
+    const areaToUpdate = getAreaById(areaId)
+    if (areaToUpdate) {
+      areaToUpdate.name = areaName
+      requestUpdateArea(areaToUpdate)
+        .then(response => console.log(response))
+        .catch(console.error)
+    }
+    setIsEditAreaNameInputShowing(false)
   }
 
   const onConfirmAddDocumentClickHandler = async (groupId: string) => {
@@ -131,11 +195,11 @@ function Sidebar() {
             name="groupName"
             id="groupName"
             autoFocus
-            className="text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="h-8 text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             placeholder="Add Group"
             onKeyDown={(event) => {
               onEnterHandler(event,
-              onConfirmAddGroupClickHandler)
+                onConfirmAddGroupClickHandler)
             }}
             ref={addGroupTextInput}
           />
@@ -178,12 +242,12 @@ function Sidebar() {
             type="text"
             name="documentName"
             id="documentName"
-            className="text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="h-8 text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             placeholder="Add Document"
             autoFocus
             onKeyDown={(event) => {
               onEnterHandler(event,
-              () => onConfirmAddDocumentClickHandler(groupId))
+                () => onConfirmAddDocumentClickHandler(groupId))
             }}
             ref={addDocumentTextInput}
           />
@@ -222,35 +286,81 @@ function Sidebar() {
 
       {renderAddGroupInput()}
 
-      {navigation.map((item) =>
-        <details key={item.name} open={item.id === selectedGroupId}>
+      {navigation.map((group) =>
+        <details key={group.name} open={group.id === selectedGroupId}>
           <summary className={classNames(
-            item.id === selectedGroupId
+            group.id === selectedGroupId
               ? 'bg-gray-900 text-white'
               : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-            'group items-center px-2 py-2 text-base font-medium rounded-md'
+            'group items-center px-2 py-2 text-base font-medium rounded-t-md'
           )}>
-            <a role='button'>{item.name}</a>
+            <a role='button'>{group.name}</a>
           </summary>
           <ul>
-            {item.children.map(child => (
-              <li key={child.id}>
-                <a
-                  role='button'
-                  onClick={() => onItemClickHandler(child.id)}
-                  className={classNames(
-                    child.id === selectedDocumentId
-                      ? 'bg-gray-900 text-white'
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                    'group w-full flex items-center pr-2 py-2 text-left font-medium text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2'
-                  )}
-                >
-                  {child.name}
-                </a>
+            {group.documents.map((d, index) => (
+              <li className='p-0 m-0' key={d.id}>
+                <details>
+                  <summary
+                    onClick={() => onDocumentClickHandler(d.id)}
+                    className={classNames(
+                      d.id === selectedDocumentId
+                        ? 'bg-gray-900 text-white'
+                        : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                      'group items-center py-2 text-base font-medium rounded-b-md pl-6',
+                      index !== 0
+                        ? 'rounded-t-md'
+                        : ''
+                    )}>
+                    <a
+                      role='button'
+                      className={classNames(
+                        d.id === selectedDocumentId
+                          ? 'bg-gray-900 text-white'
+                          : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                        'text-left font-medium text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 '
+                      )}
+                    >
+                      {d.name}
+                    </a>
+                  </summary>
+                  <ul>
+                    {d.areas.map((a, index) => (
+                      <li key={a.id}>
+                        {selectedAreaId === a.id && isEditAreaNameInputShowing
+                          ? <input
+                            type="text"
+                            name="areaName"
+                            id="areaName"
+                            autoFocus
+                            className="h-8 text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            placeholder={a.name || `Area ${index + 1}`}
+                            onBlur={onAreaInputBlur}
+                            onKeyDown={(event) => {
+                              onEnterHandler(event,
+                                () => onConfirmAreaNameChangeHandler({ areaId: a.id, areaName: event.currentTarget.value }))
+                            }}
+                            ref={editAreaNameTextInput}
+                          />
+                          : <a
+                            role='button'
+                            onClick={() => onAreaClick(a.id)}
+                            onDoubleClick={() => onAreaDoubleclick(a.id)}
+                            className={classNames('text-gray-300 hover:bg-gray-700 hover:text-white',
+                              'group w-full flex items-center pr-2 py-2 text-left font-medium pl-8 text-xs',
+                              'rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 py-2 select-none'
+                            )}
+                          >
+                            {a.name || `Area ${index + 1}`}
+                          </a>
+                        }
+                      </li>
+                    ))}
+                  </ul>
+                </details>
               </li>
             ))}
 
-            {renderAddNewDocument(item.id)}
+            {renderAddNewDocument(group.id)}
           </ul>
         </details>
       )}
