@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
-import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
+import { PlusIcon, XMarkIcon, DocumentPlusIcon } from '@heroicons/react/20/solid'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { useProject } from '../../context/Project/provider'
 
@@ -115,7 +115,6 @@ function Sidebar() {
     getDocumentIdFromAreaId(areaId)
     setSelectedDocumentId(getDocumentIdFromAreaId(areaId) || '')
     setSelectedAreaId(areaId)
-    console.log('single click')
   }
 
   const onAreaDoubleclick = (areaId: string) => {
@@ -271,12 +270,12 @@ function Sidebar() {
         role='button'
         className={classNames(
           'text-gray-300 hover:bg-gray-700 hover:text-white',
-          ' group w-full flex items-center pr-2 py-2 text-left font-medium',
-          'text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2'
+          ' group w-full flex items-center pl-5 py-2 text-left font-medium',
+          'text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'
         )}
         onClick={() => onAddNewDocumentLineItemClickHandler(groupId)}
       >
-        <PlusIcon className="h-3 w-4" aria-hidden="true" />
+        <DocumentPlusIcon className="h-3.5 mr-1" aria-hidden="true" />
         Add Document
       </a>
   }
@@ -299,17 +298,15 @@ function Sidebar() {
           <ul>
             {group.documents.map((d, index) => (
               <li className='p-0 m-0' key={d.id}>
-                <details>
-                  <summary
+                {!d.areas.length
+                  ? <div
                     onClick={() => onDocumentClickHandler(d.id)}
                     className={classNames(
                       d.id === selectedDocumentId
                         ? 'bg-gray-900 text-white'
                         : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                      'group items-center py-2 text-base font-medium rounded-b-md pl-6',
-                      index !== 0
-                        ? 'rounded-t-md'
-                        : ''
+                      'group items-center py-2 text-base font-medium rounded-b-md pl-10',
+                      index !== 0 ? 'rounded-t-md' : '',
                     )}>
                     <a
                       role='button'
@@ -322,41 +319,66 @@ function Sidebar() {
                     >
                       {d.name}
                     </a>
-                  </summary>
-                  <ul>
-                    {d.areas.map((a, index) => (
-                      <li key={a.id}>
-                        {selectedAreaId === a.id && isEditAreaNameInputShowing
-                          ? <input
-                            type="text"
-                            name="areaName"
-                            id="areaName"
-                            autoFocus
-                            className="h-8 text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            placeholder={a.name || `Area ${index + 1}`}
-                            onBlur={onAreaInputBlur}
-                            onKeyDown={(event) => {
-                              onEnterHandler(event,
-                                () => onConfirmAreaNameChangeHandler({ areaId: a.id, areaName: event.currentTarget.value }))
-                            }}
-                            ref={editAreaNameTextInput}
-                          />
-                          : <a
-                            role='button'
-                            onClick={() => onAreaClick(a.id)}
-                            onDoubleClick={() => onAreaDoubleclick(a.id)}
-                            className={classNames('text-gray-300 hover:bg-gray-700 hover:text-white',
-                              'group w-full flex items-center pr-2 py-2 text-left font-medium pl-8 text-xs',
-                              'rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 py-2 select-none'
-                            )}
-                          >
-                            {a.name || `Area ${index + 1}`}
-                          </a>
-                        }
-                      </li>
-                    ))}
-                  </ul>
-                </details>
+                  </div>
+                  : <details>
+                    <summary
+                      onClick={() => onDocumentClickHandler(d.id)}
+                      className={classNames(
+                        d.id === selectedDocumentId
+                          ? 'bg-gray-900 text-white'
+                          : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                        'group items-center py-2 text-base font-medium rounded-b-md pl-6',
+                        index !== 0 ? 'rounded-t-md' : '',
+
+                      )}>
+                      <a
+                        role='button'
+                        className={classNames(
+                          d.id === selectedDocumentId
+                            ? 'bg-gray-900 text-white'
+                            : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          'text-left font-medium text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 '
+                        )}
+                      >
+                        {d.name}
+                      </a>
+                    </summary>
+                    <ul>
+                      {d.areas.map((a, index) => (
+                        <li key={a.id}>
+                          {selectedAreaId === a.id && isEditAreaNameInputShowing
+                            ? <input
+                              type="text"
+                              name="areaName"
+                              id="areaName"
+                              autoFocus
+                              className="h-8 text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              placeholder={a.name || `Area ${index + 1}`}
+                              onBlur={onAreaInputBlur}
+                              onKeyDown={(event) => {
+                                onEnterHandler(event,
+                                  () => onConfirmAreaNameChangeHandler({ areaId: a.id, areaName: event.currentTarget.value }))
+                              }}
+                              ref={editAreaNameTextInput}
+                            />
+                            : <a
+                              role='button'
+                              onClick={() => onAreaClick(a.id)}
+                              onDoubleClick={() => onAreaDoubleclick(a.id)}
+                              className={classNames('text-gray-300 hover:bg-gray-700 hover:text-white',
+                                'group w-full flex items-center pr-2 py-2 text-left font-medium pl-8 text-xs',
+                                'rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 py-2 select-none',
+                                selectedAreaId === a.id ? 'underline' : ''
+                              )}
+                            >
+                              {a.name || `Area ${index + 1}`}
+                            </a>
+                          }
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                }
               </li>
             ))}
 
