@@ -16,6 +16,7 @@ type Props = { children: ReactNode, projectProps: ProjectProps }
 export function ProjectProvider({ children, projectProps }: Props) {
   const [ documents, setDocuments ] = useState<ipc.Document[]>(projectProps.documents)
   const [ groups, setGroups ] = useState<ipc.Group[]>(projectProps.groups)
+  const [ selectedAreaId, setSelectedAreaId ] = useState<string>('')
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>('')
 
   const updateDocuments = async () => {
@@ -72,6 +73,8 @@ export function ProjectProvider({ children, projectProps }: Props) {
     requestAddDocument,
     requestAddDocumentGroup,
     requestUpdateArea,
+    selectedAreaId,
+    setSelectedAreaId,
     selectedDocumentId,
     setSelectedDocumentId,
   }

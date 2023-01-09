@@ -23,6 +23,8 @@ export type ProjectContextType = {
   requestUpdateArea: (area: AreaProps) => Promise<ipc.Area>
   requestAddDocument: (groupId: string, documentName: string) => Promise<ipc.Document>
   requestAddDocumentGroup: (groupName: string) => Promise<ipc.Group>
+  selectedAreaId: string,
+  setSelectedAreaId: (id: string) => void,
   selectedDocumentId: string
   setSelectedDocumentId: (id: string) => void
 } & ProjectProps

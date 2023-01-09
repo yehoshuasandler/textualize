@@ -56,7 +56,6 @@ function classNames(...classes: any[]) {
 
 function Sidebar() {
   const [selectedGroupId, setSelectedGroupId] = useState('')
-  const [selectedAreaId, setSelectedAreaId] = useState('')
   const [isAddNewDocumentInputShowing, setIsAddNewDocumentInputShowing] = useState(false)
   const [isAddNewGroupInputShowing, setIsAddNewGroupInputShowing] = useState(false)
   const [isEditAreaNameInputShowing, setIsEditAreaNameInputShowing] = useState(false)
@@ -71,6 +70,8 @@ function Sidebar() {
     requestUpdateArea,
     requestAddDocument,
     requestAddDocumentGroup,
+    selectedAreaId,
+    setSelectedAreaId,
     selectedDocumentId,
     setSelectedDocumentId,
   } = useProject()
@@ -85,10 +86,6 @@ function Sidebar() {
     })
     return groupId
   }
-
-  // const getGroupIdFromAreaId = (areaId: string) => {
-  //   return navigation.find(g => g.documents.map(d => d.areas.map(a => a.id)).flat().includes(areaId))?.id
-  // }
 
   const getDocumentIdFromAreaId = (areaId: string) => {
     let documentId = ''
