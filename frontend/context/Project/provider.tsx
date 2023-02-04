@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
-import { GetDocuments, RequestAddArea, RequestAddDocument, RequestAddDocumentGroup, RequestUpdateArea } from '../../wailsjs/wailsjs/go/ipc/Channel'
+import { GetDocuments, GetProcessedAreasByDocumentId, RequestAddArea, RequestAddDocument, RequestAddDocumentGroup, RequestAddProcessedArea, RequestUpdateArea } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps } from './types'
 import makeDefaultProject from './makeDefaultProject'
@@ -41,7 +41,6 @@ export function ProjectProvider({ children, projectProps }: Props) {
 
   const requestAddArea = async (documentId: string, area: AddAreaProps): Promise<ipc.Area> => {
     const response = await RequestAddArea(documentId, new ipc.Area(area))
-
     if (response.id) await updateDocuments()
     return response
   }
@@ -58,6 +57,18 @@ export function ProjectProvider({ children, projectProps }: Props) {
   )
 
   const getSelectedDocument = () => documents.find(d => d.id === selectedDocumentId)
+
+  const getProcessedAreasByDocumentId = async (documentId: string) => {
+    let response: ipc.ProcessedArea[] = []
+    try {
+      response = await GetProcessedAreasByDocumentId(documentId)
+    } catch (err) {
+      console.log(err)
+    }
+    return response
+  }
+
+  const requestAddProcessedArea = async (processedArea: ipc.ProcessedArea) => await RequestAddProcessedArea(processedArea)
 
   useEffect(() => {
     if (!documents.length && !groups.length) updateDocuments()
@@ -77,6 +88,8 @@ export function ProjectProvider({ children, projectProps }: Props) {
     setSelectedAreaId,
     selectedDocumentId,
     setSelectedDocumentId,
+    getProcessedAreasByDocumentId,
+    requestAddProcessedArea,
   }
 
   return <ProjectContext.Provider value={value}>

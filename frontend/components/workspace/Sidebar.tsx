@@ -117,8 +117,6 @@ function Sidebar() {
   const onAreaDoubleclick = (areaId: string) => {
     const documentIdOfArea = getDocumentIdFromAreaId(areaId)
     setIsEditAreaNameInputShowing(true)
-    // const groupIdOfArea = getGroupIdFromAreaId(areaId)
-    console.log(documentIdOfArea, selectedDocumentId)
     console.log('double click')
   }
 
@@ -142,7 +140,6 @@ function Sidebar() {
   }
 
   const onConfirmAreaNameChangeHandler = async (areaDetails: { areaId: string, areaName: string }) => {
-    console.log(areaDetails)
     const { areaId, areaName } = areaDetails
 
     const areaToUpdate = getAreaById(areaId)

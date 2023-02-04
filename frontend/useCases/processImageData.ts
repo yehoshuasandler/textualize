@@ -17,16 +17,11 @@ const processImageData = async (documentId: string) => {
   if (!foundDocument.path || !foundDocument.areas?.length) return
 
   const { areas, path } = foundDocument
-
-  console.log(`about to load: ${path}`)
-
   const imageData = await loadImage(path)
 
   const scheduler = createScheduler()
-
   const workerCount = getImageWorkerCount(areas.length)
   for (let index = 0; index < workerCount; index++) {
-    console.log('add worker stuff')
     const worker = await createWorker()
     await worker.loadLanguage('eng') // TODO: change this when multilangiage system is implementd
     await worker.initialize('eng') // TODO: same here
@@ -34,7 +29,6 @@ const processImageData = async (documentId: string) => {
   }
 
   const results = await Promise.allSettled(areas.map(a => {
-    console.log('adding job')
     return scheduler.addJob('recognize', imageData, { rectangle: {
       left: a.startX,
       top: a.startY,

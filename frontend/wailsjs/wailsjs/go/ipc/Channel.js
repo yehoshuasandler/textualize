@@ -10,6 +10,10 @@ export function GetDocuments() {
   return window['go']['ipc']['Channel']['GetDocuments']();
 }
 
+export function GetProcessedAreasByDocumentId(arg1) {
+  return window['go']['ipc']['Channel']['GetProcessedAreasByDocumentId'](arg1);
+}
+
 export function RequestAddArea(arg1, arg2) {
   return window['go']['ipc']['Channel']['RequestAddArea'](arg1, arg2);
 }
@@ -20,6 +24,10 @@ export function RequestAddDocument(arg1, arg2) {
 
 export function RequestAddDocumentGroup(arg1) {
   return window['go']['ipc']['Channel']['RequestAddDocumentGroup'](arg1);
+}
+
+export function RequestAddProcessedArea(arg1) {
+  return window['go']['ipc']['Channel']['RequestAddProcessedArea'](arg1);
 }
 
 export function RequestUpdateArea(arg1) {

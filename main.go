@@ -32,10 +32,7 @@ func ClientFileLoader() *FileLoader {
 
 func (h *FileLoader) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	var err error
-	// Make sure to prefix all local files with this in renderer
-	// requestedFilename := strings.TrimPrefix(req.URL.Path, "/textualizeFileAssets")
 	requestedFilename := req.URL.Path
-	fmt.Println(requestedFilename)
 	fileData, err := os.ReadFile(requestedFilename)
 	if err != nil {
 		fmt.Println("was eror: ")

@@ -35,3 +35,36 @@ type Area struct {
 	EndX   int    `json:"endX"`
 	EndY   int    `json:"endY"`
 }
+
+type ProcessedBoundingBox struct {
+	X0 int32 `json:"x0"`
+	Y0 int32 `json:"y0"`
+	X1 int32 `json:"x1"`
+	Y1 int32 `json:"y1"`
+}
+
+type ProcessedSymbol struct {
+	Text        string               `json:"text"`
+	Confidence  float32              `json:"confidence"`
+	BoundingBox ProcessedBoundingBox `json:"boundingBox"`
+}
+
+type ProcessedWord struct {
+	FullText    string               `json:"fullText"`
+	Symbols     []ProcessedSymbol    `json:"symbols"`
+	Confidence  float32              `json:"confidence"`
+	Direction   string               `json:"direction"`
+	BoundingBox ProcessedBoundingBox `json:"boundingBox"`
+}
+
+type ProcessedLine struct {
+	FullText string          `json:"fullText"`
+	Words    []ProcessedWord `json:"words"`
+}
+
+type ProcessedArea struct {
+	Id         string          `json:"id"`
+	DocumentId string          `json:"documentId"`
+	FullText   string          `json:"fullText"`
+	Lines      []ProcessedLine `json:"lines"`
+}

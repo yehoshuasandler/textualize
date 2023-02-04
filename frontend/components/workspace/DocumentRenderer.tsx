@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react'
 import { useProject } from '../../context/Project/provider'
 import loadImage from '../../useCases/loadImage'
-import processImageData from '../../useCases/processImageData'
+import processImageArea from '../../useCases/processImageArea'
 
 const DocumentRenderer = () => {
   const { getSelectedDocument, requestAddArea } = useProject()
@@ -111,10 +111,8 @@ const DocumentRenderer = () => {
     }
 
     if (selectedDocument?.id) {
-      await requestAddArea(selectedDocument.id, { startX, startY, endX, endY })
-      processImageData(selectedDocument.id).then(results => {
-        console.log(results)
-      }).catch(err => console.log(err))
+      const addedArea = await requestAddArea(selectedDocument.id, { startX, startY, endX, endY })
+      processImageArea(selectedDocument.id, addedArea)
     }
 
     const context = drawingCanvasInstance.getContext('2d')

@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useNavigation } from '../../context/Navigation/provider'
+import { workspaces } from '../../context/Navigation/types'
 
 const tabs = [
-  { name: 'Processor', id: 0 },
-  { name: 'Text Editor', id: 1 },
-  { name: 'Translator', id: 2 },
-  { name: 'Details', id: 3 },
+  { displayName: 'Processor', type: workspaces.PROCESSOR },
+  { displayName: 'Text Editor', type: workspaces.TEXTEDITOR },
+  { displayName: 'Translator', type: workspaces.TRANSLATOR },
+  { displayName: 'Details', type: workspaces.DETAILS },
 ]
 
 function classNames(...classes: string[]) {
@@ -12,9 +13,9 @@ function classNames(...classes: string[]) {
 }
 
 export default function ToolTabs() {
-  const [selectedTabId, setSelectedTabId] = useState(0)
+  const { selectedWorkspace, setSelectedWorkspace } = useNavigation()
 
-  const getIsSelectedTab = (tabId: number) => tabId === selectedTabId
+  const getIsSelectedTab = (type: workspaces) => type === selectedWorkspace
 
   return (
     <div className="bg-white shadow">
@@ -23,17 +24,17 @@ export default function ToolTabs() {
           <nav className="-mb-px flex" aria-label="Tabs">
             {tabs.map((tab) => (
               <a
-                key={tab.name}
-                onClick={_ => setSelectedTabId(tab.id)}
+                key={tab.displayName}
+                onClick={_ => setSelectedWorkspace(tab.type)}
                 className={classNames(
-                  getIsSelectedTab(tab.id)
+                  getIsSelectedTab(tab.type)
                     ? 'border-indigo-500 text-indigo-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
                   'cursor-pointer w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm'
                 )}
-                aria-current={getIsSelectedTab(tab.id) ? 'page' : undefined}
+                aria-current={getIsSelectedTab(tab.type) ? 'page' : undefined}
               >
-                {tab.name}
+                {tab.displayName}
               </a>
             ))}
           </nav>

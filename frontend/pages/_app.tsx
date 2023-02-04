@@ -5,6 +5,8 @@ import { ProjectProvider } from '../context/Project/provider'
 import '../styles/globals.css'
 import { ipc } from '../wailsjs/wailsjs/go/models'
 import '../styles/globals.css'
+import { NavigationProvidor } from '../context/Navigation/provider'
+import { workspaces } from '../context/Navigation/types'
 
 const initialProjectProps = {
   id: '',
@@ -12,10 +14,16 @@ const initialProjectProps = {
   groups: [] as ipc.Group[]
 }
 
+const initialNavigationProps = {
+  selectedWorkspace: workspaces.PROCESSOR
+}
+
 export default function MainAppLayout({ Component, pageProps }: AppProps) {
   return <div className='min-h-screen' >
-    <ProjectProvider projectProps={initialProjectProps}>
-      <Component {...pageProps} />
-    </ProjectProvider>
+    <NavigationProvidor navigationProps={initialNavigationProps}>
+      <ProjectProvider projectProps={initialProjectProps}>
+        <Component {...pageProps} />
+      </ProjectProvider>
+    </NavigationProvidor>
   </div>
 }

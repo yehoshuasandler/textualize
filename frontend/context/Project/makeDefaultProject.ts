@@ -9,6 +9,8 @@ const makeDefaultProject = (): ProjectContextType => ({
   selectedDocumentId: '',
   getSelectedDocument: () => new ipc.Document(),
   getAreaById: (areaId) => undefined,
+  getProcessedAreasByDocumentId: (documentId) => Promise.resolve([new ipc.ProcessedArea()]),
+  requestAddProcessedArea: (processesArea) => Promise.resolve(new ipc.ProcessedArea()),
   requestAddArea: (documentId, area) => Promise.resolve(new ipc.Area()),
   requestUpdateArea: (updatedArea) => Promise.resolve(new ipc.Area()),
   requestAddDocument: (groupId, documentName) => Promise.resolve(new ipc.Document()),
