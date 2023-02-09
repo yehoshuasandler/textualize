@@ -1,5 +1,5 @@
-import { ListBulletIcon } from '@heroicons/react/20/solid'
-import { EyeIcon } from '@heroicons/react/24/outline'
+import { ListBulletIcon, MinusIcon } from '@heroicons/react/20/solid'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import createDiffEditorInteractions, { MarkdownOperator } from '../../useCases/createDiffEditorInteractions'
 
 function classNames(...classes: any[]) {
@@ -8,6 +8,7 @@ function classNames(...classes: any[]) {
 
 type Props = {
   editorInteractions: ReturnType<typeof createDiffEditorInteractions>
+  isPreviewOpen: boolean
   togglePreview: () => void
 }
 
@@ -15,18 +16,22 @@ const TextEditorButtons = (props: Props) => {
   const { editorInteractions, togglePreview } = props
   return <span className="isolate inline-flex rounded-md shadow-sm">
     <button
-        type="button"
-        onClick={togglePreview}
-        className="relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-0 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-      >
-        <span className="sr-only">Next</span>
-        <EyeIcon className="h-5 w-5" aria-hidden="true" />
-      </button>
+      type="button"
+      onClick={togglePreview}
+      className={classNames(
+        'relative -ml-px inline-flex items-center rounded-l-md border',
+        'border-gray-300 bg-white px-2 py-0 text-sm font-medium text-gray-500',
+        'hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none',
+        'focus:ring-1 focus:ring-indigo-500'
+      )}>
+      <span className="sr-only">Next</span>
+      {props.isPreviewOpen ? <EyeSlashIcon className="h-5 w-5" aria-hidden="true" /> : <EyeIcon className="h-5 w-5" aria-hidden="true" />}
+    </button>
     <button
       type="button"
       onClick={() => editorInteractions.insertMarkdownOperator(MarkdownOperator.H1)}
       className={classNames(
-        'text-lg relative inline-flex items-center rounded-l-md border',
+        'text-lg relative inline-flex items-center border',
         'border-gray-300 bg-white px-2 py-0 text-gray-700 hover:bg-gray-50',
         'focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1',
         'focus:ring-indigo-500 font-extrabold',
@@ -75,7 +80,7 @@ const TextEditorButtons = (props: Props) => {
       type="button"
       onClick={() => editorInteractions.insertMarkdownOperator(MarkdownOperator.ITALLICS)}
       className={classNames(
-        'text-sm relative inline-flex items-center rounded-r-md border',
+        'text-sm relative inline-flex items-center border',
         'border-gray-300 bg-white px-2 py-0 text-gray-700 hover:bg-gray-50',
         'focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1',
         'focus:ring-indigo-500 italic font-serif',
@@ -88,7 +93,7 @@ const TextEditorButtons = (props: Props) => {
       type="button"
       onClick={() => editorInteractions.insertMarkdownOperator(MarkdownOperator.BOLD)}
       className={classNames(
-        'text-sm relative inline-flex items-center rounded-r-md border',
+        'text-sm relative inline-flex items-center border',
         'border-gray-300 bg-white px-2 py-0 text-gray-700 hover:bg-gray-50',
         'focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1',
         'focus:ring-indigo-500 font-extrabold',
@@ -101,13 +106,26 @@ const TextEditorButtons = (props: Props) => {
       type="button"
       onClick={() => editorInteractions.insertMarkdownOperator(MarkdownOperator.BULLET)}
       className={classNames(
-        'text-sm relative inline-flex items-center rounded-r-md border',
+        'text-sm relative inline-flex items-center border',
         'border-gray-300 bg-white px-2 py-0 text-gray-700 hover:bg-gray-50',
         'focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1',
         'focus:ring-indigo-500 italic',
       )}>
       <span className="sr-only">Bullet</span>
       <ListBulletIcon className="h-5 w-5" aria-hidden="true" />
+    </button>
+
+    <button
+      type="button"
+      onClick={() => editorInteractions.insertMarkdownOperator(MarkdownOperator.DIVIDER)}
+      className={classNames(
+        'text-sm relative inline-flex items-center rounded-r-md border',
+        'border-gray-300 bg-white px-2 py-0 text-gray-700 hover:bg-gray-50',
+        'focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1',
+        'focus:ring-indigo-500 italic',
+      )}>
+      <span className="sr-only">Divider</span>
+      <MinusIcon className="h-5 w-5" aria-hidden="true" />
     </button>
   </span>
 }
