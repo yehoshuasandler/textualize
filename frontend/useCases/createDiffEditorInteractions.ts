@@ -5,6 +5,8 @@ export enum MarkdownOperator {
   H2 = '## ',
   H3 = '### ',
   H4 = '#### ',
+  H5 = '##### ',
+  H6 = '###### ',
   ITALLICS = '_',
   BOLD = '**',
   BULLET = '* ',
@@ -18,7 +20,6 @@ const wrapperOperators = [
 
 const createDiffEditorInteractions = (editor: monaco.editor.IStandaloneDiffEditor) => {
   const modifiedEditor = editor.getModifiedEditor()
-  const originalEditor = editor.getOriginalEditor()
 
   return {
     undo: () => { },

@@ -1,12 +1,13 @@
 package ipc
 
 type Document struct {
-	Id        string `json:"id"`
-	GroupId   string `json:"groupId"`
-	Name      string `json:"name"`
-	Path      string `json:"path"`
-	ProjectId string `json:"projectId"`
-	Areas     []Area `json:"areas"`
+	Id               string `json:"id"`
+	GroupId          string `json:"groupId"`
+	Name             string `json:"name"`
+	Path             string `json:"path"`
+	ProjectId        string `json:"projectId"`
+	Areas            []Area `json:"areas"`
+	ModifiedMarkdown string `json:"modifiedMarkdown"`
 }
 
 type DocumentCollection struct {
@@ -67,4 +68,14 @@ type ProcessedArea struct {
 	DocumentId string          `json:"documentId"`
 	FullText   string          `json:"fullText"`
 	Lines      []ProcessedLine `json:"lines"`
+}
+
+type UserMarkdown struct {
+	Id         string `json:"id"`
+	DocumentId string `json:"documentId"`
+	Value      string `json:"value"`
+}
+
+type UserMarkdownCollection struct {
+	Values []UserMarkdown `json:"values"`
 }

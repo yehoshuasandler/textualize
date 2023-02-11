@@ -5,24 +5,42 @@ import type { DiffOnMount } from '@monaco-editor/react/'
 import TextEditorButtons from './TextEditorButtons'
 import createDiffEditorInteractions from '../../useCases/createDiffEditorInteractions'
 import TextPreview from './TextPreview'
+import createDebounce from '../../utils/createDebounce'
 
 let editorInteractions: ReturnType<typeof createDiffEditorInteractions>
 
 const TextEditor = () => {
-  const { selectedDocumentId, getProcessedAreasByDocumentId } = useProject()
+  const { selectedDocumentId, getProcessedAreasByDocumentId, requestUpdateDocumentUserMarkdown, getUserMarkdownByDocumentId } = useProject()
   const [editorHeight, setEditorHeight] = useState(window.innerHeight - 200)
   const [editorValue, setEditorValue] = useState('')
   const [isEditorReady, setIsEditorReady] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
-  const [modifiedEditorValue, setIsModifiedEditorValue] = useState('')
+  const [modifiedEditorValue, setModifiedEditorValue] = useState('')
 
-  const handleEditorDidMount: DiffOnMount = (editor, _) => {
+  const handleEditorDidMount: DiffOnMount = async (editor, _) => {
+    const currentDocumentId = selectedDocumentId
+    
     editorInteractions = createDiffEditorInteractions(editor)
     const modifiedEditor = editor.getModifiedEditor()
-    setIsModifiedEditorValue(modifiedEditor.getValue())
-    modifiedEditor.onDidChangeModelContent(() => {
-      setIsModifiedEditorValue(modifiedEditor.getValue())
-    })
+    const originalEditor = editor.getOriginalEditor()
+
+    setModifiedEditorValue(originalEditor.getValue())
+
+    try {
+      const initialStoredUserMarkdownResponse = await getUserMarkdownByDocumentId(selectedDocumentId)
+      if (initialStoredUserMarkdownResponse.value) {
+        setModifiedEditorValue(initialStoredUserMarkdownResponse.value)
+        modifiedEditor.getModel()?.setValue(initialStoredUserMarkdownResponse.value)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+
+    modifiedEditor.onDidChangeModelContent(createDebounce(async () => {
+      const modifiedMarkdown = modifiedEditor.getValue()
+      requestUpdateDocumentUserMarkdown(currentDocumentId, modifiedMarkdown)
+      setModifiedEditorValue(modifiedMarkdown)
+    }))
 
     setIsEditorReady(true)
   }
@@ -62,13 +80,13 @@ const TextEditor = () => {
     }
     <DiffEditor
       original={editorValue}
-      modified={editorValue}
+      modified={modifiedEditorValue}
       language='markdown'
       height={`${editorHeight}px`}
       onMount={handleEditorDidMount}
     />
 
-    { isPreviewOpen ? <TextPreview markdown={modifiedEditorValue} height={editorHeight} /> : '' }
+    {isPreviewOpen ? <TextPreview markdown={modifiedEditorValue} height={editorHeight} /> : ''}
   </div>
 }
 

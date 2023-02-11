@@ -29,6 +29,7 @@ export namespace ipc {
 	    path: string;
 	    projectId: string;
 	    areas: Area[];
+	    modifiedMarkdown: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Document(source);
@@ -42,6 +43,7 @@ export namespace ipc {
 	        this.path = source["path"];
 	        this.projectId = source["projectId"];
 	        this.areas = this.convertValues(source["areas"], Area);
+	        this.modifiedMarkdown = source["modifiedMarkdown"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -274,6 +276,23 @@ export namespace ipc {
 	
 	
 	
+	
+	export class UserMarkdown {
+	    id: string;
+	    documentId: string;
+	    value: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new UserMarkdown(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.documentId = source["documentId"];
+	        this.value = source["value"];
+	    }
+	}
 
 }
 

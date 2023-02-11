@@ -75,6 +75,30 @@ const TextEditorButtons = (props: Props) => {
       <span className="sr-only">Header 4</span>
       H4
     </button>
+    <button
+      type="button"
+      onClick={() => editorInteractions.insertMarkdownOperator(MarkdownOperator.H5)}
+      className={classNames(
+        'text-xs relative inline-flex items-center border',
+        'border-gray-300 bg-white px-2 py-0 text-gray-700 hover:bg-gray-50',
+        'focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1',
+        'focus:ring-indigo-500 font-bold',
+      )}>
+      <span className="sr-only">Header 5</span>
+      H5
+    </button>
+    <button
+      type="button"
+      onClick={() => editorInteractions.insertMarkdownOperator(MarkdownOperator.H6)}
+      className={classNames(
+        'text-xs relative inline-flex items-center border',
+        'border-gray-300 bg-white px-2 py-0 text-gray-700 hover:bg-gray-50',
+        'focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1',
+        'focus:ring-indigo-500 font-bold',
+      )}>
+      <span className="sr-only">Header 6</span>
+      H6
+    </button>
 
     <button
       type="button"

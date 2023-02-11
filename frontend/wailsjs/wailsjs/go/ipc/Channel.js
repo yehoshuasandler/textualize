@@ -14,6 +14,10 @@ export function GetProcessedAreasByDocumentId(arg1) {
   return window['go']['ipc']['Channel']['GetProcessedAreasByDocumentId'](arg1);
 }
 
+export function GetUserMarkdownByDocumentId(arg1) {
+  return window['go']['ipc']['Channel']['GetUserMarkdownByDocumentId'](arg1);
+}
+
 export function RequestAddArea(arg1, arg2) {
   return window['go']['ipc']['Channel']['RequestAddArea'](arg1, arg2);
 }
@@ -32,4 +36,8 @@ export function RequestAddProcessedArea(arg1) {
 
 export function RequestUpdateArea(arg1) {
   return window['go']['ipc']['Channel']['RequestUpdateArea'](arg1);
+}
+
+export function RequestUpdateDocumentUserMarkdown(arg1, arg2) {
+  return window['go']['ipc']['Channel']['RequestUpdateDocumentUserMarkdown'](arg1, arg2);
 }

@@ -105,7 +105,7 @@ func (c *Channel) RequestAddDocument(groupId string, documentName string) Docume
 		Name:      documentName,
 		Path:      filePath,
 		GroupId:   groupId,
-		ProjectId: "something else",
+		ProjectId: "something else", // TODO: Change me
 	}
 
 	document.GetDocumentCollection().AddDocument(newDocument)
@@ -119,6 +119,44 @@ func (c *Channel) RequestAddDocument(groupId string, documentName string) Docume
 	}
 
 	return documentResponse
+}
+
+func (c *Channel) RequestUpdateDocumentUserMarkdown(documentId string, markdown string) UserMarkdown {
+	markdownCollection := document.GetUserMarkdownCollection()
+	markdownToUpdate := markdownCollection.GetUserMarkdownByDocumentId(documentId)
+
+	newMarkdown := document.UserMarkdown{
+		DocumentId: documentId,
+		Value:      markdown,
+	}
+	if markdownToUpdate == nil {
+		newMarkdown.Id = uuid.NewString()
+	} else {
+		newMarkdown.Id = markdownToUpdate.Id
+	}
+
+	updatedMarkdown := markdownCollection.UpdateUserMarkdown(newMarkdown)
+	return UserMarkdown{
+		Id:         updatedMarkdown.Id,
+		DocumentId: updatedMarkdown.DocumentId,
+		Value:      updatedMarkdown.Value,
+	}
+}
+
+func (c *Channel) GetUserMarkdownByDocumentId(documentId string) UserMarkdown {
+	foundUserMarkdown := document.GetUserMarkdownCollection().GetUserMarkdownByDocumentId((documentId))
+
+	response := UserMarkdown{}
+
+	if foundUserMarkdown != nil {
+		response = UserMarkdown{
+			Id:         foundUserMarkdown.Id,
+			DocumentId: foundUserMarkdown.DocumentId,
+			Value:      foundUserMarkdown.Value,
+		}
+	}
+
+	return response
 }
 
 func (c *Channel) RequestAddDocumentGroup(name string) Group {

@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
-import { GetDocuments, GetProcessedAreasByDocumentId, RequestAddArea, RequestAddDocument, RequestAddDocumentGroup, RequestAddProcessedArea, RequestUpdateArea } from '../../wailsjs/wailsjs/go/ipc/Channel'
+import { GetDocuments, GetProcessedAreasByDocumentId, GetUserMarkdownByDocumentId, RequestAddArea, RequestAddDocument, RequestAddDocumentGroup, RequestAddProcessedArea, RequestUpdateArea, RequestUpdateDocumentUserMarkdown } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps } from './types'
 import makeDefaultProject from './makeDefaultProject'
@@ -68,6 +68,28 @@ export function ProjectProvider({ children, projectProps }: Props) {
     return response
   }
 
+  const requestUpdateDocumentUserMarkdown = async (documentId: string, markdown: string) => {
+    let response: ipc.UserMarkdown = new ipc.UserMarkdown()
+    try {
+      response = await RequestUpdateDocumentUserMarkdown(documentId, markdown)
+    } catch (err) {
+      console.error(err)
+    }
+    return response
+  }
+
+  const getUserMarkdownByDocumentId = async (documentId: string): Promise<ipc.UserMarkdown> => {
+    let response: ipc.UserMarkdown = new ipc.UserMarkdown({})
+    console.log(documentId)
+    try {
+      response = await GetUserMarkdownByDocumentId(documentId)
+    } catch (err) {
+      console.error(err)
+    }
+
+    return response
+  }
+
   const requestAddProcessedArea = async (processedArea: ipc.ProcessedArea) => await RequestAddProcessedArea(processedArea)
 
   useEffect(() => {
@@ -90,6 +112,8 @@ export function ProjectProvider({ children, projectProps }: Props) {
     setSelectedDocumentId,
     getProcessedAreasByDocumentId,
     requestAddProcessedArea,
+    requestUpdateDocumentUserMarkdown,
+    getUserMarkdownByDocumentId,
   }
 
   return <ProjectContext.Provider value={value}>

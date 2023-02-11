@@ -8,12 +8,12 @@ const TextPreview = (props: Props) => (
     style={{ 'height': `${props.height}px` }}>
     <ReactMarkdown
       components={{
-        h1: ({ node, ...props }) => <h1 {...props} className='font-extrabold text-2xl' />,
+        h1: ({ node, ...props }) => <h1 {...props} className='font-black text-2xl' />,
         h2: ({ node, ...props }) => <h2 {...props} className='font-extrabold text-xl' />,
-        h3: ({ node, ...props }) => <h3 {...props} className='font-extrabold text-lg' />,
-        h4: ({ node, ...props }) => <h4 {...props} className='font-extrabold text-base' />,
-        h5: ({ node, ...props }) => <h5 {...props} className='font-bold text-base' />,
-        h6: ({ node, ...props }) => <h6 {...props} className='font-semibold text-base' />,
+        h3: ({ node, ...props }) => <h3 {...props} className='font-bold text-lg' />,
+        h4: ({ node, ...props }) => <h4 {...props} className='font-semibold text-base' />,
+        h5: ({ node, ...props }) => <h5 {...props} className='font-medium text-base' />,
+        h6: ({ node, ...props }) => <h6 {...props} className='font-light text-base underline' />,
         ul: ({ node, ...props }) => <ul {...props} className='list-disc list-inside ml-2' />,
         ol: ({ node, ...props }) => <ol {...props} className='list-decimal list-inside ml-2' />,
         em: ({ node, ...props }) => <em {...props} className='italic font-light' />,
