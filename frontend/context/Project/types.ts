@@ -27,8 +27,10 @@ export type ProjectContextType = {
   requestAddDocumentGroup: (groupName: string) => Promise<ipc.Group>
   requestUpdateDocumentUserMarkdown: (documentId: string, markdown: string) => Promise<ipc.UserMarkdown>
   getUserMarkdownByDocumentId: (documentId: string) => Promise<ipc.UserMarkdown>
-  selectedAreaId: string,
-  setSelectedAreaId: (id: string) => void,
+  selectedAreaId: string
+  setSelectedAreaId: (id: string) => void
   selectedDocumentId: string
   setSelectedDocumentId: (id: string) => void
+  currentSession: ipc.Session
+  createNewProject: (name: string) => Promise<ipc.Session>
 } & ProjectProps

@@ -1,21 +1,23 @@
 package session
 
-type session struct {
+type Session struct {
 	Project      Project
 	Organization Organization
 	User         User
 }
 
-var sessionInstance *session
+var sessionInstance *Session
 
-func GetInstance() *session {
+func GetInstance() *Session {
 	if sessionInstance == nil {
-		sessionInstance = &session{}
+		sessionInstance = &Session{}
 	}
 	return sessionInstance
 }
 
-func InitializeModule(newSession session) *session {
-	sessionInstance = &newSession
+func InitializeModule(newSession Session) *Session {
+	if sessionInstance == nil {
+		sessionInstance = &newSession
+	}
 	return sessionInstance
 }

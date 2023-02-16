@@ -3,6 +3,7 @@ package ipc
 import (
 	app "textualize/core/App"
 	document "textualize/core/Document"
+	session "textualize/core/Session"
 
 	"github.com/google/uuid"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -18,14 +19,7 @@ func (c *Channel) GetDocumentById(id string) Document {
 	var jsonAreas []Area
 
 	for _, a := range foundDocument.Areas {
-		jsonAreas = append(jsonAreas, Area{
-			Id:     a.Id,
-			Name:   a.Name,
-			StartX: a.StartX,
-			StartY: a.StartY,
-			EndX:   a.EndX,
-			EndY:   a.EndY,
-		})
+		jsonAreas = append(jsonAreas, Area(a))
 	}
 	response := Document{
 		Id:        foundDocument.Id,
@@ -50,14 +44,7 @@ func (c *Channel) GetDocuments() GetDocumentsResponse {
 	for _, d := range documents {
 		jsonAreas := make([]Area, 0)
 		for _, a := range d.Areas {
-			jsonAreas = append(jsonAreas, Area{
-				Id:     a.Id,
-				Name:   a.Name,
-				StartX: a.StartX,
-				StartY: a.StartY,
-				EndX:   a.EndX,
-				EndY:   a.EndY,
-			})
+			jsonAreas = append(jsonAreas, Area(a))
 		}
 
 		jsonDocument := Document{
@@ -105,7 +92,7 @@ func (c *Channel) RequestAddDocument(groupId string, documentName string) Docume
 		Name:      documentName,
 		Path:      filePath,
 		GroupId:   groupId,
-		ProjectId: "something else", // TODO: Change me
+		ProjectId: session.GetInstance().Project.Id,
 	}
 
 	document.GetDocumentCollection().AddDocument(newDocument)
@@ -163,7 +150,7 @@ func (c *Channel) RequestAddDocumentGroup(name string) Group {
 	newGroup := document.Group{
 		Id:        uuid.NewString(),
 		Name:      name,
-		ProjectId: "something else", // TODO: change me
+		ProjectId: session.GetInstance().Project.Id,
 	}
 
 	document.GetGroupCollection().AddDocumentGroup(newGroup)

@@ -4,7 +4,7 @@ type Props = { markdown: string, height: number }
 
 const TextPreview = (props: Props) => (
   <div
-    className='absolute w-1/2 top-[30px] bg-white overflow-y-scroll p-0 m-0'
+    className='absolute w-[calc(50%-14px)] top-[30px] bg-white overflow-y-scroll p-4 m-0'
     style={{ 'height': `${props.height}px` }}>
     <ReactMarkdown
       components={{

@@ -18,7 +18,9 @@ const makeDefaultProject = (): ProjectContextType => ({
   requestUpdateDocumentUserMarkdown: (documentId: string, markdown: string) => Promise.resolve(new ipc.UserMarkdown()),
   getUserMarkdownByDocumentId: (documentId) => Promise.resolve(new ipc.UserMarkdown),
   setSelectedAreaId: (id) => {},
-  setSelectedDocumentId: (id) => {}
+  setSelectedDocumentId: (id) => {},
+  currentSession: new ipc.Session(),
+  createNewProject: (name: string) => Promise.resolve(new ipc.Session()),
 })
 
 export default makeDefaultProject

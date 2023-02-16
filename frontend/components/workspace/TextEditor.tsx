@@ -17,9 +17,9 @@ const TextEditor = () => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [modifiedEditorValue, setModifiedEditorValue] = useState('')
 
-  const handleEditorDidMount: DiffOnMount = async (editor, _) => {
+  const handleEditorDidMount: DiffOnMount = async (editor, monaco) => {
     const currentDocumentId = selectedDocumentId
-    
+
     editorInteractions = createDiffEditorInteractions(editor)
     const modifiedEditor = editor.getModifiedEditor()
     const originalEditor = editor.getOriginalEditor()
@@ -84,6 +84,10 @@ const TextEditor = () => {
       language='markdown'
       height={`${editorHeight}px`}
       onMount={handleEditorDidMount}
+      options={{
+        renderMarginRevertIcon: true,
+        enableSplitViewResizing: false,
+      }}
     />
 
     {isPreviewOpen ? <TextPreview markdown={modifiedEditorValue} height={editorHeight} /> : ''}

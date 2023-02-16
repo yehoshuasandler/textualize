@@ -1,13 +1,12 @@
 package ipc
 
 type Document struct {
-	Id               string `json:"id"`
-	GroupId          string `json:"groupId"`
-	Name             string `json:"name"`
-	Path             string `json:"path"`
-	ProjectId        string `json:"projectId"`
-	Areas            []Area `json:"areas"`
-	ModifiedMarkdown string `json:"modifiedMarkdown"`
+	Id        string `json:"id"`
+	GroupId   string `json:"groupId"`
+	Name      string `json:"name"`
+	Path      string `json:"path"`
+	ProjectId string `json:"projectId"`
+	Areas     []Area `json:"areas"`
 }
 
 type DocumentCollection struct {
@@ -78,4 +77,30 @@ type UserMarkdown struct {
 
 type UserMarkdownCollection struct {
 	Values []UserMarkdown `json:"values"`
+}
+
+type User struct {
+	Id         string `json:"id"`
+	FirstName  string `json:"firstName"`
+	LastName   string `json:"lastName"`
+	AvatarPath string `json:"avatarPath"`
+	AuthToken  string `json:"authToken"`
+}
+
+type Organization struct {
+	Id       string `json:"id"`
+	Name     string `json:"name"`
+	LogoPath string `json:"logoPath"`
+	Users    []User `json:"users"`
+}
+
+type Project struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type Session struct {
+	Project      Project      `json:"project"`
+	Organization Organization `json:"organization"`
+	User         User         `json:"user"`
 }

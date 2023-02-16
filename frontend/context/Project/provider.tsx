@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
-import { GetDocuments, GetProcessedAreasByDocumentId, GetUserMarkdownByDocumentId, RequestAddArea, RequestAddDocument, RequestAddDocumentGroup, RequestAddProcessedArea, RequestUpdateArea, RequestUpdateDocumentUserMarkdown } from '../../wailsjs/wailsjs/go/ipc/Channel'
+import { CreateNewProject, GetCurrentSession, GetDocuments, GetProcessedAreasByDocumentId, GetUserMarkdownByDocumentId, RequestAddArea, RequestAddDocument, RequestAddDocumentGroup, RequestAddProcessedArea, RequestUpdateArea, RequestUpdateDocumentUserMarkdown } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps } from './types'
 import makeDefaultProject from './makeDefaultProject'
@@ -18,6 +18,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
   const [ groups, setGroups ] = useState<ipc.Group[]>(projectProps.groups)
   const [ selectedAreaId, setSelectedAreaId ] = useState<string>('')
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>('')
+  const [currentSession, setCurrentSession] = useState<ipc.Session>(new ipc.Session())
 
   const updateDocuments = async () => {
     GetDocuments().then(response => {
@@ -92,6 +93,19 @@ export function ProjectProvider({ children, projectProps }: Props) {
 
   const requestAddProcessedArea = async (processedArea: ipc.ProcessedArea) => await RequestAddProcessedArea(processedArea)
 
+  const updateSession = async () => {
+    GetCurrentSession().then(response => {
+      if (response) setCurrentSession(response)
+      Promise.resolve(response)
+    })
+  }
+
+  const createNewProject = async (name: string) => {
+    const sessionResponse = await CreateNewProject(name)
+    await updateSession()
+    return sessionResponse
+  }
+
   useEffect(() => {
     if (!documents.length && !groups.length) updateDocuments()
   }, [documents.length, groups.length])
@@ -114,6 +128,8 @@ export function ProjectProvider({ children, projectProps }: Props) {
     requestAddProcessedArea,
     requestUpdateDocumentUserMarkdown,
     getUserMarkdownByDocumentId,
+    currentSession,
+    createNewProject,
   }
 
   return <ProjectContext.Provider value={value}>

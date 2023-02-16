@@ -1,22 +1,24 @@
 import { NextPage } from 'next'
-import { useState } from 'react'
 import MainHead from '../components/head'
+import MainProject from '../components/project/Main'
 import MainWorkspace from '../components/workspace/Main'
 import Navigation from '../components/workspace/Navigation'
-
-enum workspaces {
-  PROCESSOR = 'PROCESSOR',
-  TEXTEDITOR = 'TEXTEDITOR'
-}
+import { useProject } from '../context/Project/provider'
 
 const Home: NextPage = () => {
-  const [ selectedWorkSpace, setSelectedWorkSpace ] = useState(workspaces.PROCESSOR)
+
+  const { currentSession } = useProject()
 
   return (
     <>
       <MainHead />
-      <Navigation />
-      <MainWorkspace selectedWorkSpace={selectedWorkSpace} />
+      {!currentSession?.project?.id
+        ? <MainProject />
+        : <>
+          <Navigation />
+          <MainWorkspace />
+        </>
+      }
     </>
   )
 }
