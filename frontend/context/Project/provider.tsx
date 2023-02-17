@@ -87,7 +87,6 @@ export function ProjectProvider({ children, projectProps }: Props) {
 
   const getUserMarkdownByDocumentId = async (documentId: string): Promise<ipc.UserMarkdown> => {
     let response: ipc.UserMarkdown = new ipc.UserMarkdown({})
-    console.log(documentId)
     try {
       response = await GetUserMarkdownByDocumentId(documentId)
     } catch (err) {

@@ -1,4 +1,5 @@
 import { NextPage } from 'next'
+import { useEffect } from 'react'
 import MainHead from '../components/head'
 import MainProject from '../components/project/Main'
 import User from '../components/settings/User'
@@ -11,7 +12,12 @@ import { useProject } from '../context/Project/provider'
 const Home: NextPage = () => {
 
   const { currentSession } = useProject()
-  const { selectedMainPage } = useNavigation()
+  const { selectedMainPage, setSelectedMainPage } = useNavigation()
+
+  useEffect(() => {
+    if (!currentSession?.user?.localId) setSelectedMainPage(mainPages.EDITUSER)
+    else if (!currentSession?.project?.id) setSelectedMainPage(mainPages.SELECTPROJECT)
+  },)
 
   const renderSelectedMainPage = () => {
     if (selectedMainPage === mainPages.SELECTPROJECT) return <MainProject />

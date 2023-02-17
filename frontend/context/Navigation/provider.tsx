@@ -13,7 +13,7 @@ export function useNavigation() {
 type Props = { children: ReactNode, navigationProps: NavigationProps }
 export function NavigationProvidor({ children, navigationProps }: Props) {
   const [selectedWorkspace, setSelectedWorkspace] = useState<workspaces>(navigationProps.selectedWorkspace)
-  const [selectedMainPage, setSelectedMainPage] = useState<mainPages>(mainPages.SELECTPROJECT)
+  const [selectedMainPage, setSelectedMainPage] = useState<mainPages>(navigationProps.selectedMainPage)
 
   const value = {
     selectedWorkspace,

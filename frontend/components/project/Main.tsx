@@ -43,10 +43,10 @@ const MainProject = () => {
     },
   ]
 
-  const onCreateNewProjectHandler = (projectName: string) => {
+  const onCreateNewProjectHandler = async (projectName: string) => {
     setIsNewProjectModalOpen(false)
     setCanPopoverBeOpen(true)
-    createNewProject(projectName)
+    await createNewProject(projectName)
     setSelectedMainPage(mainPages.WORKSPACE)
   }
 

@@ -6,7 +6,7 @@ import '../styles/globals.css'
 import { ipc } from '../wailsjs/wailsjs/go/models'
 import '../styles/globals.css'
 import { NavigationProvidor } from '../context/Navigation/provider'
-import { workspaces } from '../context/Navigation/types'
+import { mainPages, workspaces } from '../context/Navigation/types'
 
 const initialProjectProps = {
   id: '',
@@ -15,7 +15,8 @@ const initialProjectProps = {
 }
 
 const initialNavigationProps = {
-  selectedWorkspace: workspaces.PROCESSOR
+  selectedWorkspace: workspaces.PROCESSOR,
+  selectedMainPage: mainPages.EDITUSER
 }
 
 export default function MainAppLayout({ Component, pageProps }: AppProps) {

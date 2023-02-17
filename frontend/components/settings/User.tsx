@@ -3,23 +3,27 @@ import { useProject } from '../../context/Project/provider'
 import { EnvelopeIcon } from '@heroicons/react/24/outline'
 import UserAvatar from '../utils/UserAvatar'
 import { useRef, useState } from 'react'
+import { useNavigation } from '../../context/Navigation/provider'
+import { mainPages } from '../../context/Navigation/types'
 
 const User = () => {
   const { currentSession, requestUpdateCurrentUser, requestChooseUserAvatar } = useProject()
+  const { setSelectedMainPage } = useNavigation()
 
   const firstNameRef = useRef<HTMLInputElement>(null)
   const lastNameRef = useRef<HTMLInputElement>(null)
   const emailRef = useRef<HTMLInputElement>(null)
   const [avatarPath, setAvatarPath] = useState(currentSession?.user?.avatarPath || '')
 
-  const onSaveButtonClickHandler = () => {
-    requestUpdateCurrentUser({
-      localId: currentSession?.user.localId,
+  const onSaveButtonClickHandler = async () => {
+    await requestUpdateCurrentUser({
+      localId: currentSession?.user?.localId,
       firstName: firstNameRef?.current?.value,
       lastName: lastNameRef?.current?.value,
       email: emailRef?.current?.value,
       avatarPath: avatarPath || ''
     })
+    setSelectedMainPage(mainPages.WORKSPACE)
   }
 
   const onAvatarSelectButtonClickHandler = async () => {
@@ -42,7 +46,9 @@ const User = () => {
               <div className="space-y-1">
                 <h3 className="text-lg font-medium leading-6 text-gray-900">Profile</h3>
                 <p className="max-w-2xl text-sm text-gray-500">
-                  This information will be stored in a database if connected to a hosted account, so be careful what you share.
+                  This information will be stored in a database if connected to a hosted account. 
+                  <br />
+                  <em className='text-xs'>For a local user on this machine, you may save without adding any user details.</em>
                 </p>
               </div>
               <div className="mt-6">
