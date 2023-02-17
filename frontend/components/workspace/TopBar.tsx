@@ -1,4 +1,4 @@
-import Search from './Search'
+import Search from '../utils/Search'
 import ToolTabs from './ToolTabs'
 
 const TopBar = () => <div className="flex flex-col md:pl-64 sticky">

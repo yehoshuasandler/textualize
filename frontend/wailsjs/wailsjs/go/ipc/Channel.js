@@ -10,6 +10,10 @@ export function GetCurrentSession() {
   return window['go']['ipc']['Channel']['GetCurrentSession']();
 }
 
+export function GetCurrentUser() {
+  return window['go']['ipc']['Channel']['GetCurrentUser']();
+}
+
 export function GetDocumentById(arg1) {
   return window['go']['ipc']['Channel']['GetDocumentById'](arg1);
 }
@@ -42,8 +46,16 @@ export function RequestAddProcessedArea(arg1) {
   return window['go']['ipc']['Channel']['RequestAddProcessedArea'](arg1);
 }
 
+export function RequestChooseUserAvatar() {
+  return window['go']['ipc']['Channel']['RequestChooseUserAvatar']();
+}
+
 export function RequestUpdateArea(arg1) {
   return window['go']['ipc']['Channel']['RequestUpdateArea'](arg1);
+}
+
+export function RequestUpdateCurrentUser(arg1) {
+  return window['go']['ipc']['Channel']['RequestUpdateCurrentUser'](arg1);
 }
 
 export function RequestUpdateDocumentUserMarkdown(arg1, arg2) {

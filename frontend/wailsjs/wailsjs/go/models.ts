@@ -115,10 +115,12 @@ export namespace ipc {
 	
 	export class User {
 	    id: string;
+	    localId: string;
 	    firstName: string;
 	    lastName: string;
 	    avatarPath: string;
 	    authToken: string;
+	    email: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new User(source);
@@ -127,10 +129,12 @@ export namespace ipc {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.id = source["id"];
+	        this.localId = source["localId"];
 	        this.firstName = source["firstName"];
 	        this.lastName = source["lastName"];
 	        this.avatarPath = source["avatarPath"];
 	        this.authToken = source["authToken"];
+	        this.email = source["email"];
 	    }
 	}
 	export class Organization {

@@ -390,7 +390,7 @@ function Sidebar() {
         <div className="flex min-h-0 flex-1 flex-col bg-gray-800 bg-opacity-25">
           <div className="flex h-16 flex-shrink-0 items-center bg-gray-900 px-4 bg-opacity-25">
             <img className="h-8 w-auto" src='/images/logo.svg' alt="Textualize" />
-            <h1 className='text-gray-100 text-xl ml-2'>{currentSession.project.name}</h1>
+            <h1 className='text-gray-100 text-xl ml-2'>{currentSession?.project?.name}</h1>
           </div>
           <div className="flex flex-1 flex-col overflow-y-auto">
             {renderNavigationItems()}

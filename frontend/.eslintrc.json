@@ -4,5 +4,6 @@
     "@next/next/no-img-element": "off",
     "quotes": ["warn", "single"],
     "semi": ["warn", "never"]
-  }
+  },
+  "ignorePatterns": ["wailsjs/*"]
 }

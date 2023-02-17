@@ -1,8 +1,8 @@
 'use client'
 
-import { createContext, ReactNode, useContext, useState } from 'react'
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
 import makeDefaultNavigation from './makeDefaultNavigation'
-import { NavigationContextType, NavigationProps, workspaces } from './types'
+import { mainPages, NavigationContextType, NavigationProps, workspaces } from './types'
 
 const NavigationContext = createContext<NavigationContextType>(makeDefaultNavigation())
 
@@ -13,10 +13,13 @@ export function useNavigation() {
 type Props = { children: ReactNode, navigationProps: NavigationProps }
 export function NavigationProvidor({ children, navigationProps }: Props) {
   const [selectedWorkspace, setSelectedWorkspace] = useState<workspaces>(navigationProps.selectedWorkspace)
+  const [selectedMainPage, setSelectedMainPage] = useState<mainPages>(mainPages.SELECTPROJECT)
 
   const value = {
     selectedWorkspace,
-    setSelectedWorkspace
+    setSelectedWorkspace,
+    selectedMainPage,
+    setSelectedMainPage
   }
 
   return <NavigationContext.Provider value={value}>

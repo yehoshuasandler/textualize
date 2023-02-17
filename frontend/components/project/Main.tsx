@@ -3,6 +3,8 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ChevronDownIcon, FolderArrowDownIcon, FolderOpenIcon, FolderPlusIcon } from '@heroicons/react/20/solid'
 import { Fragment, useState } from 'react'
+import { useNavigation } from '../../context/Navigation/provider'
+import { mainPages } from '../../context/Navigation/types'
 import { useProject } from '../../context/Project/provider'
 import NewProjectModal from './NewProjectModal'
 
@@ -11,6 +13,7 @@ const MainProject = () => {
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false)
   const [canPopoverBeOpen, setCanPopoverBeOpen] = useState(true)
   const { createNewProject } = useProject()
+  const { setSelectedMainPage } = useNavigation()
 
   const buttonOptions = [
     {
@@ -44,6 +47,7 @@ const MainProject = () => {
     setIsNewProjectModalOpen(false)
     setCanPopoverBeOpen(true)
     createNewProject(projectName)
+    setSelectedMainPage(mainPages.WORKSPACE)
   }
 
   return <main className=" text-gray-100 h-screen overflow-y-scroll">

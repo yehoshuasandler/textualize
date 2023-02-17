@@ -6,6 +6,8 @@ export function CreateNewProject(arg1:string):Promise<ipc.Session>;
 
 export function GetCurrentSession():Promise<ipc.Session>;
 
+export function GetCurrentUser():Promise<ipc.User>;
+
 export function GetDocumentById(arg1:string):Promise<ipc.Document>;
 
 export function GetDocuments():Promise<ipc.GetDocumentsResponse>;
@@ -22,6 +24,10 @@ export function RequestAddDocumentGroup(arg1:string):Promise<ipc.Group>;
 
 export function RequestAddProcessedArea(arg1:ipc.ProcessedArea):Promise<ipc.ProcessedArea>;
 
+export function RequestChooseUserAvatar():Promise<string>;
+
 export function RequestUpdateArea(arg1:ipc.Area):Promise<ipc.Area>;
+
+export function RequestUpdateCurrentUser(arg1:ipc.User):Promise<ipc.User>;
 
 export function RequestUpdateDocumentUserMarkdown(arg1:string,arg2:string):Promise<ipc.UserMarkdown>;

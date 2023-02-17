@@ -21,3 +21,8 @@ func InitializeModule(newSession Session) *Session {
 	}
 	return sessionInstance
 }
+
+func (s *Session) UpdateCurrentUser(updatedUser User) User {
+	s.User = User(updatedUser)
+	return s.User
+}

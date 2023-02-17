@@ -1,5 +1,5 @@
 import { ipc } from '../../wailsjs/wailsjs/go/models'
-import { ProjectContextType } from './types'
+import { ProjectContextType, UserProps } from './types'
 
 const makeDefaultProject = (): ProjectContextType => ({
   id: '',
@@ -21,6 +21,8 @@ const makeDefaultProject = (): ProjectContextType => ({
   setSelectedDocumentId: (id) => {},
   currentSession: new ipc.Session(),
   createNewProject: (name: string) => Promise.resolve(new ipc.Session()),
+  requestUpdateCurrentUser: (updatedUserProps: UserProps) => Promise.resolve(new ipc.User()),
+  requestChooseUserAvatar: () => Promise.resolve(''),
 })
 
 export default makeDefaultProject

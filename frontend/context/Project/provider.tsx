@@ -1,9 +1,15 @@
 'use client'
 
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
-import { CreateNewProject, GetCurrentSession, GetDocuments, GetProcessedAreasByDocumentId, GetUserMarkdownByDocumentId, RequestAddArea, RequestAddDocument, RequestAddDocumentGroup, RequestAddProcessedArea, RequestUpdateArea, RequestUpdateDocumentUserMarkdown } from '../../wailsjs/wailsjs/go/ipc/Channel'
+import {
+  CreateNewProject, GetCurrentSession, GetDocuments,
+  GetProcessedAreasByDocumentId, GetUserMarkdownByDocumentId, RequestAddArea,
+  RequestAddDocument, RequestAddDocumentGroup, RequestAddProcessedArea,
+  RequestUpdateArea, RequestUpdateCurrentUser, RequestUpdateDocumentUserMarkdown,
+  RequestChooseUserAvatar,
+} from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
-import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps } from './types'
+import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps, UserProps } from './types'
 import makeDefaultProject from './makeDefaultProject'
 
 const ProjectContext = createContext<ProjectContextType>(makeDefaultProject())
@@ -14,9 +20,9 @@ export function useProject() {
 
 type Props = { children: ReactNode, projectProps: ProjectProps }
 export function ProjectProvider({ children, projectProps }: Props) {
-  const [ documents, setDocuments ] = useState<ipc.Document[]>(projectProps.documents)
-  const [ groups, setGroups ] = useState<ipc.Group[]>(projectProps.groups)
-  const [ selectedAreaId, setSelectedAreaId ] = useState<string>('')
+  const [documents, setDocuments] = useState<ipc.Document[]>(projectProps.documents)
+  const [groups, setGroups] = useState<ipc.Group[]>(projectProps.groups)
+  const [selectedAreaId, setSelectedAreaId] = useState<string>('')
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>('')
   const [currentSession, setCurrentSession] = useState<ipc.Session>(new ipc.Session())
 
@@ -54,7 +60,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
   }
 
   const getAreaById = (areaId: string): ipc.Area | undefined => (
-    documents.map(d => d.areas).flat().find(a => a.id ===areaId)
+    documents.map(d => d.areas).flat().find(a => a.id === areaId)
   )
 
   const getSelectedDocument = () => documents.find(d => d.id === selectedDocumentId)
@@ -106,6 +112,17 @@ export function ProjectProvider({ children, projectProps }: Props) {
     return sessionResponse
   }
 
+  const requestUpdateCurrentUser = async (userProps: UserProps) => {
+    const response = await RequestUpdateCurrentUser(new ipc.User(userProps))
+    await updateSession()
+    return response
+  }
+
+  const requestChooseUserAvatar = async () => {
+    const filePathResponse = await RequestChooseUserAvatar()
+    return filePathResponse
+  }
+
   useEffect(() => {
     if (!documents.length && !groups.length) updateDocuments()
   }, [documents.length, groups.length])
@@ -130,9 +147,11 @@ export function ProjectProvider({ children, projectProps }: Props) {
     getUserMarkdownByDocumentId,
     currentSession,
     createNewProject,
+    requestUpdateCurrentUser,
+    requestChooseUserAvatar,
   }
 
   return <ProjectContext.Provider value={value}>
-    { children }
+    {children}
   </ProjectContext.Provider>
 }

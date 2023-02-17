@@ -16,6 +16,16 @@ export type AddAreaProps = {
 
 export type AreaProps = { id: string } & AddAreaProps
 
+export type UserProps = {
+  id?: string,
+  localId?: string,
+  firstName?: string,
+  lastName?: string,
+  avatarPath?: string,
+  authToken?: string,
+  email?: string
+}
+
 export type ProjectContextType = {
   getSelectedDocument: () => ipc.Document | undefined
   getAreaById: (areaId: string) => ipc.Area | undefined
@@ -33,4 +43,6 @@ export type ProjectContextType = {
   setSelectedDocumentId: (id: string) => void
   currentSession: ipc.Session
   createNewProject: (name: string) => Promise<ipc.Session>
+  requestUpdateCurrentUser: (updatedUserProps: UserProps) => Promise<ipc.User>
+  requestChooseUserAvatar: () => Promise<string>
 } & ProjectProps
