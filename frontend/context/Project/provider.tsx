@@ -7,9 +7,10 @@ import {
   RequestAddDocument, RequestAddDocumentGroup, RequestAddProcessedArea,
   RequestUpdateArea, RequestUpdateCurrentUser, RequestUpdateDocumentUserMarkdown,
   RequestChooseUserAvatar,
+  RequestUpdateDocument,
 } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
-import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps, UserProps } from './types'
+import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps, UpdateDocumentRequest, UserProps } from './types'
 import makeDefaultProject from './makeDefaultProject'
 
 const ProjectContext = createContext<ProjectContextType>(makeDefaultProject())
@@ -122,6 +123,13 @@ export function ProjectProvider({ children, projectProps }: Props) {
     return filePathResponse
   }
 
+  const requestUpdateDocument = async (docuemntProps: UpdateDocumentRequest) => {
+    console.log('request: ', docuemntProps)
+    const response = await RequestUpdateDocument(new ipc.Document(docuemntProps))
+    await updateDocuments()
+    return response
+  }
+
   useEffect(() => {
     if (!documents.length && !groups.length) updateDocuments()
   }, [documents.length, groups.length])
@@ -148,6 +156,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
     createNewProject,
     requestUpdateCurrentUser,
     requestChooseUserAvatar,
+    requestUpdateDocument,
   }
 
   return <ProjectContext.Provider value={value}>

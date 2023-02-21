@@ -3,7 +3,8 @@
   "rules": {
     "@next/next/no-img-element": "off",
     "quotes": ["warn", "single"],
-    "semi": ["warn", "never"]
+    "semi": ["warn", "never"],
+    "react-hooks/exhaustive-deps": "off"
   },
   "ignorePatterns": ["wailsjs/*"]
 }

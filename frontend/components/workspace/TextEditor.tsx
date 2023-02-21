@@ -1,4 +1,4 @@
-import { DiffEditor } from '@monaco-editor/react'
+import { loader, DiffEditor } from '@monaco-editor/react'
 import { useEffect, useState } from 'react'
 import { useProject } from '../../context/Project/provider'
 import type { DiffOnMount } from '@monaco-editor/react/'
@@ -6,18 +6,29 @@ import TextEditorButtons from './TextEditorButtons'
 import createDiffEditorInteractions from '../../useCases/createDiffEditorInteractions'
 import TextPreview from './TextPreview'
 import createDebounce from '../../utils/createDebounce'
+import LanguageSelect from './LanguageSelect'
+
+loader.config({
+  paths: {
+    vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs',
+  },
+})
 
 let editorInteractions: ReturnType<typeof createDiffEditorInteractions>
+const editorHeightOffset = 234
 
 const TextEditor = () => {
-  const { selectedDocumentId, getProcessedAreasByDocumentId, requestUpdateDocumentUserMarkdown, getUserMarkdownByDocumentId } = useProject()
-  const [editorHeight, setEditorHeight] = useState(window.innerHeight - 200)
+  const { getSelectedDocument, getProcessedAreasByDocumentId, requestUpdateDocumentUserMarkdown, getUserMarkdownByDocumentId } = useProject()
+  const [editorHeight, setEditorHeight] = useState(window.innerHeight - editorHeightOffset)
   const [editorValue, setEditorValue] = useState('')
   const [isEditorReady, setIsEditorReady] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [modifiedEditorValue, setModifiedEditorValue] = useState('')
 
-  const handleEditorDidMount: DiffOnMount = async (editor, monaco) => {
+  const selectedDocument = getSelectedDocument()
+  const selectedDocumentId = selectedDocument?.id || ''
+
+  const handleEditorDidMount: DiffOnMount = async (editor, _) => {
     const currentDocumentId = selectedDocumentId
 
     editorInteractions = createDiffEditorInteractions(editor)
@@ -66,18 +77,23 @@ const TextEditor = () => {
   }, [selectedDocumentId, getProcessedAreasByDocumentId])
 
   window.addEventListener('resize', () => {
-    setEditorHeight(window.innerHeight - 200)
+    setEditorHeight(window.innerHeight - editorHeightOffset)
   })
 
-  return <div className='relative m-0 p-0'>
-    {isEditorReady
-      ? <TextEditorButtons
-        isPreviewOpen={isPreviewOpen}
-        togglePreview={() => setIsPreviewOpen(!isPreviewOpen)}
-        editorInteractions={editorInteractions}
-      />
-      : ''
-    }
+  return <div className='m-0 p-0 relative'>
+    <span className="flex z-0 rounded-md shadow-sm mb-2 mt-2 justify-between">
+      {isEditorReady
+        ? <>
+          <TextEditorButtons
+            isPreviewOpen={isPreviewOpen}
+            togglePreview={() => setIsPreviewOpen(!isPreviewOpen)}
+            editorInteractions={editorInteractions}
+          />
+          <LanguageSelect shouldUpdateDocument defaultLanguage={selectedDocument?.defaultLanguage} />
+        </>
+        : ''
+      }
+    </span>
     <DiffEditor
       original={editorValue}
       modified={modifiedEditorValue}
@@ -87,6 +103,7 @@ const TextEditor = () => {
       options={{
         renderMarginRevertIcon: true,
         enableSplitViewResizing: false,
+        glyphMargin: true,
       }}
     />
 

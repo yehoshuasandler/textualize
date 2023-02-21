@@ -26,6 +26,10 @@ export function GetProcessedAreasByDocumentId(arg1) {
   return window['go']['ipc']['Channel']['GetProcessedAreasByDocumentId'](arg1);
 }
 
+export function GetSuppportedLanguages() {
+  return window['go']['ipc']['Channel']['GetSuppportedLanguages']();
+}
+
 export function GetUserMarkdownByDocumentId(arg1) {
   return window['go']['ipc']['Channel']['GetUserMarkdownByDocumentId'](arg1);
 }
@@ -56,6 +60,10 @@ export function RequestUpdateArea(arg1) {
 
 export function RequestUpdateCurrentUser(arg1) {
   return window['go']['ipc']['Channel']['RequestUpdateCurrentUser'](arg1);
+}
+
+export function RequestUpdateDocument(arg1) {
+  return window['go']['ipc']['Channel']['RequestUpdateDocument'](arg1);
 }
 
 export function RequestUpdateDocumentUserMarkdown(arg1, arg2) {

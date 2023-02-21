@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react'
 import { useProject } from '../../context/Project/provider'
 import loadImage from '../../useCases/loadImage'
 import processImageArea from '../../useCases/processImageArea'
+import LanguageSelect from './LanguageSelect'
 
 const DocumentRenderer = () => {
   const { getSelectedDocument, requestAddArea } = useProject()
@@ -146,28 +147,33 @@ const DocumentRenderer = () => {
 
   useEffect(() => {
     if (selectedDocument?.path) applyDocumentToCanvas(selectedDocument.path)
-  }, [selectedDocument?.id])
-
-  useEffect(() => {
     applyAreasToCanvas()
-  }, [areas, areas?.length])
+  })
 
-  return <div className="relative">
-    <canvas
-      className="absolute border-4 border-dashed border-gray-200"
-      ref={documentCanvas}
-    />
-    <canvas
-      className="absolute border-4 border-transparent"
-      ref={areaCanvas}
-    />
-    <canvas
-      className="absolute border-4 border-transparent"
-      ref={drawingCanvas}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}
-    />
+  return <div className='relative'>
+    <div className='flex justify-between mt-2'>
+      <h1 className="text-2xl font-semibold text-gray-900">
+        {getSelectedDocument()?.name}
+      </h1>
+      <LanguageSelect shouldUpdateDocument defaultLanguage={selectedDocument?.defaultLanguage} />
+    </div>
+    <div className="relative mt-2">
+      <canvas
+        className="absolute border-4 border-dashed border-gray-200"
+        ref={documentCanvas}
+      />
+      <canvas
+        className="absolute border-4 border-transparent"
+        ref={areaCanvas}
+      />
+      <canvas
+        className="absolute border-4 border-transparent"
+        ref={drawingCanvas}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+      />
+    </div>
   </div>
 }
 

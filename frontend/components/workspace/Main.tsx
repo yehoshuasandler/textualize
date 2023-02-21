@@ -22,9 +22,9 @@ const renderSelectedWorkSpace = () => {
         <div className="mx-auto  px-4 sm:px-6 md:px-8">
           <div className="py-1">
             <div className="mx-auto px-4 sm:px-6 md:px-8">
-              <h1 className="text-2xl font-semibold text-gray-900">
-                {getSelectedDocument()?.name || 'Image Processor'}
-              </h1>
+              {!getSelectedDocument()?.id ? <h1 className="text-2xl mt-2 font-semibold text-gray-900">
+                Image Processor
+              </h1> : ''}
             </div>
             { renderSelectedWorkSpace() }
           </div>

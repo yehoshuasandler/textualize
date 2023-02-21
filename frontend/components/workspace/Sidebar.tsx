@@ -4,6 +4,7 @@ import React, { useRef, useState } from 'react'
 import { PlusIcon, XMarkIcon, DocumentPlusIcon } from '@heroicons/react/20/solid'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { useProject } from '../../context/Project/provider'
+import classNames from '../../utils/classNames'
 
 type GroupNavigationItem = {
   id: string,
@@ -43,29 +44,28 @@ const getNavigationProps = (documents: ipc.Document[], groups: ipc.Group[]): Gro
   return [
     ...groupsWithDocuments,
     {
-      id: 'Uncategorized',
+      id: '',
       name: 'Uncategorized',
       documents: documentsWithoutGroup
     }
   ]
 }
 
-function classNames(...classes: any[]) {
-  return classes.filter(Boolean).join(' ')
-}
-
 function Sidebar() {
   const [selectedGroupId, setSelectedGroupId] = useState('')
   const [isAddNewDocumentInputShowing, setIsAddNewDocumentInputShowing] = useState(false)
+  const [isEditDocumentNameInputShowing, setIsEditDocumentNameInputShowing] = useState(false)
   const [isAddNewGroupInputShowing, setIsAddNewGroupInputShowing] = useState(false)
   const [isEditAreaNameInputShowing, setIsEditAreaNameInputShowing] = useState(false)
   const addDocumentTextInput = useRef<HTMLInputElement>(null)
   const addGroupTextInput = useRef<HTMLInputElement>(null)
   const editAreaNameTextInput = useRef<HTMLInputElement>(null)
+  const editDocumentNameTextInput = useRef<HTMLInputElement>(null)
 
   const {
     documents,
     groups,
+    getSelectedDocument,
     getAreaById,
     requestUpdateArea,
     requestAddDocument,
@@ -75,6 +75,7 @@ function Sidebar() {
     selectedDocumentId,
     setSelectedDocumentId,
     currentSession,
+    requestUpdateDocument,
   } = useProject()
 
   const navigation = getNavigationProps(documents, groups)
@@ -115,7 +116,7 @@ function Sidebar() {
     setSelectedAreaId(areaId)
   }
 
-  const onAreaDoubleclick = (areaId: string) => {
+  const onAreaDoubleClick = (areaId: string) => {
     const documentIdOfArea = getDocumentIdFromAreaId(areaId)
     setIsEditAreaNameInputShowing(true)
     console.log('double click')
@@ -130,6 +131,14 @@ function Sidebar() {
     setSelectedGroupId(getGroupIdFromDocumentId(itemId))
     setIsAddNewDocumentInputShowing(false)
     setIsAddNewGroupInputShowing(false)
+  }
+
+  const onDocumentDoubleClickHandler = (docuemntId: string) => {
+    setIsEditDocumentNameInputShowing(true)
+  }
+
+  const onDocumentInputBlur = () => {
+    setIsEditDocumentNameInputShowing(false)
   }
 
   const onCancelAddGroupClickHandler = () => {
@@ -151,6 +160,17 @@ function Sidebar() {
         .catch(console.error)
     }
     setIsEditAreaNameInputShowing(false)
+  }
+
+  const onConfirmDocumentNameChangeHandler = async (documentName: string) => {
+    const documentToUpdate = { ...getSelectedDocument() }
+    if (documentToUpdate) {
+      documentToUpdate.name = documentName
+      requestUpdateDocument(documentToUpdate)
+        .then(response => console.log('onConfirmDocumentNameChangeHandler response: ', response))
+        .catch(console.error)
+    }
+    setIsEditDocumentNameInputShowing(false)
   }
 
   const onConfirmAddDocumentClickHandler = async (groupId: string) => {
@@ -294,8 +314,10 @@ function Sidebar() {
             {group.documents.map((d, index) => (
               <li className='p-0 m-0' key={d.id}>
                 {!d.areas.length
-                  ? <div
+                  ?
+                  <div
                     onClick={() => onDocumentClickHandler(d.id)}
+                    onDoubleClick={() => onDocumentDoubleClickHandler(d.id)}
                     className={classNames(
                       d.id === selectedDocumentId
                         ? 'bg-gray-900 text-white'
@@ -303,30 +325,22 @@ function Sidebar() {
                       'group items-center py-2 text-base font-medium rounded-b-md pl-10',
                       index !== 0 ? 'rounded-t-md' : '',
                     )}>
-                    <a
-                      role='button'
-                      className={classNames(
-                        d.id === selectedDocumentId
-                          ? 'bg-gray-900 text-white'
-                          : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                        'text-left font-medium text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 '
-                      )}
-                    >
-                      {d.name}
-                    </a>
-                  </div>
-                  : <details>
-                    <summary
-                      onClick={() => onDocumentClickHandler(d.id)}
-                      className={classNames(
-                        d.id === selectedDocumentId
-                          ? 'bg-gray-900 text-white'
-                          : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                        'group items-center py-2 text-base font-medium rounded-b-md pl-6',
-                        index !== 0 ? 'rounded-t-md' : '',
-
-                      )}>
-                      <a
+                    {selectedDocumentId === d.id && isEditDocumentNameInputShowing
+                      ? <input
+                        type="text"
+                        name="documentName"
+                        id="documentName"
+                        autoFocus
+                        className="h-8 text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        defaultValue={d.name}
+                        onBlur={onDocumentInputBlur}
+                        onKeyDown={(event) => {
+                          onEnterHandler(event,
+                            () => onConfirmDocumentNameChangeHandler(event.currentTarget.value))
+                        }}
+                        ref={editDocumentNameTextInput}
+                      />
+                      : <a
                         role='button'
                         className={classNames(
                           d.id === selectedDocumentId
@@ -337,6 +351,47 @@ function Sidebar() {
                       >
                         {d.name}
                       </a>
+                    }
+                  </div>
+                  : <details>
+                    <summary
+                      onClick={() => onDocumentClickHandler(d.id)}
+                      onDoubleClick={() => onDocumentDoubleClickHandler(d.id)}
+                      className={classNames(
+                        d.id === selectedDocumentId
+                          ? 'bg-gray-900 text-white'
+                          : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                        'group items-center py-2 text-base font-medium rounded-b-md pl-6',
+                        index !== 0 ? 'rounded-t-md' : '',
+
+                      )}>
+                      {selectedDocumentId === d.id && isEditDocumentNameInputShowing
+                        ? <input // TODO: this
+                          type="text"
+                          name="documentName"
+                          id="documentName"
+                          autoFocus
+                          className="h-8 text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          defaultValue={d.name}
+                          onBlur={onDocumentInputBlur}
+                          onKeyDown={(event) => {
+                            onEnterHandler(event,
+                              () => onConfirmDocumentNameChangeHandler(event.currentTarget.value))
+                          }}
+                          ref={editDocumentNameTextInput}
+                        />
+                        : <a
+                          role='button'
+                          className={classNames(
+                            d.id === selectedDocumentId
+                              ? 'bg-gray-900 text-white'
+                              : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                            'text-left font-medium text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 '
+                          )}
+                        >
+                          {d.name}
+                        </a>
+                      }
                     </summary>
                     <ul>
                       {d.areas.map((a, index) => (
@@ -359,7 +414,7 @@ function Sidebar() {
                             : <a
                               role='button'
                               onClick={() => onAreaClick(a.id)}
-                              onDoubleClick={() => onAreaDoubleclick(a.id)}
+                              onDoubleClick={() => onAreaDoubleClick(a.id)}
                               className={classNames('text-gray-300 hover:bg-gray-700 hover:text-white',
                                 'group w-full flex items-center pr-2 py-2 text-left font-medium pl-8 text-xs',
                                 'rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 py-2 select-none',

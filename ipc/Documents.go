@@ -1,6 +1,7 @@
 package ipc
 
 import (
+	"fmt"
 	app "textualize/core/App"
 	document "textualize/core/Document"
 	session "textualize/core/Session"
@@ -19,7 +20,15 @@ func (c *Channel) GetDocumentById(id string) Document {
 	var jsonAreas []Area
 
 	for _, a := range foundDocument.Areas {
-		jsonAreas = append(jsonAreas, Area(a))
+		jsonAreas = append(jsonAreas, Area{
+			Id:       a.Id,
+			Name:     a.Name,
+			StartX:   a.StartX,
+			StartY:   a.StartY,
+			EndX:     a.EndX,
+			EndY:     a.EndY,
+			Language: Language(a.Language),
+		})
 	}
 	response := Document{
 		Id:        foundDocument.Id,
@@ -44,16 +53,25 @@ func (c *Channel) GetDocuments() GetDocumentsResponse {
 	for _, d := range documents {
 		jsonAreas := make([]Area, 0)
 		for _, a := range d.Areas {
-			jsonAreas = append(jsonAreas, Area(a))
+			jsonAreas = append(jsonAreas, Area{
+				Id:       a.Id,
+				Name:     a.Name,
+				StartX:   a.StartX,
+				StartY:   a.StartY,
+				EndX:     a.EndX,
+				EndY:     a.EndY,
+				Language: Language(a.Language),
+			})
 		}
 
 		jsonDocument := Document{
-			Id:        d.Id,
-			GroupId:   d.GroupId,
-			Name:      d.Name,
-			Path:      d.Path,
-			ProjectId: d.ProjectId,
-			Areas:     jsonAreas,
+			Id:              d.Id,
+			GroupId:         d.GroupId,
+			Name:            d.Name,
+			Path:            d.Path,
+			ProjectId:       d.ProjectId,
+			Areas:           jsonAreas,
+			DefaultLanguage: Language(d.DefaultLanguage),
 		}
 		response.Documents = append(response.Documents, jsonDocument)
 	}
@@ -176,15 +194,20 @@ func (c *Channel) RequestAddArea(documentId string, area Area) Area {
 	}
 
 	newArea := document.Area{
-		Id:     id,
-		Name:   area.Name,
-		StartX: area.StartX,
-		EndX:   area.EndX,
-		StartY: area.StartY,
-		EndY:   area.EndY,
+		Id:       id,
+		Name:     area.Name,
+		StartX:   area.StartX,
+		EndX:     area.EndX,
+		StartY:   area.StartY,
+		EndY:     area.EndY,
+		Language: app.Language(area.Language),
 	}
 	foundDocument.AddArea(newArea)
-	return Area(newArea)
+
+	responseArea := area
+	responseArea.Id = id
+
+	return responseArea
 }
 
 func (c *Channel) RequestUpdateArea(updatedArea Area) Area {
@@ -206,11 +229,41 @@ func (c *Channel) RequestUpdateArea(updatedArea Area) Area {
 	}
 
 	return Area{
-		Id:     updatedArea.Id,
-		Name:   updatedArea.Name,
-		StartX: updatedArea.StartX,
-		StartY: updatedArea.StartY,
-		EndX:   updatedArea.EndX,
-		EndY:   updatedArea.EndY,
+		Id:       areaToUpdate.Id,
+		Name:     areaToUpdate.Name,
+		StartX:   areaToUpdate.StartX,
+		StartY:   areaToUpdate.StartY,
+		EndX:     areaToUpdate.EndX,
+		EndY:     areaToUpdate.EndY,
+		Language: Language(areaToUpdate.Language),
 	}
+}
+
+func (c *Channel) RequestUpdateDocument(updatedDocument Document) Document {
+	documentToUpdate := document.GetDocumentCollection().GetDocumentById(updatedDocument.Id)
+
+	if documentToUpdate == nil {
+		return Document{}
+	}
+
+	if updatedDocument.Id != "" {
+		documentToUpdate.Id = updatedDocument.Id
+	}
+	if updatedDocument.Name != "" {
+		documentToUpdate.Name = updatedDocument.Name
+	}
+	if updatedDocument.GroupId != "" {
+		documentToUpdate.GroupId = updatedDocument.GroupId
+	}
+	if updatedDocument.Path != "" {
+		documentToUpdate.Path = updatedDocument.Path
+	}
+	if updatedDocument.DefaultLanguage.DisplayName != "" {
+		documentToUpdate.DefaultLanguage = app.Language(updatedDocument.DefaultLanguage)
+	}
+
+	fmt.Println("updated doc")
+	fmt.Println(document.GetDocumentCollection().GetDocumentById(updatedDocument.Id))
+
+	return updatedDocument
 }

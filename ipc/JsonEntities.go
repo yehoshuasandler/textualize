@@ -1,12 +1,13 @@
 package ipc
 
 type Document struct {
-	Id        string `json:"id"`
-	GroupId   string `json:"groupId"`
-	Name      string `json:"name"`
-	Path      string `json:"path"`
-	ProjectId string `json:"projectId"`
-	Areas     []Area `json:"areas"`
+	Id              string   `json:"id"`
+	GroupId         string   `json:"groupId"`
+	Name            string   `json:"name"`
+	Path            string   `json:"path"`
+	ProjectId       string   `json:"projectId"`
+	Areas           []Area   `json:"areas"`
+	DefaultLanguage Language `json:"defaultLanguage"`
 }
 
 type DocumentCollection struct {
@@ -28,12 +29,13 @@ type GroupCollection struct {
 }
 
 type Area struct {
-	Id     string `json:"id"`
-	Name   string `json:"name"`
-	StartX int    `json:"startX"`
-	StartY int    `json:"startY"`
-	EndX   int    `json:"endX"`
-	EndY   int    `json:"endY"`
+	Id       string   `json:"id"`
+	Name     string   `json:"name"`
+	StartX   int      `json:"startX"`
+	StartY   int      `json:"startY"`
+	EndX     int      `json:"endX"`
+	EndY     int      `json:"endY"`
+	Language Language `json:"language"`
 }
 
 type ProcessedBoundingBox struct {
@@ -97,12 +99,26 @@ type Organization struct {
 }
 
 type Project struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
+	Id             string          `json:"id"`
+	OrganizationId string          `json:"organizationId"`
+	Name           string          `json:"name"`
+	Settings       ProjectSettings `json:"settings"`
+}
+
+type ProjectSettings struct {
+	DefaultProcessLanguage         Language `json:"defaultProcessLanguage"`
+	DefaultTranslateTargetLanguage Language `json:"defaultTranslateTargetLanguage"`
+	IsHosted                       bool     `json:"IsHosted"`
 }
 
 type Session struct {
 	Project      Project      `json:"project"`
 	Organization Organization `json:"organization"`
 	User         User         `json:"user"`
+}
+
+type Language struct {
+	DisplayName   string `json:"displayName"`
+	ProcessCode   string `json:"processCode"`
+	TranslateCode string `json:"translateCode"`
 }

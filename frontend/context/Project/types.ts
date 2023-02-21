@@ -26,6 +26,16 @@ export type UserProps = {
   email?: string
 }
 
+export type UpdateDocumentRequest = {
+  id?: string,
+  projectId?: string,
+  groupId?: string,
+  name?: string,
+  path?: string,
+  areas?: ipc.Area[]
+  defaultLanguage?: ipc.Language
+}
+
 export type ProjectContextType = {
   getSelectedDocument: () => ipc.Document | undefined
   getAreaById: (areaId: string) => ipc.Area | undefined
@@ -45,4 +55,5 @@ export type ProjectContextType = {
   createNewProject: (name: string) => Promise<ipc.Session>
   requestUpdateCurrentUser: (updatedUserProps: UserProps) => Promise<ipc.User>
   requestChooseUserAvatar: () => Promise<string>
+  requestUpdateDocument: (request: UpdateDocumentRequest) => Promise<ipc.Document>
 } & ProjectProps

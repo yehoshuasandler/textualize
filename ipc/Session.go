@@ -17,8 +17,22 @@ func (c *Channel) GetCurrentSession() Session {
 		sessionUsers = append(sessionUsers, User(u))
 	}
 
+	currentProject := currentSession.Project
+	currentDefaultProcessLanguage := Language(currentProject.Settings.DefaultProcessLanguage)
+	currentDefaultTranslateTargetLanguage := Language(currentProject.Settings.DefaultTranslateTargetLanguage)
+	project := Project{
+		Id:             currentProject.Id,
+		Name:           currentProject.Name,
+		OrganizationId: currentProject.OrganizationId,
+		Settings: ProjectSettings{
+			DefaultProcessLanguage:         currentDefaultProcessLanguage,
+			DefaultTranslateTargetLanguage: currentDefaultTranslateTargetLanguage,
+			IsHosted:                       currentProject.Settings.IsHosted,
+		},
+	}
+
 	return Session{
-		Project: Project(currentSession.Project),
+		Project: Project(project),
 		User:    User(currentSession.User),
 		Organization: Organization{
 			Id:       currentSession.Organization.Id,
@@ -33,8 +47,9 @@ func (c *Channel) CreateNewProject(name string) Session {
 	currentSession := session.GetInstance()
 
 	currentSession.Project = session.Project{
-		Id:   uuid.NewString(),
-		Name: name,
+		Id:             uuid.NewString(),
+		OrganizationId: currentSession.Project.OrganizationId,
+		Name:           name,
 	}
 
 	return c.GetCurrentSession()
@@ -85,4 +100,16 @@ func (c *Channel) RequestChooseUserAvatar() string {
 	} else {
 		return filePath
 	}
+}
+
+func (c *Channel) GetSuppportedLanguages() []Language {
+	supportedLanguages := app.GetSuppportedLanguages()
+
+	var response []Language
+
+	for _, l := range supportedLanguages {
+		response = append(response, Language(l))
+	}
+
+	return response
 }

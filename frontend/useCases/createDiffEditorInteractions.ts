@@ -10,7 +10,7 @@ export enum MarkdownOperator {
   ITALLICS = '_',
   BOLD = '**',
   BULLET = '* ',
-  DIVIDER = '\n\n---\n\n'
+  DIVIDER = '\n\n---\n'
 }
 
 const wrapperOperators = [
@@ -43,8 +43,6 @@ const createDiffEditorInteractions = (editor: monaco.editor.IStandaloneDiffEdito
       })
 
       if (operator == MarkdownOperator.DIVIDER) {
-        console.log('lineOfCursor:', lineOfCursor)
-        console.log('lengthOfLine:', lengthOfLine)
         range = {
           startLineNumber,
           startColumn: lengthOfLine,
@@ -72,12 +70,9 @@ const createDiffEditorInteractions = (editor: monaco.editor.IStandaloneDiffEdito
         newText = `${operator}${modifiedEditor.getModel()?.getValueInRange(range)}`
       }
 
-      modifiedEditor.executeEdits('editor', [{
-        range,
-        text: newText
-      }])
-
+      modifiedEditor.executeEdits('editor', [{ range, text: newText }])
       modifiedEditor.pushUndoStop()
+      modifiedEditor.focus()
     }
   }
 }

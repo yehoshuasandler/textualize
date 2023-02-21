@@ -14,6 +14,8 @@ export function GetDocuments():Promise<ipc.GetDocumentsResponse>;
 
 export function GetProcessedAreasByDocumentId(arg1:string):Promise<Array<ipc.ProcessedArea>>;
 
+export function GetSuppportedLanguages():Promise<Array<ipc.Language>>;
+
 export function GetUserMarkdownByDocumentId(arg1:string):Promise<ipc.UserMarkdown>;
 
 export function RequestAddArea(arg1:string,arg2:ipc.Area):Promise<ipc.Area>;
@@ -29,5 +31,7 @@ export function RequestChooseUserAvatar():Promise<string>;
 export function RequestUpdateArea(arg1:ipc.Area):Promise<ipc.Area>;
 
 export function RequestUpdateCurrentUser(arg1:ipc.User):Promise<ipc.User>;
+
+export function RequestUpdateDocument(arg1:ipc.Document):Promise<ipc.Document>;
 
 export function RequestUpdateDocumentUserMarkdown(arg1:string,arg2:string):Promise<ipc.UserMarkdown>;
