@@ -56,4 +56,5 @@ export type ProjectContextType = {
   requestUpdateCurrentUser: (updatedUserProps: UserProps) => Promise<ipc.User>
   requestChooseUserAvatar: () => Promise<string>
   requestUpdateDocument: (request: UpdateDocumentRequest) => Promise<ipc.Document>
+  requestChangeAreaOrder: (areaId: string, newOrder: number) => Promise<ipc.Document>
 } & ProjectProps

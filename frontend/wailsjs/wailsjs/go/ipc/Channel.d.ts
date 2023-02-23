@@ -26,6 +26,8 @@ export function RequestAddDocumentGroup(arg1:string):Promise<ipc.Group>;
 
 export function RequestAddProcessedArea(arg1:ipc.ProcessedArea):Promise<ipc.ProcessedArea>;
 
+export function RequestChangeAreaOrder(arg1:string,arg2:number):Promise<ipc.Document>;
+
 export function RequestChooseUserAvatar():Promise<string>;
 
 export function RequestUpdateArea(arg1:ipc.Area):Promise<ipc.Area>;

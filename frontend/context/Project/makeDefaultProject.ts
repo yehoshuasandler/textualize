@@ -24,6 +24,7 @@ const makeDefaultProject = (): ProjectContextType => ({
   requestUpdateCurrentUser: (updatedUserProps: UserProps) => Promise.resolve(new ipc.User()),
   requestChooseUserAvatar: () => Promise.resolve(''),
   requestUpdateDocument: ({}) => Promise.resolve(new ipc.Document),
+  requestChangeAreaOrder: (areaId: string, newOrder: number) => Promise.resolve(new ipc.Document()),
 })
 
 export default makeDefaultProject

@@ -1,6 +1,7 @@
 package ipc
 
 import (
+	"sort"
 	document "textualize/core/Document"
 )
 
@@ -61,6 +62,7 @@ func serializeProcessedArea(area document.ProcessedArea) ProcessedArea {
 		Id:         area.Id,
 		DocumentId: area.DocumentId,
 		FullText:   area.FullText,
+		Order:      area.Order,
 		Lines:      lines,
 	}
 }
@@ -73,6 +75,10 @@ func (c *Channel) GetProcessedAreasByDocumentId(id string) []ProcessedArea {
 	for _, a := range areas {
 		response = append(response, serializeProcessedArea(*a))
 	}
+
+	sort.Slice(response, func(i, j int) bool {
+		return response[i].Order < response[j].Order
+	})
 
 	return response
 }
@@ -141,7 +147,9 @@ func deserializeProcessedArea(area ProcessedArea) document.ProcessedArea {
 func (c *Channel) RequestAddProcessedArea(area ProcessedArea) ProcessedArea {
 	var currentAreaIds []string
 
-	for _, a := range document.GetProcessedAreaCollection().Areas {
+	processedAreasCollection := document.GetProcessedAreaCollection()
+
+	for _, a := range processedAreasCollection.Areas {
 		currentAreaIds = append(currentAreaIds, a.Id)
 	}
 
@@ -153,7 +161,10 @@ func (c *Channel) RequestAddProcessedArea(area ProcessedArea) ProcessedArea {
 	}
 
 	if !areaAlreadyExists {
-		document.GetProcessedAreaCollection().AddProcessedArea((deserializeProcessedArea(area)))
+		processedArea := deserializeProcessedArea(area)
+		currentAreasOfDocument := processedAreasCollection.GetAreasByDocumentId(area.DocumentId)
+		processedArea.Order = len(currentAreasOfDocument)
+		document.GetProcessedAreaCollection().AddProcessedArea(processedArea)
 	}
 	return area
 }

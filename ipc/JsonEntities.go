@@ -36,6 +36,7 @@ type Area struct {
 	EndX     int      `json:"endX"`
 	EndY     int      `json:"endY"`
 	Language Language `json:"language"`
+	Order    int      `json:"order"`
 }
 
 type ProcessedBoundingBox struct {
@@ -68,6 +69,7 @@ type ProcessedArea struct {
 	Id         string          `json:"id"`
 	DocumentId string          `json:"documentId"`
 	FullText   string          `json:"fullText"`
+	Order      int             `json:"order"`
 	Lines      []ProcessedLine `json:"lines"`
 }
 

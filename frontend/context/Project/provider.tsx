@@ -8,6 +8,7 @@ import {
   RequestUpdateArea, RequestUpdateCurrentUser, RequestUpdateDocumentUserMarkdown,
   RequestChooseUserAvatar,
   RequestUpdateDocument,
+  RequestChangeAreaOrder,
 } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps, UpdateDocumentRequest, UserProps } from './types'
@@ -29,6 +30,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
 
   const updateDocuments = async () => {
     GetDocuments().then(response => {
+      console.log(response)
       if (response.documents.length) setDocuments(response.documents)
       if (response.groups.length) setGroups(response.groups)
       Promise.resolve(response)
@@ -124,8 +126,14 @@ export function ProjectProvider({ children, projectProps }: Props) {
   }
 
   const requestUpdateDocument = async (docuemntProps: UpdateDocumentRequest) => {
-    console.log('request: ', docuemntProps)
     const response = await RequestUpdateDocument(new ipc.Document(docuemntProps))
+    await updateDocuments()
+    return response
+  }
+
+  const requestChangeAreaOrder = async (areaId: string, newOrder: number) => {
+    console.log('requestChangeAreaOrder')
+    const response = await RequestChangeAreaOrder(areaId, newOrder)
     await updateDocuments()
     return response
   }
@@ -157,6 +165,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
     requestUpdateCurrentUser,
     requestChooseUserAvatar,
     requestUpdateDocument,
+    requestChangeAreaOrder,
   }
 
   return <ProjectContext.Provider value={value}>

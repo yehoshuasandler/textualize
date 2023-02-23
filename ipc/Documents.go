@@ -1,7 +1,7 @@
 package ipc
 
 import (
-	"fmt"
+	"sort"
 	app "textualize/core/App"
 	document "textualize/core/Document"
 	session "textualize/core/Session"
@@ -27,6 +27,7 @@ func (c *Channel) GetDocumentById(id string) Document {
 			StartY:   a.StartY,
 			EndX:     a.EndX,
 			EndY:     a.EndY,
+			Order:    a.Order,
 			Language: Language(a.Language),
 		})
 	}
@@ -60,9 +61,18 @@ func (c *Channel) GetDocuments() GetDocumentsResponse {
 				StartY:   a.StartY,
 				EndX:     a.EndX,
 				EndY:     a.EndY,
+				Order:    a.Order,
 				Language: Language(a.Language),
 			})
 		}
+
+		// sort.Slice(jsonAreas, func(i, j int) bool {
+		// 	return jsonAreas[i].Order < jsonAreas[j].Order
+		// })
+
+		sort.Slice(jsonAreas, func(i, j int) bool {
+			return jsonAreas[i].Order < jsonAreas[j].Order
+		})
 
 		jsonDocument := Document{
 			Id:              d.Id,
@@ -193,6 +203,11 @@ func (c *Channel) RequestAddArea(documentId string, area Area) Area {
 		id = area.Id
 	}
 
+	order := area.Order
+	if order < 1 {
+		order = len(foundDocument.Areas)
+	}
+
 	newArea := document.Area{
 		Id:       id,
 		Name:     area.Name,
@@ -200,6 +215,7 @@ func (c *Channel) RequestAddArea(documentId string, area Area) Area {
 		EndX:     area.EndX,
 		StartY:   area.StartY,
 		EndY:     area.EndY,
+		Order:    order,
 		Language: app.Language(area.Language),
 	}
 	foundDocument.AddArea(newArea)
@@ -227,6 +243,9 @@ func (c *Channel) RequestUpdateArea(updatedArea Area) Area {
 	if updatedArea.Name != "" {
 		areaToUpdate.Name = updatedArea.Name
 	}
+	if updatedArea.Order != areaToUpdate.Order {
+		areaToUpdate.Order = updatedArea.Order
+	}
 
 	return Area{
 		Id:       areaToUpdate.Id,
@@ -235,6 +254,7 @@ func (c *Channel) RequestUpdateArea(updatedArea Area) Area {
 		StartY:   areaToUpdate.StartY,
 		EndX:     areaToUpdate.EndX,
 		EndY:     areaToUpdate.EndY,
+		Order:    areaToUpdate.Order,
 		Language: Language(areaToUpdate.Language),
 	}
 }
@@ -262,8 +282,41 @@ func (c *Channel) RequestUpdateDocument(updatedDocument Document) Document {
 		documentToUpdate.DefaultLanguage = app.Language(updatedDocument.DefaultLanguage)
 	}
 
-	fmt.Println("updated doc")
-	fmt.Println(document.GetDocumentCollection().GetDocumentById(updatedDocument.Id))
-
 	return updatedDocument
+}
+
+func (c *Channel) RequestChangeAreaOrder(areaId string, newOrder int) Document {
+	documentOfArea := document.GetDocumentCollection().GetDocumentByAreaId((areaId))
+
+	if documentOfArea == nil {
+		return Document{}
+	}
+
+	var foundArea document.Area
+	for _, a := range documentOfArea.Areas {
+		if a.Id == areaId {
+			foundArea = a
+			break
+		}
+	}
+
+	if foundArea.Id == "" {
+		return Document{}
+	}
+
+	processedAreasCollection := document.GetProcessedAreaCollection()
+
+	for index, a := range documentOfArea.Areas {
+		if a.Order < newOrder {
+			continue
+		} else if a.Id == areaId {
+			documentOfArea.Areas[index].Order = newOrder
+			processedAreasCollection.GetAreaById(a.Id).Order = newOrder
+		} else {
+			documentOfArea.Areas[index].Order = a.Order + 1
+			processedAreasCollection.GetAreaById(a.Id).Order = a.Order + 1
+		}
+	}
+
+	return c.GetDocumentById(documentOfArea.Id)
 }

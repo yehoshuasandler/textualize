@@ -1,6 +1,8 @@
 package document
 
-import app "textualize/core/App"
+import (
+	app "textualize/core/App"
+)
 
 type Entity struct {
 	Id              string
@@ -20,6 +22,7 @@ type Area struct {
 	EndX     int
 	EndY     int
 	Language app.Language
+	Order    int
 }
 
 func (e *Entity) AddArea(a Area) {

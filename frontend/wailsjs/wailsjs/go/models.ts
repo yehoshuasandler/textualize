@@ -24,6 +24,7 @@ export namespace ipc {
 	    endX: number;
 	    endY: number;
 	    language: Language;
+	    order: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Area(source);
@@ -38,6 +39,7 @@ export namespace ipc {
 	        this.endX = source["endX"];
 	        this.endY = source["endY"];
 	        this.language = this.convertValues(source["language"], Language);
+	        this.order = source["order"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -338,6 +340,7 @@ export namespace ipc {
 	    id: string;
 	    documentId: string;
 	    fullText: string;
+	    order: number;
 	    lines: ProcessedLine[];
 	
 	    static createFrom(source: any = {}) {
@@ -349,6 +352,7 @@ export namespace ipc {
 	        this.id = source["id"];
 	        this.documentId = source["documentId"];
 	        this.fullText = source["fullText"];
+	        this.order = source["order"];
 	        this.lines = this.convertValues(source["lines"], ProcessedLine);
 	    }
 	

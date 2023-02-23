@@ -50,6 +50,10 @@ export function RequestAddProcessedArea(arg1) {
   return window['go']['ipc']['Channel']['RequestAddProcessedArea'](arg1);
 }
 
+export function RequestChangeAreaOrder(arg1, arg2) {
+  return window['go']['ipc']['Channel']['RequestChangeAreaOrder'](arg1, arg2);
+}
+
 export function RequestChooseUserAvatar() {
   return window['go']['ipc']['Channel']['RequestChooseUserAvatar']();
 }

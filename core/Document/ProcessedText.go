@@ -30,6 +30,7 @@ type ProcessedArea struct {
 	Id         string
 	DocumentId string
 	FullText   string
+	Order      int // TODO: make reorder feature
 	Lines      []ProcessedLine
 }
 
@@ -60,4 +61,17 @@ func (collection *ProcessedAreaCollection) GetAreasByDocumentId(id string) []*Pr
 	}
 
 	return foundAreas
+}
+
+func (collection *ProcessedAreaCollection) GetAreaById(areaId string) *ProcessedArea {
+	var foundArea *ProcessedArea
+
+	for index, a := range collection.Areas {
+		if a.Id == areaId {
+			foundArea = &collection.Areas[index]
+			break
+		}
+	}
+
+	return foundArea
 }

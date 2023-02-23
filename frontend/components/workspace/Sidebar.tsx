@@ -12,7 +12,7 @@ type GroupNavigationItem = {
   documents: {
     id: string,
     name: string,
-    areas: { id: string, name: string }[]
+    areas: { id: string, name: string, order: number }[]
   }[]
 }
 
@@ -23,7 +23,7 @@ const getNavigationProps = (documents: ipc.Document[], groups: ipc.Group[]): Gro
       .map(d => ({
         id: d.id,
         name: d.name,
-        areas: d.areas.map(a => ({ id: a.id, name: a.name }))
+        areas: d.areas.map(a => ({ id: a.id, name: a.name, order: a.order }))//.sort((a, b) => a.order - b.order)
       }))
 
     return {
@@ -38,7 +38,7 @@ const getNavigationProps = (documents: ipc.Document[], groups: ipc.Group[]): Gro
     .map(d => ({
       id: d.id,
       name: d.name,
-      areas: d.areas.map(a => ({ id: a.id, name: a.name }))
+      areas: d.areas.map(a => ({ id: a.id, name: a.name, order: a.order }))//.sort((a, b) => a.order - b.order)
     }))
 
   return [
@@ -57,6 +57,8 @@ function Sidebar() {
   const [isEditDocumentNameInputShowing, setIsEditDocumentNameInputShowing] = useState(false)
   const [isAddNewGroupInputShowing, setIsAddNewGroupInputShowing] = useState(false)
   const [isEditAreaNameInputShowing, setIsEditAreaNameInputShowing] = useState(false)
+  const [dragOverAreaId, setDragOverAreaId] = useState('')
+
   const addDocumentTextInput = useRef<HTMLInputElement>(null)
   const addGroupTextInput = useRef<HTMLInputElement>(null)
   const editAreaNameTextInput = useRef<HTMLInputElement>(null)
@@ -76,6 +78,7 @@ function Sidebar() {
     setSelectedDocumentId,
     currentSession,
     requestUpdateDocument,
+    requestChangeAreaOrder,
   } = useProject()
 
   const navigation = getNavigationProps(documents, groups)
@@ -117,14 +120,42 @@ function Sidebar() {
   }
 
   const onAreaDoubleClick = (areaId: string) => {
-    const documentIdOfArea = getDocumentIdFromAreaId(areaId)
+    setSelectedDocumentId(getDocumentIdFromAreaId(areaId) || '')
     setIsEditAreaNameInputShowing(true)
-    console.log('double click')
   }
 
   const onAreaInputBlur = () => {
     setIsEditAreaNameInputShowing(false)
   }
+
+
+  // ________________
+  
+  const onAreaDragOver = (areaId: string) => {
+    setDragOverAreaId(areaId)
+  }
+
+  const onAreaDragStart = (areaId: string) => {
+    // setDragStartAreaId(areaId)
+  }
+  
+  const onAreaDropEnd = (areaId: string) => {
+    const areaDroppedOn = navigation.map(n => n.documents).flat().map(d => d.areas).flat().find(a => a.id === dragOverAreaId)
+    if (!areaDroppedOn) return
+    requestChangeAreaOrder(areaId, areaDroppedOn.order)
+    setDragOverAreaId('')
+  }
+  
+  
+  
+  
+  // ________________
+
+  
+
+
+
+
 
   const onDocumentClickHandler = (itemId: string) => {
     setSelectedDocumentId(itemId)
@@ -415,13 +446,18 @@ function Sidebar() {
                               role='button'
                               onClick={() => onAreaClick(a.id)}
                               onDoubleClick={() => onAreaDoubleClick(a.id)}
+                              draggable
+                              onDragOver={() => onAreaDragOver(a.id)}
+                              onDragStart={() => onAreaDragStart(a.id)}
+                              onDragEnd={() => onAreaDropEnd(a.id)}
                               className={classNames('text-gray-300 hover:bg-gray-700 hover:text-white',
                                 'group w-full flex items-center pr-2 py-2 text-left font-medium pl-8 text-xs',
                                 'rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 py-2 select-none',
-                                selectedAreaId === a.id ? 'underline' : ''
+                                selectedAreaId === a.id ? 'underline' : '',
+                                dragOverAreaId === a.id ? 'bg-gray-300 text-gray-700' : ''
                               )}
                             >
-                              {a.name || `Area ${index + 1}`}
+                              {a.name || `Area ${a.order}`}
                             </a>
                           }
                         </li>
