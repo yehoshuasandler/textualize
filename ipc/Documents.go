@@ -307,12 +307,10 @@ func (c *Channel) RequestChangeAreaOrder(areaId string, newOrder int) Document {
 	processedAreasCollection := document.GetProcessedAreaCollection()
 
 	for index, a := range documentOfArea.Areas {
-		if a.Order < newOrder {
-			continue
-		} else if a.Id == areaId {
+		if a.Id == areaId {
 			documentOfArea.Areas[index].Order = newOrder
 			processedAreasCollection.GetAreaById(a.Id).Order = newOrder
-		} else {
+		} else if a.Order >= newOrder {
 			documentOfArea.Areas[index].Order = a.Order + 1
 			processedAreasCollection.GetAreaById(a.Id).Order = a.Order + 1
 		}
