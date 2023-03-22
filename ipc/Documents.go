@@ -32,12 +32,13 @@ func (c *Channel) GetDocumentById(id string) Document {
 		})
 	}
 	response := Document{
-		Id:        foundDocument.Id,
-		Name:      foundDocument.Name,
-		GroupId:   foundDocument.GroupId,
-		Path:      foundDocument.Path,
-		ProjectId: foundDocument.ProjectId,
-		Areas:     jsonAreas,
+		Id:              foundDocument.Id,
+		Name:            foundDocument.Name,
+		GroupId:         foundDocument.GroupId,
+		Path:            foundDocument.Path,
+		ProjectId:       foundDocument.ProjectId,
+		Areas:           jsonAreas,
+		DefaultLanguage: Language(foundDocument.DefaultLanguage),
 	}
 	return response
 }
@@ -193,6 +194,32 @@ func (c *Channel) RequestAddDocumentGroup(name string) Group {
 	return response
 }
 
+func (c *Channel) GetAreaById(areaId string) Area {
+	foundDocument := document.GetDocumentCollection().GetDocumentByAreaId(areaId)
+
+	if len(foundDocument.Areas) == 0 {
+		return Area{}
+	}
+
+	var foundArea document.Area
+	for i, a := range foundDocument.Areas {
+		if a.Id == areaId {
+			foundArea = foundDocument.Areas[i]
+		}
+	}
+
+	return Area{
+		Id:       foundArea.Id,
+		Name:     foundArea.Name,
+		StartX:   foundArea.StartX,
+		EndX:     foundArea.EndX,
+		StartY:   foundArea.StartY,
+		EndY:     foundArea.EndY,
+		Order:    foundArea.Order,
+		Language: Language(foundArea.Language),
+	}
+}
+
 func (c *Channel) RequestAddArea(documentId string, area Area) Area {
 	foundDocument := document.GetDocumentCollection().GetDocumentById(documentId)
 
@@ -233,7 +260,7 @@ func (c *Channel) RequestUpdateArea(updatedArea Area) Area {
 		return Area{}
 	}
 
-	areaToUpdate := documentOfArea.GetAreaById((updatedArea.Id))
+	areaToUpdate := documentOfArea.GetAreaById(updatedArea.Id)
 
 	if areaToUpdate.Id == "" {
 		return Area{}
@@ -257,6 +284,37 @@ func (c *Channel) RequestUpdateArea(updatedArea Area) Area {
 		Order:    areaToUpdate.Order,
 		Language: Language(areaToUpdate.Language),
 	}
+}
+
+func (c *Channel) RequestDeleteAreaById(areaId string) bool {
+	documentOfArea := document.GetDocumentCollection().GetDocumentByAreaId(areaId)
+
+	if documentOfArea.Id == "" {
+		return false
+	}
+
+	areaToDeleteIndex := -1
+
+	for i, a := range documentOfArea.Areas {
+		if a.Id == areaId {
+			areaToDeleteIndex = i
+			break
+		}
+	}
+
+	if areaToDeleteIndex < 0 {
+		return false
+	}
+
+	// 	func remove(s []int, i int) []int {
+	//     s[i] = s[len(s)-1]
+	//     return s[:len(s)-1]
+	// }
+
+	documentOfArea.Areas[areaToDeleteIndex] = documentOfArea.Areas[len(documentOfArea.Areas)-1]
+	documentOfArea.Areas = documentOfArea.Areas[:len(documentOfArea.Areas)-1]
+	return true
+
 }
 
 func (c *Channel) RequestUpdateDocument(updatedDocument Document) Document {

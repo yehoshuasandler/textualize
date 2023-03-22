@@ -6,6 +6,10 @@ export function CreateNewProject(arg1) {
   return window['go']['ipc']['Channel']['CreateNewProject'](arg1);
 }
 
+export function GetAreaById(arg1) {
+  return window['go']['ipc']['Channel']['GetAreaById'](arg1);
+}
+
 export function GetCurrentSession() {
   return window['go']['ipc']['Channel']['GetCurrentSession']();
 }
@@ -56,6 +60,10 @@ export function RequestChangeAreaOrder(arg1, arg2) {
 
 export function RequestChooseUserAvatar() {
   return window['go']['ipc']['Channel']['RequestChooseUserAvatar']();
+}
+
+export function RequestDeleteAreaById(arg1) {
+  return window['go']['ipc']['Channel']['RequestDeleteAreaById'](arg1);
 }
 
 export function RequestUpdateArea(arg1) {

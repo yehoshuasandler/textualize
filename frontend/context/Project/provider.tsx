@@ -9,6 +9,7 @@ import {
   RequestChooseUserAvatar,
   RequestUpdateDocument,
   RequestChangeAreaOrder,
+  RequestDeleteAreaById,
 } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps, UpdateDocumentRequest, UserProps } from './types'
@@ -30,7 +31,6 @@ export function ProjectProvider({ children, projectProps }: Props) {
 
   const updateDocuments = async () => {
     GetDocuments().then(response => {
-      console.log(response)
       if (response.documents.length) setDocuments(response.documents)
       if (response.groups.length) setGroups(response.groups)
       Promise.resolve(response)
@@ -65,6 +65,12 @@ export function ProjectProvider({ children, projectProps }: Props) {
   const getAreaById = (areaId: string): ipc.Area | undefined => (
     documents.map(d => d.areas).flat().find(a => a.id === areaId)
   )
+
+  const requestDeleteAreaById = async (areaId: string): Promise<boolean> => {
+    const wasSuccessfulDeletion = await RequestDeleteAreaById(areaId)
+    if (wasSuccessfulDeletion) updateDocuments()
+    return wasSuccessfulDeletion
+  }
 
   const getSelectedDocument = () => documents.find(d => d.id === selectedDocumentId)
 
@@ -132,7 +138,6 @@ export function ProjectProvider({ children, projectProps }: Props) {
   }
 
   const requestChangeAreaOrder = async (areaId: string, newOrder: number) => {
-    console.log('requestChangeAreaOrder')
     const response = await RequestChangeAreaOrder(areaId, newOrder)
     await updateDocuments()
     return response
@@ -152,6 +157,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
     requestAddDocument,
     requestAddDocumentGroup,
     requestUpdateArea,
+    requestDeleteAreaById,
     selectedAreaId,
     setSelectedAreaId,
     selectedDocumentId,

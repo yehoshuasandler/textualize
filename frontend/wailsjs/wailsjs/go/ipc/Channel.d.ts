@@ -4,6 +4,8 @@ import {ipc} from '../models';
 
 export function CreateNewProject(arg1:string):Promise<ipc.Session>;
 
+export function GetAreaById(arg1:string):Promise<ipc.Area>;
+
 export function GetCurrentSession():Promise<ipc.Session>;
 
 export function GetCurrentUser():Promise<ipc.User>;
@@ -29,6 +31,8 @@ export function RequestAddProcessedArea(arg1:ipc.ProcessedArea):Promise<ipc.Proc
 export function RequestChangeAreaOrder(arg1:string,arg2:number):Promise<ipc.Document>;
 
 export function RequestChooseUserAvatar():Promise<string>;
+
+export function RequestDeleteAreaById(arg1:string):Promise<boolean>;
 
 export function RequestUpdateArea(arg1:ipc.Area):Promise<ipc.Area>;
 

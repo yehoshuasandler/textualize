@@ -70,6 +70,7 @@ function Sidebar() {
     getSelectedDocument,
     getAreaById,
     requestUpdateArea,
+    requestDeleteAreaById,
     requestAddDocument,
     requestAddDocumentGroup,
     selectedAreaId,
@@ -128,34 +129,24 @@ function Sidebar() {
     setIsEditAreaNameInputShowing(false)
   }
 
-
-  // ________________
-  
   const onAreaDragOver = (areaId: string) => {
     setDragOverAreaId(areaId)
   }
 
   const onAreaDragStart = (areaId: string) => {
-    // setDragStartAreaId(areaId)
+    setSelectedAreaId(areaId)
   }
-  
+
   const onAreaDropEnd = (areaId: string) => {
     const areaDroppedOn = navigation.map(n => n.documents).flat().map(d => d.areas).flat().find(a => a.id === dragOverAreaId)
     if (!areaDroppedOn) return
     requestChangeAreaOrder(areaId, areaDroppedOn.order)
     setDragOverAreaId('')
   }
-  
-  
-  
-  
-  // ________________
 
-  
-
-
-
-
+  const handleAreaDeleteButtonClick = (areaId: string) => {
+    requestDeleteAreaById(areaId)
+  }
 
   const onDocumentClickHandler = (itemId: string) => {
     setSelectedDocumentId(itemId)
@@ -362,7 +353,7 @@ function Sidebar() {
                         name="documentName"
                         id="documentName"
                         autoFocus
-                        className="h-8 text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="h-8 w-[calc(100%-18px)] text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 inline-block rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                         defaultValue={d.name}
                         onBlur={onDocumentInputBlur}
                         onKeyDown={(event) => {
@@ -397,12 +388,12 @@ function Sidebar() {
 
                       )}>
                       {selectedDocumentId === d.id && isEditDocumentNameInputShowing
-                        ? <input // TODO: this
+                        ? <input
                           type="text"
                           name="documentName"
                           id="documentName"
                           autoFocus
-                          className="h-8 text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="h-8 w-[calc(100%-18px)] text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 inline-block rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                           defaultValue={d.name}
                           onBlur={onDocumentInputBlur}
                           onKeyDown={(event) => {
@@ -434,7 +425,7 @@ function Sidebar() {
                               id="areaName"
                               autoFocus
                               className="h-8 text-white placeholder-gray-400 bg-gray-900 bg-opacity-5 block w-full rounded-none rounded-l-md border-late-700 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                              placeholder={a.name || `Area ${index + 1}`}
+                              placeholder={a.name || `Area ${index}`}
                               onBlur={onAreaInputBlur}
                               onKeyDown={(event) => {
                                 onEnterHandler(event,
@@ -442,23 +433,29 @@ function Sidebar() {
                               }}
                               ref={editAreaNameTextInput}
                             />
-                            : <a
-                              role='button'
-                              onClick={() => onAreaClick(a.id)}
-                              onDoubleClick={() => onAreaDoubleClick(a.id)}
+                            : <div
                               draggable
                               onDragOver={() => onAreaDragOver(a.id)}
                               onDragStart={() => onAreaDragStart(a.id)}
                               onDragEnd={() => onAreaDropEnd(a.id)}
-                              className={classNames('text-gray-300 hover:bg-gray-700 hover:text-white',
-                                'group w-full flex items-center pr-2 py-2 text-left font-medium pl-8 text-xs',
-                                'rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 py-2 select-none',
-                                selectedAreaId === a.id ? 'underline' : '',
-                                dragOverAreaId === a.id ? 'bg-gray-300 text-gray-700' : ''
-                              )}
-                            >
-                              {a.name || `Area ${a.order}`}
-                            </a>
+                              className={classNames('flex justify-between items-center cursor-pointer',
+                                selectedAreaId === a.id ? 'bg-indigo-500 text-gray-200' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                dragOverAreaId === a.id ? 'bg-gray-300 text-gray-700' : '',
+                                selectedAreaId === a.id && dragOverAreaId === a.id ? 'bg-indigo-300' : '',
+                              )}>
+                              <a
+                                role='button'
+                                onClick={() => onAreaClick(a.id)}
+                                onDoubleClick={() => onAreaDoubleClick(a.id)}
+                                className={classNames('group w-full pr-2 py-2 text-left font-medium pl-8 text-xs',
+                                  'rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 py-2 select-none',
+                                )}>
+                                {a.name || `Area ${a.order}`}
+                              </a>
+                              <XMarkIcon
+                              className='w-5 h-5 mr-2 text-white hover:bg-white hover:text-gray-700 rounded-full p-0.5'
+                              onClick={() => handleAreaDeleteButtonClick(a.id)} />
+                            </div>
                           }
                         </li>
                       ))}

@@ -43,6 +43,7 @@ export type ProjectContextType = {
   requestAddProcessedArea: (processedArea: ipc.ProcessedArea) => Promise<ipc.ProcessedArea>
   requestAddArea: (documentId: string, area: AddAreaProps) => Promise<ipc.Area>
   requestUpdateArea: (area: AreaProps) => Promise<ipc.Area>
+  requestDeleteAreaById: (areaId: string) => Promise<boolean>
   requestAddDocument: (groupId: string, documentName: string) => Promise<ipc.Document>
   requestAddDocumentGroup: (groupName: string) => Promise<ipc.Group>
   requestUpdateDocumentUserMarkdown: (documentId: string, markdown: string) => Promise<ipc.UserMarkdown>

@@ -1,32 +1,35 @@
 import { createScheduler, createWorker } from 'tesseract.js'
-import { GetDocumentById, RequestAddProcessedArea } from '../wailsjs/wailsjs/go/ipc/Channel'
+import { GetAreaById, GetDocumentById, RequestAddProcessedArea } from '../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../wailsjs/wailsjs/go/models'
 import loadImage from './loadImage'
 
-const processImageArea = async (documentId: string, area: ipc.Area) => {
+const processImageArea = async (documentId: string, areaId: string) => {
   const foundDocument = await GetDocumentById(documentId)
-  if (!foundDocument.path || !foundDocument.areas?.length) return
+  const foundArea = await GetAreaById(areaId)
+  if (!foundDocument.path || !foundDocument.areas?.length || !foundArea.id) return
+
+  const processLanguage = foundDocument.defaultLanguage.processCode
 
   const { path } = foundDocument
   const imageData = await loadImage(path)
 
   const scheduler = createScheduler()
   const worker = await createWorker()
-  await worker.loadLanguage('eng') // TODO: change this when multilangiage system is implementd
-  await worker.initialize('eng') // TODO: same here
+  await worker.loadLanguage(processLanguage)
+  await worker.initialize(processLanguage)
   scheduler.addWorker(worker)
 
   const result = await scheduler.addJob('recognize', imageData, {
     rectangle: {
-      left: area.startX,
-      top: area.startY,
-      width: area.endX - area.startX,
-      height: area.endY - area.startY,
+      left: foundArea.startX,
+      top: foundArea.startY,
+      width: foundArea.endX - foundArea.startX,
+      height: foundArea.endY - foundArea.startY,
     }
   })
 
   const addProcessesAreaRequest = await RequestAddProcessedArea(new ipc.ProcessedArea({
-    id: area.id,
+    id: foundArea.id,
     documentId,
     fullText: result.data.text,
     lines: result.data.lines.map((l: any) => new ipc.ProcessedLine({
