@@ -1,6 +1,7 @@
 'use client'
 
-import Sidebar from './Sidebar'
+import Sidebar from './Sidebar/Sidebar'
+import { SidebarProvider } from './Sidebar/provider'
 import TopBar from './TopBar'
 
 function WorkspaceNavigation() {
@@ -8,7 +9,9 @@ function WorkspaceNavigation() {
   return (
     <>
       <TopBar />
-      <Sidebar />
+      <SidebarProvider>
+        <Sidebar />
+      </SidebarProvider>
     </>
   )
 }

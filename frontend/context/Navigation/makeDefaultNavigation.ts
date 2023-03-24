@@ -1,8 +1,10 @@
-import { NavigationContextType, workspaces } from './types'
+import { mainPages, NavigationContextType, workspaces } from './types'
 
 const makeDefaultNavigation = (): NavigationContextType => ({
   selectedWorkspace: workspaces.PROCESSOR,
-  setSelectedWorkspace: (workspace) => {}
+  setSelectedWorkspace: (_) => {},
+  selectedMainPage: mainPages.EDITUSER,
+  setSelectedMainPage: (_) => {},
 })
 
 export default makeDefaultNavigation
