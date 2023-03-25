@@ -10,6 +10,8 @@ const processImageArea = async (documentId: string, areaId: string) => {
 
   const processLanguage = foundDocument.defaultLanguage.processCode
 
+  if (!processLanguage) return console.error('No process language selected')
+
   const { path } = foundDocument
   const imageData = await loadImage(path)
 
@@ -31,6 +33,7 @@ const processImageArea = async (documentId: string, areaId: string) => {
   const addProcessesAreaRequest = await RequestAddProcessedArea(new ipc.ProcessedArea({
     id: foundArea.id,
     documentId,
+    order: foundArea.order,
     fullText: result.data.text,
     lines: result.data.lines.map((l: any) => new ipc.ProcessedLine({
       fullText: l.text,

@@ -1,13 +1,13 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
-import { XMarkIcon } from '@heroicons/react/20/solid'
 import { useProject } from '../../../context/Project/provider'
 import classNames from '../../../utils/classNames'
-import { ArrowPathIcon } from '@heroicons/react/24/outline'
+import { ArrowPathIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { SidebarArea } from './types'
 import { useSidebar } from './provider'
 import onEnterHandler from '../../../utils/onEnterHandler'
+import processImageArea from '../../../useCases/processImageArea'
 
 
 const AreaLineItem = (props: { area: SidebarArea, documentId: string, index: number }) => {
@@ -76,6 +76,11 @@ const AreaLineItem = (props: { area: SidebarArea, documentId: string, index: num
     requestDeleteAreaById(areaId)
   }
 
+  const handleReprocessAreaButtonClick = async () => {
+    const response = await processImageArea(props.documentId, props.area.id)
+    console.log(response)
+  }
+
   return <li>
     {selectedAreaId === props.area.id && isEditAreaNameInputShowing
       ? <input
@@ -114,7 +119,7 @@ const AreaLineItem = (props: { area: SidebarArea, documentId: string, index: num
         <ArrowPathIcon
           className='w-6 h-5 mr-2 text-white hover:bg-white hover:text-gray-700 rounded-full p-0.5'
           aria-hidden="true"
-          onClick={() => console.log('refresh')}
+          onClick={handleReprocessAreaButtonClick}
         />
         <XMarkIcon
           className='w-6 h-5 mr-2 text-white hover:bg-red-400 hover:text-gray-100 rounded-full p-0.5'

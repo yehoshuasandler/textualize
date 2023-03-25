@@ -139,32 +139,32 @@ func deserializeProcessedArea(area ProcessedArea) document.ProcessedArea {
 	return document.ProcessedArea{
 		Id:         area.Id,
 		DocumentId: area.DocumentId,
+		Order:      area.Order,
 		FullText:   area.FullText,
 		Lines:      lines,
 	}
 }
 
-func (c *Channel) RequestAddProcessedArea(area ProcessedArea) ProcessedArea {
-	var currentAreaIds []string
-
-	processedAreasCollection := document.GetProcessedAreaCollection()
-
-	for _, a := range processedAreasCollection.Areas {
-		currentAreaIds = append(currentAreaIds, a.Id)
-	}
-
-	areaAlreadyExists := false
-	for _, areaId := range currentAreaIds {
-		if area.Id == areaId {
-			areaAlreadyExists = true
+func (c *Channel) RequestAddProcessedArea(processedArea ProcessedArea) ProcessedArea {
+	doesAreaAlreadyExist := false
+	processedAreasOfDocument := document.GetProcessedAreaCollection().GetAreasByDocumentId(processedArea.DocumentId)
+	for _, a := range processedAreasOfDocument {
+		if a.Order == processedArea.Order {
+			doesAreaAlreadyExist = true
+			break
 		}
 	}
 
-	if !areaAlreadyExists {
-		processedArea := deserializeProcessedArea(area)
-		currentAreasOfDocument := processedAreasCollection.GetAreasByDocumentId(area.DocumentId)
-		processedArea.Order = len(currentAreasOfDocument)
-		document.GetProcessedAreaCollection().AddProcessedArea(processedArea)
+	deserializedProcessedArea := deserializeProcessedArea(processedArea)
+
+	if doesAreaAlreadyExist {
+		storedProcessedArea := document.GetProcessedAreaCollection().GetAreaById(processedArea.Id)
+		if storedProcessedArea.Id != "" {
+			storedProcessedArea = &deserializedProcessedArea
+		}
+	} else {
+		document.GetProcessedAreaCollection().AddProcessedArea((deserializedProcessedArea))
 	}
-	return area
+
+	return processedArea
 }

@@ -1,5 +1,4 @@
-import { ListBulletIcon, MinusIcon } from '@heroicons/react/20/solid'
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { Bars3BottomRightIcon, MinusIcon, ListBulletIcon, ChatBubbleLeftEllipsisIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import createDiffEditorInteractions, { MarkdownOperator } from '../../useCases/createDiffEditorInteractions'
 import classNames from '../../utils/classNames'
 
@@ -124,6 +123,21 @@ const TextEditorButtons = (props: Props) => {
       B
     </button>
 
+
+
+    <button
+      type="button"
+      onClick={() => editorInteractions.insertMarkdownOperator(MarkdownOperator.QUOTE)}
+      className={classNames(
+        'text-sm relative inline-flex items-center border',
+        'border-gray-300 bg-white px-2 py-0 text-gray-700 hover:bg-gray-50',
+        'focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1',
+        'focus:ring-indigo-500 font-extrabold',
+      )}>
+      <span className="sr-only">Quote</span>
+      <ChatBubbleLeftEllipsisIcon className="h-5 w-5" aria-hidden="true" />
+    </button>
+
     <button
       type="button"
       onClick={() => editorInteractions.insertMarkdownOperator(MarkdownOperator.BULLET)}
@@ -137,11 +151,26 @@ const TextEditorButtons = (props: Props) => {
       <ListBulletIcon className="h-5 w-5" aria-hidden="true" />
     </button>
 
+
+
+    <button
+      type="button"
+      onClick={() => editorInteractions.insertMarkdownOperator(MarkdownOperator.RIGHTALIGN)}
+      className={classNames(
+        'text-sm relative inline-flex items-center border',
+        'border-gray-300 bg-white px-2 py-0 text-gray-700 hover:bg-gray-50',
+        'focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1',
+        'focus:ring-indigo-500 italic',
+      )}>
+      <span className="sr-only">Right Align</span>
+      <Bars3BottomRightIcon className="h-5 w-5" aria-hidden="true" />
+    </button>
+
     <button
       type="button"
       onClick={() => editorInteractions.insertMarkdownOperator(MarkdownOperator.DIVIDER)}
       className={classNames(
-        'text-sm relative inline-flex items-center border',
+        'text-sm relative inline-flex items-center rounded-r-md border',
         'border-gray-300 bg-white px-2 py-0 text-gray-700 hover:bg-gray-50',
         'focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1',
         'focus:ring-indigo-500 italic',
@@ -150,7 +179,6 @@ const TextEditorButtons = (props: Props) => {
       <MinusIcon className="h-5 w-5" aria-hidden="true" />
     </button>
 
-    
   </span>
 }
 

@@ -41,10 +41,11 @@ const LanguageSelect = (props?: Props) => {
   }, [selectedLanguage])
 
 
-  return <Combobox as="div" value={selectedLanguage} onChange={setSelectedLanguage}>
+  return <Combobox as="div" value={selectedLanguage} onChange={setSelectedLanguage} className='inline-block'>
     <div className="inline-block relative">
       <Combobox.Input
-        className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+        style={{'maxWidth': '240px', 'height': '30px'}}
+        className="rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
         onChange={(event) => setQuery(event.target.value)}
         displayValue={(language: ipc.Language) => language?.displayName}
         placeholder='Document Language'

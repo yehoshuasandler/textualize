@@ -10,13 +10,25 @@ export enum MarkdownOperator {
   ITALLICS = '_',
   BOLD = '**',
   BULLET = '* ',
-  DIVIDER = '\n\n---\n'
+  DIVIDER = '\n\n---\n',
+  QUOTE = '> ',
+  RIGHTALIGN = 'htmlRightAlign' // Not a real operator
 }
 
 const wrapperOperators = [
   MarkdownOperator.ITALLICS,
   MarkdownOperator.BOLD
 ]
+
+const htmlWrappers = [
+  MarkdownOperator.RIGHTALIGN
+]
+
+const getHtmlWrappedText = (text: string, htmlWrapper: (typeof htmlWrappers)[number])  => {
+  if (htmlWrapper === MarkdownOperator.RIGHTALIGN) {
+    return `<span style="text-align:right">\n\n${text}\n\n</span>\n`
+  }
+}
 
 const createDiffEditorInteractions = (editor: monaco.editor.IStandaloneDiffEditor) => {
   const modifiedEditor = editor.getModifiedEditor()
@@ -51,14 +63,16 @@ const createDiffEditorInteractions = (editor: monaco.editor.IStandaloneDiffEdito
         }
 
         newText = `${operator}`
-      } else if (wrapperOperators.includes(operator)) {
+      } else if (wrapperOperators.includes(operator) || htmlWrappers.includes(operator)) {
         if (!doesSelectionHaveRange && wordAtStartPosition) range = {
           startLineNumber,
           startColumn: wordAtStartPosition.startColumn,
           endLineNumber,
           endColumn: wordAtStartPosition.endColumn
         }
-        newText = `${operator}${modifiedEditor.getModel()?.getValueInRange(range)}${operator}`
+        if (htmlWrappers.includes(operator)) {
+          newText = getHtmlWrappedText(modifiedEditor.getModel()?.getValueInRange(range) || '', operator) || ''
+        } else newText = `${operator}${modifiedEditor.getModel()?.getValueInRange(range)}${operator}`
       } else {
         range = {
           startLineNumber,

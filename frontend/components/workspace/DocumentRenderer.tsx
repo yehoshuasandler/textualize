@@ -178,22 +178,19 @@ const DocumentRenderer = () => {
   })
 
   return <div className='relative'>
-    <div className='flex justify-between mt-2'>
-      <h1 className="text-2xl font-semibold text-gray-900">
-        {getSelectedDocument()?.name}
-      </h1>
-      <div>
+    <div className='flex justify-between align-top mb-2'>
+      <div className='flex align-top'>
+        <h1 className="text-xl font-semibold text-gray-900 inline-block mr-2">{getSelectedDocument()?.name}</h1>
         <LanguageSelect shouldUpdateDocument defaultLanguage={selectedDocument?.defaultLanguage} />
-        <div className='flex justify-evenly items-center mt-2 mb-0'>
-          <MagnifyingGlassMinusIcon className='w-4 h-4' />
-          <input
-            id="zoomRange" type="range" min={zoomStep} max={maxZoomLevel} step={zoomStep}
-            value={zoomLevel} className="w-[calc(100%-50px)] h-2 bg-indigo-200 rounded-lg appearance-none cursor-pointer p-0"
-            onChange={(e) => { setZoomLevel(e.currentTarget.valueAsNumber) }}
-          />
-          <MagnifyingGlassPlusIcon className='w-4 h-4' />
-        </div>
-
+      </div>
+      <div className='flex justify-evenly items-center'>
+        <MagnifyingGlassMinusIcon className='w-4 h-4' />
+        <input
+          id="zoomRange" type="range" min={zoomStep} max={maxZoomLevel} step={zoomStep}
+          value={zoomLevel} className="w-[calc(100%-50px)] h-2 bg-indigo-200 rounded-lg appearance-none cursor-pointer p-0"
+          onChange={(e) => { setZoomLevel(e.currentTarget.valueAsNumber) }}
+        />
+        <MagnifyingGlassPlusIcon className='w-4 h-4' />
       </div>
     </div>
     <div
