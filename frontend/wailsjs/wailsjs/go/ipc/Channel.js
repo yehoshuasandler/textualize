@@ -82,6 +82,14 @@ export function RequestDeleteAreaById(arg1) {
   return window['go']['ipc']['Channel']['RequestDeleteAreaById'](arg1);
 }
 
+export function RequestSaveDocumentCollection() {
+  return window['go']['ipc']['Channel']['RequestSaveDocumentCollection']();
+}
+
+export function RequestSaveGroupCollection() {
+  return window['go']['ipc']['Channel']['RequestSaveGroupCollection']();
+}
+
 export function RequestUpdateArea(arg1) {
   return window['go']['ipc']['Channel']['RequestUpdateArea'](arg1);
 }

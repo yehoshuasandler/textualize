@@ -19,6 +19,11 @@ func (collection *DocumentCollection) AddDocument(document Entity) {
 	collection.Documents = append(collection.Documents, document)
 }
 
+func SetDocumentCollection(collection DocumentCollection) *DocumentCollection {
+	documentCollectionInstance = &collection
+	return documentCollectionInstance
+}
+
 func (collection *DocumentCollection) GetDocumentById(id string) *Entity {
 	var foundDocument *Entity
 

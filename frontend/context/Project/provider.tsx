@@ -11,8 +11,9 @@ import {
   RequestChangeAreaOrder,
   RequestDeleteAreaById,
   RequestChangeGroupOrder,
-  GetProjectByName,
   RequestChangeSessionProjectByName,
+  RequestSaveDocumentCollection,
+  RequestSaveGroupCollection,
 } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps, UpdateDocumentRequest, UserProps } from './types'
@@ -24,8 +25,6 @@ export function useProject() {
   return useContext(ProjectContext)
 }
 
-let attempts = 0
-
 type Props = { children: ReactNode, projectProps: ProjectProps }
 export function ProjectProvider({ children, projectProps }: Props) {
   const [documents, setDocuments] = useState<ipc.Document[]>(projectProps.documents)
@@ -34,10 +33,25 @@ export function ProjectProvider({ children, projectProps }: Props) {
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>('')
   const [currentSession, setCurrentSession] = useState<ipc.Session>(new ipc.Session())
 
+  const saveDocumentsAndGroups = () => {
+    RequestSaveDocumentCollection().then(success => {
+      if (!success) console.error('Could not save DocumentCollection')
+    }).catch(err => {
+      console.error('Could not save DocumentCollection:', err)
+    })
+    RequestSaveGroupCollection().then(success => {
+      if (!success) console.error('Could not save GroupCollection')
+    }).catch(err => {
+      console.error('Could not save GroupCollection:', err)
+    })
+  }
+
   const updateDocuments = async () => {
     GetDocuments().then(response => {
+      console.log(response)
       if (response.documents.length) setDocuments(response.documents)
       if (response.groups.length) setGroups(response.groups)
+      saveDocumentsAndGroups()
       Promise.resolve(response)
     })
   }
@@ -162,6 +176,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
   const requestSelectProjectByName = async (name: string) => {
     const successfulResponse = await RequestChangeSessionProjectByName(name)
     await updateSession()
+    await updateDocuments()
     return successfulResponse
   }
 
@@ -173,7 +188,6 @@ export function ProjectProvider({ children, projectProps }: Props) {
   useEffect(() => {
     if ((!currentSession?.user?.localId || !currentSession?.user?.id)) {
       updateSession()
-      attempts++
     }
   }, [currentSession?.user?.localId, currentSession?.user?.id])
 

@@ -24,6 +24,11 @@ func GetGroupCollection() *GroupCollection {
 	return groupCollectionInstance
 }
 
+func SetGroupCollection(collection GroupCollection) *GroupCollection {
+	groupCollectionInstance = &collection
+	return groupCollectionInstance
+}
+
 func (collection *GroupCollection) AddDocumentGroup(group Group) {
 	collection.Groups = append(collection.Groups, group)
 }

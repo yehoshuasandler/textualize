@@ -1,8 +1,10 @@
 package ipc
 
 import (
+	"fmt"
 	app "textualize/core/App"
 	consts "textualize/core/Consts"
+	document "textualize/core/Document"
 	session "textualize/core/Session"
 	storage "textualize/storage/Local"
 
@@ -178,6 +180,53 @@ func (c *Channel) RequestChangeSessionProjectByName(projectName string) bool {
 			IsHosted:                       foundProject.Settings.IsHosted,
 		},
 	}
+
+	localDocumentCollection := storage.ReadLocalDocumentCollection(projectName)
+	newDocuments := make([]document.Entity, 0)
+	for _, d := range localDocumentCollection.Documents {
+		newAreas := make([]document.Area, 0)
+		for _, a := range d.Areas {
+			newAreas = append(newAreas, document.Area{
+				Id:       a.Id,
+				Name:     a.Name,
+				StartX:   a.StartX,
+				StartY:   a.StartY,
+				EndX:     a.EndX,
+				EndY:     a.EndY,
+				Language: consts.Language(a.Language),
+				Order:    a.Order,
+			})
+		}
+		newDocuments = append(newDocuments, document.Entity{
+			Id:              d.Id,
+			GroupId:         d.GroupId,
+			Name:            d.Name,
+			Path:            d.Path,
+			ProjectId:       d.ProjectId,
+			Areas:           newAreas,
+			DefaultLanguage: consts.Language(d.DefaultLanguage),
+		})
+	}
+	newDocumentColllection := document.DocumentCollection{
+		Documents: newDocuments,
+		ProjectId: foundProject.Id,
+	}
+	document.SetDocumentCollection(newDocumentColllection)
+
+	localGroupsCollection := storage.ReadLocalGroupCollection(projectName)
+	newGroups := make([]document.Group, 0)
+	for _, g := range localGroupsCollection.Groups {
+		newGroups = append(newGroups, document.Group(g))
+	}
+	newGroupCollection := document.GroupCollection{
+		Id:        localGroupsCollection.Id,
+		ProjectId: localGroupsCollection.ProjectId,
+		Groups:    newGroups,
+	}
+	document.SetGroupCollection(newGroupCollection)
+
+	fmt.Println("newSESSION_______")
+	fmt.Println(document.GetDocumentCollection())
 
 	return session.GetInstance().Project.Id == foundProject.Id
 }

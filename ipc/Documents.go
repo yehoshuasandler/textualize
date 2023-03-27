@@ -6,6 +6,7 @@ import (
 	consts "textualize/core/Consts"
 	document "textualize/core/Document"
 	session "textualize/core/Session"
+	storage "textualize/storage/Local"
 
 	"github.com/google/uuid"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -206,30 +207,6 @@ func (c *Channel) RequestAddDocumentGroup(name string) Group {
 func (c *Channel) RequestChangeGroupOrder(groupId string, newOrder int) Group {
 	groupCollection := document.GetGroupCollection()
 
-	// var foundArea document.Area
-	// for _, a := range documentOfArea.Areas {
-	// 	if a.Id == areaId {
-	// 		foundArea = a
-	// 		break
-	// 	}
-	// }
-
-	// if foundArea.Id == "" {
-	// 	return Document{}
-	// }
-
-	// processedAreasCollection := document.GetProcessedAreaCollection()
-
-	// for index, a := range documentOfArea.Areas {
-	// 	if a.Id == areaId {
-	// 		documentOfArea.Areas[index].Order = newOrder
-	// 		processedAreasCollection.GetAreaById(a.Id).Order = newOrder
-	// 	} else if a.Order >= newOrder {
-	// 		documentOfArea.Areas[index].Order = a.Order + 1
-	// 		processedAreasCollection.GetAreaById(a.Id).Order = a.Order + 1
-	// 	}
-	// }
-
 	for _, g := range groupCollection.Groups {
 		if g.Id == groupId {
 			// document.GetGroupCollection().Groups[index].Order = newOrder
@@ -355,11 +332,6 @@ func (c *Channel) RequestDeleteAreaById(areaId string) bool {
 		return false
 	}
 
-	// 	func remove(s []int, i int) []int {
-	//     s[i] = s[len(s)-1]
-	//     return s[:len(s)-1]
-	// }
-
 	documentOfArea.Areas[areaToDeleteIndex] = documentOfArea.Areas[len(documentOfArea.Areas)-1]
 	documentOfArea.Areas = documentOfArea.Areas[:len(documentOfArea.Areas)-1]
 	return true
@@ -424,4 +396,73 @@ func (c *Channel) RequestChangeAreaOrder(areaId string, newOrder int) Document {
 	}
 
 	return c.GetDocumentById(documentOfArea.Id)
+}
+
+func (c *Channel) RequestSaveDocumentCollection() bool {
+	documentCollection := document.GetDocumentCollection()
+	projectName := c.GetCurrentSession().Project.Name
+
+	fullProject := storage.ReadLocalProjectByName(projectName)
+
+	if fullProject.Id == "" {
+		return false
+	}
+
+	var documentsToWrite []storage.LocalDocument
+	for _, d := range documentCollection.Documents {
+		var areasToWrite []storage.LocalArea
+		for _, a := range d.Areas {
+			areasToWrite = append(areasToWrite, storage.LocalArea{
+				Id:       a.Id,
+				Name:     a.Name,
+				StartX:   a.StartX,
+				StartY:   a.StartY,
+				EndX:     a.EndX,
+				EndY:     a.EndY,
+				Language: storage.Language(a.Language),
+				Order:    a.Order,
+			})
+		}
+
+		documentsToWrite = append(documentsToWrite, storage.LocalDocument{
+			Id:              d.Id,
+			GroupId:         d.GroupId,
+			Name:            d.Name,
+			Path:            d.Path,
+			ProjectId:       d.ProjectId,
+			Areas:           areasToWrite,
+			DefaultLanguage: storage.Language(d.DefaultLanguage),
+		})
+	}
+
+	successfulWrite := storage.WriteLocalDocumentCollection(storage.LocalDocumentCollection{
+		Documents: documentsToWrite,
+		ProjectId: fullProject.Id,
+	}, projectName)
+
+	return successfulWrite
+}
+
+func (c *Channel) RequestSaveGroupCollection() bool {
+	groupCollection := document.GetGroupCollection()
+	projectName := c.GetCurrentSession().Project.Name
+
+	fullProject := storage.ReadLocalProjectByName(projectName)
+
+	if fullProject.Id == "" {
+		return false
+	}
+
+	var groupsToWrite []storage.LocalGroup
+	for _, g := range groupCollection.Groups {
+		groupsToWrite = append(groupsToWrite, storage.LocalGroup(g))
+	}
+
+	successfulWrite := storage.WriteLocalGroupCollection(storage.LocalGroupCollection{
+		Id:        groupCollection.Id,
+		ProjectId: groupCollection.ProjectId,
+		Groups:    groupsToWrite,
+	}, projectName)
+
+	return successfulWrite
 }

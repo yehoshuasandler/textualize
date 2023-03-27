@@ -42,6 +42,10 @@ export function RequestChooseUserAvatar():Promise<string>;
 
 export function RequestDeleteAreaById(arg1:string):Promise<boolean>;
 
+export function RequestSaveDocumentCollection():Promise<boolean>;
+
+export function RequestSaveGroupCollection():Promise<boolean>;
+
 export function RequestUpdateArea(arg1:ipc.Area):Promise<ipc.Area>;
 
 export function RequestUpdateCurrentUser(arg1:ipc.User):Promise<ipc.User>;

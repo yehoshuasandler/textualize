@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 )
 
 func GetLocalStoragePath() string {
@@ -88,7 +87,7 @@ func ReadLocalUserData() LocalUser {
 }
 
 func ReadLocalProjectByName(name string) LocalProject {
-	file, err := os.ReadFile(GetLocalStoragePath() + "/projects/" + name + ".json")
+	file, err := os.ReadFile(GetLocalStoragePath() + "/projects/" + name + "/Project.json")
 
 	if err != nil {
 		return LocalProject{}
@@ -111,13 +110,13 @@ func WriteLocalProjectData(project LocalProject) bool {
 		return false
 	}
 
-	subdirectory := "/projects/"
+	subdirectory := "/projects/" + project.Name + "/"
 	isLocalStorageDirectoryCreated := createLocalStorageSubDirIfNeeded(subdirectory)
 	if !isLocalStorageDirectoryCreated {
 		return false
 	}
 
-	err := os.WriteFile(GetLocalStoragePath()+subdirectory+project.Name+".json", file, 0644)
+	err := os.WriteFile(GetLocalStoragePath()+subdirectory+project.Name+"/Project.json", file, 0644)
 
 	return err == nil
 }
@@ -138,8 +137,9 @@ func ReadAllLocalProjects() []LocalProject {
 	}
 
 	localProjectNames := make([]string, 0)
-	for _, fileName := range localProjectFileEntries {
-		localProjectNames = append(localProjectNames, strings.ReplaceAll(fileName.Name(), ".json", ""))
+	for _, fileEntry := range localProjectFileEntries {
+		localProjectNames = append(localProjectNames, fileEntry.Name())
+		// localProjectNames = append(localProjectNames, strings.ReplaceAll(fileName.Name(), ".json", ""))
 	}
 
 	for _, projectName := range localProjectNames {
@@ -147,4 +147,74 @@ func ReadAllLocalProjects() []LocalProject {
 	}
 
 	return localProjects
+}
+
+func WriteLocalDocumentCollection(documentCollection LocalDocumentCollection, projectName string) bool {
+	file, _ := json.MarshalIndent(documentCollection, "", " ")
+	path := GetLocalStoragePath()
+
+	if path == "" {
+		return false
+	}
+
+	subdirectory := "/projects/" + projectName
+	isLocalStorageDirectoryCreated := createLocalStorageSubDirIfNeeded(subdirectory)
+	if !isLocalStorageDirectoryCreated {
+		return false
+	}
+
+	err := os.WriteFile(GetLocalStoragePath()+subdirectory+"/Documents.json", file, 0644)
+
+	return err == nil
+}
+
+func ReadLocalDocumentCollection(projectName string) LocalDocumentCollection {
+	file, err := os.ReadFile(GetLocalStoragePath() + "/projects/" + projectName + "/Documents.json")
+
+	if err != nil {
+		return LocalDocumentCollection{}
+	}
+
+	response := LocalDocumentCollection{}
+	errorUnmarshaling := json.Unmarshal([]byte(file), &response)
+	if errorUnmarshaling != nil {
+		return LocalDocumentCollection{}
+	}
+
+	return response
+}
+
+func WriteLocalGroupCollection(groupCollection LocalGroupCollection, projectName string) bool {
+	file, _ := json.MarshalIndent(groupCollection, "", " ")
+	path := GetLocalStoragePath()
+
+	if path == "" {
+		return false
+	}
+
+	subdirectory := "/projects/" + projectName
+	isLocalStorageDirectoryCreated := createLocalStorageSubDirIfNeeded(subdirectory)
+	if !isLocalStorageDirectoryCreated {
+		return false
+	}
+
+	err := os.WriteFile(GetLocalStoragePath()+subdirectory+"/Groups.json", file, 0644)
+
+	return err == nil
+}
+
+func ReadLocalGroupCollection(projectName string) LocalGroupCollection {
+	file, err := os.ReadFile(GetLocalStoragePath() + "/projects/" + projectName + "/Groups.json")
+
+	if err != nil {
+		return LocalGroupCollection{}
+	}
+
+	response := LocalGroupCollection{}
+	errorUnmarshaling := json.Unmarshal([]byte(file), &response)
+	if errorUnmarshaling != nil {
+		return LocalGroupCollection{}
+	}
+
+	return response
 }
