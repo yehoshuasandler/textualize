@@ -5,6 +5,7 @@ type Group struct {
 	ParentId  string
 	ProjectId string
 	Name      string
+	Order     int
 }
 
 type GroupCollection struct {
@@ -25,4 +26,15 @@ func GetGroupCollection() *GroupCollection {
 
 func (collection *GroupCollection) AddDocumentGroup(group Group) {
 	collection.Groups = append(collection.Groups, group)
+}
+
+func (collection *GroupCollection) GetGroupById(groupId string) *Group {
+	var foundGroup *Group
+
+	for index, g := range collection.Groups {
+		if g.Id == groupId {
+			foundGroup = &collection.Groups[index]
+		}
+	}
+	return foundGroup
 }

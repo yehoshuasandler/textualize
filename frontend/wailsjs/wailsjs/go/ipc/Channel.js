@@ -6,6 +6,10 @@ export function CreateNewProject(arg1) {
   return window['go']['ipc']['Channel']['CreateNewProject'](arg1);
 }
 
+export function GetAllLocalProjects() {
+  return window['go']['ipc']['Channel']['GetAllLocalProjects']();
+}
+
 export function GetAreaById(arg1) {
   return window['go']['ipc']['Channel']['GetAreaById'](arg1);
 }
@@ -28,6 +32,10 @@ export function GetDocuments() {
 
 export function GetProcessedAreasByDocumentId(arg1) {
   return window['go']['ipc']['Channel']['GetProcessedAreasByDocumentId'](arg1);
+}
+
+export function GetProjectByName(arg1) {
+  return window['go']['ipc']['Channel']['GetProjectByName'](arg1);
 }
 
 export function GetSuppportedLanguages() {
@@ -56,6 +64,14 @@ export function RequestAddProcessedArea(arg1) {
 
 export function RequestChangeAreaOrder(arg1, arg2) {
   return window['go']['ipc']['Channel']['RequestChangeAreaOrder'](arg1, arg2);
+}
+
+export function RequestChangeGroupOrder(arg1, arg2) {
+  return window['go']['ipc']['Channel']['RequestChangeGroupOrder'](arg1, arg2);
+}
+
+export function RequestChangeSessionProjectByName(arg1) {
+  return window['go']['ipc']['Channel']['RequestChangeSessionProjectByName'](arg1);
 }
 
 export function RequestChooseUserAvatar() {

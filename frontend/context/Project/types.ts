@@ -58,4 +58,7 @@ export type ProjectContextType = {
   requestChooseUserAvatar: () => Promise<string>
   requestUpdateDocument: (request: UpdateDocumentRequest) => Promise<ipc.Document>
   requestChangeAreaOrder: (areaId: string, newOrder: number) => Promise<ipc.Document>
+  requestChangeGroupOrder: (groupId: string, newOrder: number) => Promise<ipc.Group>
+  getGroupById: (groupId: string) => ipc.Group | undefined
+  requestSelectProjectByName: (projectName: string) => Promise<boolean>
 } & ProjectProps

@@ -1,7 +1,7 @@
 package document
 
 import (
-	app "textualize/core/App"
+	consts "textualize/core/Consts"
 )
 
 type Entity struct {
@@ -11,7 +11,7 @@ type Entity struct {
 	Path            string
 	ProjectId       string
 	Areas           []Area
-	DefaultLanguage app.Language
+	DefaultLanguage consts.Language
 }
 
 type Area struct {
@@ -21,7 +21,7 @@ type Area struct {
 	StartY   int
 	EndX     int
 	EndY     int
-	Language app.Language
+	Language consts.Language
 	Order    int
 }
 

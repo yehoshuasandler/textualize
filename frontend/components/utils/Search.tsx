@@ -20,6 +20,10 @@ const Search = () => {
       onClick: () => { setSelectedMainPage(mainPages.WORKSPACE) }
     },
     {
+      name: 'Change Project',
+      onClick: () => { setSelectedMainPage(mainPages.SELECTPROJECT) }
+    },
+    {
       name: 'Sign Out',
       onClick: () => { setSelectedMainPage(mainPages.SELECTPROJECT) }
     },

@@ -1,4 +1,5 @@
 import { NextPage } from 'next'
+import { useEffect, useState } from 'react'
 import MainHead from '../components/head'
 import MainProject from '../components/project/Main'
 import User from '../components/settings/User'
@@ -9,7 +10,6 @@ import { mainPages } from '../context/Navigation/types'
 import { useProject } from '../context/Project/provider'
 
 const Home: NextPage = () => {
-
   const { currentSession } = useProject()
   const { selectedMainPage } = useNavigation()
 

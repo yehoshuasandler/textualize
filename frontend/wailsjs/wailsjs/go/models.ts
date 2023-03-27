@@ -107,6 +107,7 @@ export namespace ipc {
 	    parentId: string;
 	    projectId: string;
 	    name: string;
+	    order: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Group(source);
@@ -118,6 +119,7 @@ export namespace ipc {
 	        this.parentId = source["parentId"];
 	        this.projectId = source["projectId"];
 	        this.name = source["name"];
+	        this.order = source["order"];
 	    }
 	}
 	export class GetDocumentsResponse {
@@ -381,7 +383,7 @@ export namespace ipc {
 	export class ProjectSettings {
 	    defaultProcessLanguage: Language;
 	    defaultTranslateTargetLanguage: Language;
-	    IsHosted: boolean;
+	    isHosted: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new ProjectSettings(source);
@@ -391,7 +393,7 @@ export namespace ipc {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.defaultProcessLanguage = this.convertValues(source["defaultProcessLanguage"], Language);
 	        this.defaultTranslateTargetLanguage = this.convertValues(source["defaultTranslateTargetLanguage"], Language);
-	        this.IsHosted = source["IsHosted"];
+	        this.isHosted = source["isHosted"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

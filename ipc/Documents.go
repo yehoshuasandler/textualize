@@ -3,6 +3,7 @@ package ipc
 import (
 	"sort"
 	app "textualize/core/App"
+	consts "textualize/core/Consts"
 	document "textualize/core/Document"
 	session "textualize/core/Session"
 
@@ -67,10 +68,6 @@ func (c *Channel) GetDocuments() GetDocumentsResponse {
 			})
 		}
 
-		// sort.Slice(jsonAreas, func(i, j int) bool {
-		// 	return jsonAreas[i].Order < jsonAreas[j].Order
-		// })
-
 		sort.Slice(jsonAreas, func(i, j int) bool {
 			return jsonAreas[i].Order < jsonAreas[j].Order
 		})
@@ -87,15 +84,23 @@ func (c *Channel) GetDocuments() GetDocumentsResponse {
 		response.Documents = append(response.Documents, jsonDocument)
 	}
 
+	jsonGroups := make([]Group, 0)
 	for _, g := range groups {
 		jsonGroup := Group{
 			Id:        g.Id,
 			ParentId:  g.ParentId,
 			ProjectId: g.ProjectId,
 			Name:      g.Name,
+			Order:     g.Order,
 		}
-		response.Groups = append(response.Groups, jsonGroup)
+		jsonGroups = append(jsonGroups, jsonGroup)
 	}
+
+	sort.Slice(jsonGroups, func(i, j int) bool {
+		return jsonGroups[i].Order < jsonGroups[j].Order
+	})
+
+	response.Groups = jsonGroups
 
 	return response
 }
@@ -176,22 +181,66 @@ func (c *Channel) GetUserMarkdownByDocumentId(documentId string) UserMarkdown {
 }
 
 func (c *Channel) RequestAddDocumentGroup(name string) Group {
+	groupCollection := document.GetGroupCollection()
+
 	newGroup := document.Group{
 		Id:        uuid.NewString(),
 		Name:      name,
 		ProjectId: session.GetInstance().Project.Id,
+		Order:     len(groupCollection.Groups),
 	}
 
-	document.GetGroupCollection().AddDocumentGroup(newGroup)
+	groupCollection.AddDocumentGroup(newGroup)
 
 	response := Group{
 		Id:        newGroup.Id,
 		Name:      newGroup.Name,
 		ParentId:  newGroup.ParentId,
 		ProjectId: newGroup.ProjectId,
+		Order:     newGroup.Order,
 	}
 
 	return response
+}
+
+func (c *Channel) RequestChangeGroupOrder(groupId string, newOrder int) Group {
+	groupCollection := document.GetGroupCollection()
+
+	// var foundArea document.Area
+	// for _, a := range documentOfArea.Areas {
+	// 	if a.Id == areaId {
+	// 		foundArea = a
+	// 		break
+	// 	}
+	// }
+
+	// if foundArea.Id == "" {
+	// 	return Document{}
+	// }
+
+	// processedAreasCollection := document.GetProcessedAreaCollection()
+
+	// for index, a := range documentOfArea.Areas {
+	// 	if a.Id == areaId {
+	// 		documentOfArea.Areas[index].Order = newOrder
+	// 		processedAreasCollection.GetAreaById(a.Id).Order = newOrder
+	// 	} else if a.Order >= newOrder {
+	// 		documentOfArea.Areas[index].Order = a.Order + 1
+	// 		processedAreasCollection.GetAreaById(a.Id).Order = a.Order + 1
+	// 	}
+	// }
+
+	for _, g := range groupCollection.Groups {
+		if g.Id == groupId {
+			// document.GetGroupCollection().Groups[index].Order = newOrder
+			document.GetGroupCollection().GetGroupById(groupId).Order = newOrder
+		} else if g.Order >= newOrder {
+			// document.GetGroupCollection().Groups[index].Order = g.Order + 1
+			document.GetGroupCollection().GetGroupById(groupId).Order = g.Order + 1
+		}
+	}
+
+	return Group(*document.GetGroupCollection().GetGroupById(groupId))
 }
 
 func (c *Channel) GetAreaById(areaId string) Area {
@@ -243,7 +292,7 @@ func (c *Channel) RequestAddArea(documentId string, area Area) Area {
 		StartY:   area.StartY,
 		EndY:     area.EndY,
 		Order:    order,
-		Language: app.Language(area.Language),
+		Language: consts.Language(area.Language),
 	}
 	foundDocument.AddArea(newArea)
 
@@ -337,7 +386,7 @@ func (c *Channel) RequestUpdateDocument(updatedDocument Document) Document {
 		documentToUpdate.Path = updatedDocument.Path
 	}
 	if updatedDocument.DefaultLanguage.DisplayName != "" {
-		documentToUpdate.DefaultLanguage = app.Language(updatedDocument.DefaultLanguage)
+		documentToUpdate.DefaultLanguage = consts.Language(updatedDocument.DefaultLanguage)
 	}
 
 	return updatedDocument

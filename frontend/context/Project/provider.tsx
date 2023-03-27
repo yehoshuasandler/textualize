@@ -10,6 +10,9 @@ import {
   RequestUpdateDocument,
   RequestChangeAreaOrder,
   RequestDeleteAreaById,
+  RequestChangeGroupOrder,
+  GetProjectByName,
+  RequestChangeSessionProjectByName,
 } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps, UpdateDocumentRequest, UserProps } from './types'
@@ -20,6 +23,8 @@ const ProjectContext = createContext<ProjectContextType>(makeDefaultProject())
 export function useProject() {
   return useContext(ProjectContext)
 }
+
+let attempts = 0
 
 type Props = { children: ReactNode, projectProps: ProjectProps }
 export function ProjectProvider({ children, projectProps }: Props) {
@@ -110,6 +115,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
   const updateSession = async () => {
     GetCurrentSession().then(response => {
       if (response) setCurrentSession(response)
+      console.log(response)
       Promise.resolve(response)
     })
   }
@@ -143,9 +149,33 @@ export function ProjectProvider({ children, projectProps }: Props) {
     return response
   }
 
+  const getGroupById = (groupId: string): ipc.Group | undefined => (
+    groups.find(g => g.id === groupId)
+  )
+
+  const requestChangeGroupOrder = async (groupId: string, newOrder: number) => {
+    const response = await RequestChangeGroupOrder(groupId, newOrder)
+    await updateDocuments()
+    return response
+  }
+
+  const requestSelectProjectByName = async (name: string) => {
+    const successfulResponse = await RequestChangeSessionProjectByName(name)
+    await updateSession()
+    return successfulResponse
+  }
+
   useEffect(() => {
     if (!documents.length && !groups.length) updateDocuments()
   }, [documents.length, groups.length])
+
+
+  useEffect(() => {
+    if ((!currentSession?.user?.localId || !currentSession?.user?.id)) {
+      updateSession()
+      attempts++
+    }
+  }, [currentSession?.user?.localId, currentSession?.user?.id])
 
   const value = {
     id: '',
@@ -172,6 +202,9 @@ export function ProjectProvider({ children, projectProps }: Props) {
     requestChooseUserAvatar,
     requestUpdateDocument,
     requestChangeAreaOrder,
+    requestChangeGroupOrder,
+    getGroupById,
+    requestSelectProjectByName,
   }
 
   return <ProjectContext.Provider value={value}>

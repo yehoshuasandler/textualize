@@ -2,7 +2,9 @@ package ipc
 
 import (
 	app "textualize/core/App"
+	consts "textualize/core/Consts"
 	session "textualize/core/Session"
+	storage "textualize/storage/Local"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
@@ -46,11 +48,23 @@ func (c *Channel) GetCurrentSession() Session {
 func (c *Channel) CreateNewProject(name string) Session {
 	currentSession := session.GetInstance()
 
-	currentSession.Project = session.Project{
+	newProject := session.Project{
 		Id:             uuid.NewString(),
 		OrganizationId: currentSession.Project.OrganizationId,
 		Name:           name,
 	}
+
+	successfulProjectWrite := storage.WriteLocalProjectData(storage.LocalProject{
+		Id:             uuid.NewString(),
+		OrganizationId: currentSession.Project.OrganizationId,
+		Name:           name,
+	})
+
+	if !successfulProjectWrite {
+		return Session{}
+	}
+
+	currentSession.Project = newProject
 
 	return c.GetCurrentSession()
 }
@@ -62,24 +76,30 @@ func (c *Channel) GetCurrentUser() User {
 func (c *Channel) RequestUpdateCurrentUser(updatedUserRequest User) User {
 	sessionInstance := session.GetInstance()
 
-	user := session.User(sessionInstance.User)
+	sessionUser := session.User(sessionInstance.User)
 
-	if user.LocalId == "" {
-		user.LocalId = uuid.NewString()
+	if sessionUser.LocalId == "" {
+		sessionUser.LocalId = uuid.NewString()
 	}
 	if updatedUserRequest.FirstName != "" {
-		user.FirstName = updatedUserRequest.FirstName
+		sessionUser.FirstName = updatedUserRequest.FirstName
 	}
 	if updatedUserRequest.LastName != "" {
-		user.LastName = updatedUserRequest.LastName
+		sessionUser.LastName = updatedUserRequest.LastName
 	}
 	if updatedUserRequest.Email != "" {
-		user.Email = updatedUserRequest.Email
+		sessionUser.Email = updatedUserRequest.Email
 	}
 
-	user.AvatarPath = updatedUserRequest.AvatarPath
+	sessionUser.AvatarPath = updatedUserRequest.AvatarPath
 
-	sessionInstance.UpdateCurrentUser(user)
+	successfulUserWrite := storage.WriteLocalUserData(storage.LocalUser(sessionUser))
+	if !successfulUserWrite {
+		return User{}
+	}
+
+	sessionInstance.UpdateCurrentUser(sessionUser)
+
 	return User(sessionInstance.User)
 }
 
@@ -102,8 +122,68 @@ func (c *Channel) RequestChooseUserAvatar() string {
 	}
 }
 
+func (c *Channel) GetAllLocalProjects() []Project {
+	readLocalProjects := storage.ReadAllLocalProjects()
+	response := make([]Project, 0)
+
+	for _, p := range readLocalProjects {
+		response = append(response, Project{
+			Id:             p.Id,
+			OrganizationId: p.OrganizationId,
+			Name:           p.Name,
+			Settings: ProjectSettings{
+				DefaultProcessLanguage:         Language(p.Settings.DefaultProcessLanguage),
+				DefaultTranslateTargetLanguage: Language(p.Settings.DefaultTranslateTargetLanguage),
+				IsHosted:                       p.Settings.IsHosted,
+			},
+		})
+	}
+
+	return response
+}
+
+func (c *Channel) GetProjectByName(projectName string) Project {
+	foundProject := storage.ReadLocalProjectByName(projectName)
+
+	if foundProject.Id == "" {
+		return Project{}
+	}
+
+	return Project{
+		Id:             foundProject.Id,
+		Name:           foundProject.Name,
+		OrganizationId: foundProject.OrganizationId,
+		Settings: ProjectSettings{
+			DefaultProcessLanguage:         Language(foundProject.Settings.DefaultProcessLanguage),
+			DefaultTranslateTargetLanguage: Language(foundProject.Settings.DefaultTranslateTargetLanguage),
+			IsHosted:                       foundProject.Settings.IsHosted,
+		},
+	}
+}
+
+func (c *Channel) RequestChangeSessionProjectByName(projectName string) bool {
+	foundProject := c.GetProjectByName(projectName)
+
+	if foundProject.Id == "" {
+		return false
+	}
+
+	session.GetInstance().Project = session.Project{
+		Id:             foundProject.Id,
+		Name:           foundProject.Name,
+		OrganizationId: foundProject.OrganizationId,
+		Settings: session.ProjectSettings{
+			DefaultProcessLanguage:         consts.Language(foundProject.Settings.DefaultProcessLanguage),
+			DefaultTranslateTargetLanguage: consts.Language(foundProject.Settings.DefaultTranslateTargetLanguage),
+			IsHosted:                       foundProject.Settings.IsHosted,
+		},
+	}
+
+	return session.GetInstance().Project.Id == foundProject.Id
+}
+
 func (c *Channel) GetSuppportedLanguages() []Language {
-	supportedLanguages := app.GetSuppportedLanguages()
+	supportedLanguages := consts.GetSuppportedLanguages()
 
 	var response []Language
 

@@ -2,6 +2,10 @@ package app
 
 import (
 	"context"
+	"fmt"
+	document "textualize/core/Document"
+	session "textualize/core/Session"
+	storage "textualize/storage/Local"
 )
 
 type App struct {
@@ -20,25 +24,12 @@ func GetInstance() *App {
 
 func (a *App) Startup(ctx context.Context) {
 	a.Context = ctx
-}
+	localUserData := storage.ReadLocalUserData()
+	session.InitializeModule(session.Session{
+		User: session.User(localUserData),
+	})
 
-type Language struct {
-	DisplayName   string
-	ProcessCode   string
-	TranslateCode string
-}
+	document.InitizeModule()
 
-func GetSuppportedLanguages() []Language {
-	return []Language{
-		{
-			DisplayName:   "English",
-			ProcessCode:   "eng",
-			TranslateCode: "en",
-		},
-		{
-			DisplayName:   "Hebrew",
-			ProcessCode:   "heb",
-			TranslateCode: "he",
-		},
-	}
+	fmt.Println(localUserData)
 }

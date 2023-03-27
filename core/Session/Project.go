@@ -1,7 +1,7 @@
 package session
 
 import (
-	app "textualize/core/App"
+	consts "textualize/core/Consts"
 )
 
 type Project struct {
@@ -12,7 +12,7 @@ type Project struct {
 }
 
 type ProjectSettings struct {
-	DefaultProcessLanguage         app.Language
-	DefaultTranslateTargetLanguage app.Language
+	DefaultProcessLanguage         consts.Language
+	DefaultTranslateTargetLanguage consts.Language
 	IsHosted                       bool
 }

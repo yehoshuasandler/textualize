@@ -20,6 +20,7 @@ type Group struct {
 	ParentId  string `json:"parentId"`
 	ProjectId string `json:"projectId"`
 	Name      string `json:"name"`
+	Order     int    `json:"order"`
 }
 
 type GroupCollection struct {
@@ -110,7 +111,7 @@ type Project struct {
 type ProjectSettings struct {
 	DefaultProcessLanguage         Language `json:"defaultProcessLanguage"`
 	DefaultTranslateTargetLanguage Language `json:"defaultTranslateTargetLanguage"`
-	IsHosted                       bool     `json:"IsHosted"`
+	IsHosted                       bool     `json:"isHosted"`
 }
 
 type Session struct {

@@ -66,7 +66,8 @@ const AreaLineItem = (props: { area: SidebarArea, documentId: string, index: num
   }
 
   const onAreaDropEnd = (areaId: string) => {
-    const areaDroppedOn = getAreaById(areaId)
+    const areaDroppedOn = getAreaById(dragOverAreaId)
+    console.log(areaDroppedOn)
     if (!areaDroppedOn) return
     requestChangeAreaOrder(areaId, areaDroppedOn.order)
     setDragOverAreaId('')

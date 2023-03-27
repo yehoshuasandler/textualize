@@ -30,7 +30,7 @@ type ProcessedArea struct {
 	Id         string
 	DocumentId string
 	FullText   string
-	Order      int // TODO: make reorder feature
+	Order      int
 	Lines      []ProcessedLine
 }
 

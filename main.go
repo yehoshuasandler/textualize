@@ -7,9 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	ipc "textualize/Ipc"
 	app "textualize/core/App"
-	document "textualize/core/Document"
-	ipc "textualize/ipc"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -50,8 +49,6 @@ var icon []byte
 func main() {
 	// Create an instance of the app structure
 	app := app.GetInstance()
-
-	document.InitizeModule()
 	ipcChannel := ipc.GetInstance()
 
 	// Create application with options

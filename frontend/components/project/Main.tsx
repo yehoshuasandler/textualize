@@ -6,13 +6,19 @@ import { Fragment, useState } from 'react'
 import { useNavigation } from '../../context/Navigation/provider'
 import { mainPages } from '../../context/Navigation/types'
 import { useProject } from '../../context/Project/provider'
+import { GetAllLocalProjects } from '../../wailsjs/wailsjs/go/ipc/Channel'
+import { ipc } from '../../wailsjs/wailsjs/go/models'
 import NewProjectModal from './NewProjectModal'
+import ProjectListModal from './ProjectListModal'
 
 
 const MainProject = () => {
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false)
+  const [isProjectListModal, setIsProjectListModal] = useState(false)
   const [canPopoverBeOpen, setCanPopoverBeOpen] = useState(true)
-  const { createNewProject } = useProject()
+
+  const [avalibleProjects, setAvalibleProjects] = useState<ipc.Project[]>([])
+  const { createNewProject, requestSelectProjectByName } = useProject()
   const { setSelectedMainPage } = useNavigation()
 
   const buttonOptions = [
@@ -31,6 +37,11 @@ const MainProject = () => {
       icon: <FolderOpenIcon className='w-10 h-9 stroke-slate-600' />,
       onClick: () => {
         setCanPopoverBeOpen(false)
+        GetAllLocalProjects().then(response => {
+          console.log(response)
+          setAvalibleProjects(response)
+          setIsProjectListModal(true)
+        })
       },
     },
     {
@@ -50,9 +61,19 @@ const MainProject = () => {
     setSelectedMainPage(mainPages.WORKSPACE)
   }
 
+  const onSelectProjectHandler = async (name: string) => {
+    const successfulResponse = await requestSelectProjectByName(name)
+    setIsProjectListModal(false)
+    setCanPopoverBeOpen(true)
+
+    if (successfulResponse) setSelectedMainPage(mainPages.WORKSPACE)
+  }
+
   return <main className=" text-gray-100 h-screen overflow-y-scroll">
 
     {isNewProjectModalOpen ? <NewProjectModal onCreateNewProjectHandler={onCreateNewProjectHandler} /> : ''}
+
+    {isProjectListModal ? <ProjectListModal onSelectProjectHandler={onSelectProjectHandler} projects={avalibleProjects} /> : '' }
 
     <div className="py-20 px-6 sm:px-6 sm:py-32 lg:px-8">
       <div className="mx-auto max-w-2xl text-center">

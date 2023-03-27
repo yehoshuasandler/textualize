@@ -4,6 +4,8 @@ import {ipc} from '../models';
 
 export function CreateNewProject(arg1:string):Promise<ipc.Session>;
 
+export function GetAllLocalProjects():Promise<Array<ipc.Project>>;
+
 export function GetAreaById(arg1:string):Promise<ipc.Area>;
 
 export function GetCurrentSession():Promise<ipc.Session>;
@@ -15,6 +17,8 @@ export function GetDocumentById(arg1:string):Promise<ipc.Document>;
 export function GetDocuments():Promise<ipc.GetDocumentsResponse>;
 
 export function GetProcessedAreasByDocumentId(arg1:string):Promise<Array<ipc.ProcessedArea>>;
+
+export function GetProjectByName(arg1:string):Promise<ipc.Project>;
 
 export function GetSuppportedLanguages():Promise<Array<ipc.Language>>;
 
@@ -29,6 +33,10 @@ export function RequestAddDocumentGroup(arg1:string):Promise<ipc.Group>;
 export function RequestAddProcessedArea(arg1:ipc.ProcessedArea):Promise<ipc.ProcessedArea>;
 
 export function RequestChangeAreaOrder(arg1:string,arg2:number):Promise<ipc.Document>;
+
+export function RequestChangeGroupOrder(arg1:string,arg2:number):Promise<ipc.Group>;
+
+export function RequestChangeSessionProjectByName(arg1:string):Promise<boolean>;
 
 export function RequestChooseUserAvatar():Promise<string>;
 
