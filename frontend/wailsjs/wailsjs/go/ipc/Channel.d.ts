@@ -46,6 +46,8 @@ export function RequestSaveDocumentCollection():Promise<boolean>;
 
 export function RequestSaveGroupCollection():Promise<boolean>;
 
+export function RequestSaveLocalUserProcessedMarkdownCollection():Promise<boolean>;
+
 export function RequestSaveProcessedTextCollection():Promise<boolean>;
 
 export function RequestUpdateArea(arg1:ipc.Area):Promise<ipc.Area>;

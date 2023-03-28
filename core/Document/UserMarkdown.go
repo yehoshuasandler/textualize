@@ -20,6 +20,10 @@ func GetUserMarkdownCollection() *UserMarkdownCollection {
 	return userMarkdownCollection
 }
 
+func SetUserMarkdownCollection(collection UserMarkdownCollection) {
+	userMarkdownCollection = &collection
+}
+
 func (collection *UserMarkdownCollection) GetUserMarkdownByDocumentId(documentId string) *UserMarkdown {
 	var foundUserMarkdown *UserMarkdown
 

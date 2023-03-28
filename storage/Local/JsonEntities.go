@@ -106,3 +106,13 @@ type LocalProcessedArea struct {
 type LocalProcessedAreaCollection struct {
 	Areas []LocalProcessedArea
 }
+
+type LocalUserMarkdown struct {
+	Id         string `json:"id"`
+	DocumentId string `json:"documentId"`
+	Value      string `json:"value"`
+}
+
+type LocalUserMarkdownCollection struct {
+	Values []LocalUserMarkdown `json:"values"`
+}

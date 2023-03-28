@@ -1,4 +1,4 @@
-import { RequestSaveDocumentCollection, RequestSaveGroupCollection, RequestSaveProcessedTextCollection } from '../wailsjs/wailsjs/go/ipc/Channel'
+import { RequestSaveDocumentCollection, RequestSaveGroupCollection, RequestSaveLocalUserProcessedMarkdownCollection, RequestSaveProcessedTextCollection } from '../wailsjs/wailsjs/go/ipc/Channel'
 
 const saveDocuments = async () => {
   try {
@@ -27,8 +27,18 @@ const saveProcessedText = async () => {
   }
 }
 
+const saveUserProcessedMarkdown = async () => {
+  try {
+    const sucessfulSave = await RequestSaveLocalUserProcessedMarkdownCollection()
+    if (!sucessfulSave) console.error('Could not save LocalUserProcessedMarkdownCollection')
+  } catch (err) {
+    console.error('Could not save LocalUserProcessedMarkdownCollection: ', err)
+  }
+}
+
 export {
   saveDocuments,
   saveGroups,
   saveProcessedText,
+  saveUserProcessedMarkdown,
 }

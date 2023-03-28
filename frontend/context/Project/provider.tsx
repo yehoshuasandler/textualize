@@ -16,7 +16,7 @@ import {
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps, UpdateDocumentRequest, UserProps } from './types'
 import makeDefaultProject from './makeDefaultProject'
-import { saveDocuments, saveGroups } from '../../useCases/saveData'
+import { saveDocuments, saveGroups, saveUserProcessedMarkdown } from '../../useCases/saveData'
 
 const ProjectContext = createContext<ProjectContextType>(makeDefaultProject())
 
@@ -97,6 +97,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
     let response: ipc.UserMarkdown = new ipc.UserMarkdown()
     try {
       response = await RequestUpdateDocumentUserMarkdown(documentId, markdown)
+      await saveUserProcessedMarkdown()
     } catch (err) {
       console.error(err)
     }

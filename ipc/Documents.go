@@ -525,3 +525,27 @@ func (c *Channel) RequestSaveProcessedTextCollection() bool {
 	successfulWrite := storage.WriteLocalProcessedAreaCollection(processedAreaCollectionToWrite, projectName)
 	return successfulWrite
 }
+
+func (c *Channel) RequestSaveLocalUserProcessedMarkdownCollection() bool {
+	userProcessedMarkdownCollection := document.GetUserMarkdownCollection()
+	projectName := c.GetCurrentSession().Project.Name
+
+	fullProject := storage.ReadLocalProjectByName(projectName)
+
+	if fullProject.Id == "" {
+		return false
+	}
+
+	var valuesToWrite []storage.LocalUserMarkdown
+	for _, v := range userProcessedMarkdownCollection.Values {
+		valuesToWrite = append(valuesToWrite, storage.LocalUserMarkdown(v))
+	}
+
+	successfulWrite := storage.WriteLocalUserProcessedMarkdownCollection(storage.LocalUserMarkdownCollection{
+		Values: valuesToWrite,
+	}, projectName)
+
+	return successfulWrite
+}
+
+

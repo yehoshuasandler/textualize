@@ -272,6 +272,25 @@ func (c *Channel) RequestChangeSessionProjectByName(projectName string) bool {
 		Areas: newAreas,
 	})
 
+	// UserProcessedMarkdown
+
+	localUserProcessedMarkdown := storage.ReadLocalUserProcessedMarkdownCollection(projectName)
+
+	newUserProcessedMarkdown := make([]document.UserMarkdown, 0)
+	for _, v := range localUserProcessedMarkdown.Values {
+		newUserProcessedMarkdown = append(newUserProcessedMarkdown, document.UserMarkdown{
+			Id:         v.Id,
+			DocumentId: v.DocumentId,
+			Value:      v.Value,
+		})
+	}
+
+	document.SetUserMarkdownCollection(document.UserMarkdownCollection{
+		Values: newUserProcessedMarkdown,
+	})
+
+	// End UserProcessedMarkdown
+
 	return session.GetInstance().Project.Id == foundProject.Id
 }
 
