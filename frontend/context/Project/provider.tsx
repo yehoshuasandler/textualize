@@ -12,8 +12,6 @@ import {
   RequestDeleteAreaById,
   RequestChangeGroupOrder,
   RequestChangeSessionProjectByName,
-  RequestSaveDocumentCollection,
-  RequestSaveGroupCollection,
 } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps, UpdateDocumentRequest, UserProps } from './types'

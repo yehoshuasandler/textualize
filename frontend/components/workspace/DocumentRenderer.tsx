@@ -8,7 +8,7 @@ import processImageArea from '../../useCases/processImageArea'
 import classNames from '../../utils/classNames'
 import LanguageSelect from './LanguageSelect'
 
-const zoomStep = 0.05
+const zoomStep = 0.025
 const maxZoomLevel = 4
 
 const DocumentRenderer = () => {

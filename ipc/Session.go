@@ -1,7 +1,6 @@
 package ipc
 
 import (
-	"fmt"
 	app "textualize/core/App"
 	consts "textualize/core/Consts"
 	document "textualize/core/Document"
@@ -225,8 +224,53 @@ func (c *Channel) RequestChangeSessionProjectByName(projectName string) bool {
 	}
 	document.SetGroupCollection(newGroupCollection)
 
-	fmt.Println("newSESSION_______")
-	fmt.Println(document.GetDocumentCollection())
+	// Processed Texts
+
+	localProcessedAreaCollection := storage.ReadLocalProcessedAreaCollection(projectName)
+	newAreas := make([]document.ProcessedArea, 0)
+	for _, a := range localProcessedAreaCollection.Areas {
+		linesOfArea := make([]document.ProcessedLine, 0)
+		for _, l := range a.Lines {
+			wordsOfLine := make([]document.ProcessedWord, 0)
+
+			for _, w := range l.Words {
+				symbolsOfWord := make([]document.ProcessedSymbol, 0)
+
+				for _, s := range w.Symbols {
+					symbolsOfWord = append(symbolsOfWord, document.ProcessedSymbol{
+						Text:        s.Text,
+						Confidence:  s.Confidence,
+						BoundingBox: document.ProcessedBoundingBox(s.BoundingBox),
+					})
+				}
+
+				wordsOfLine = append(wordsOfLine, document.ProcessedWord{
+					FullText:    w.FullText,
+					Confidence:  w.Confidence,
+					Direction:   w.Direction,
+					BoundingBox: document.ProcessedBoundingBox(w.BoundingBox),
+					Symbols:     symbolsOfWord,
+				})
+			}
+
+			linesOfArea = append(linesOfArea, document.ProcessedLine{
+				FullText: l.FullText,
+				Words:    wordsOfLine,
+			})
+		}
+
+		newAreas = append(newAreas, document.ProcessedArea{
+			Id:         a.Id,
+			DocumentId: a.DocumentId,
+			FullText:   a.FullText,
+			Order:      a.Order,
+			Lines:      linesOfArea,
+		})
+	}
+
+	document.SetProcessedAreaCollection(document.ProcessedAreaCollection{
+		Areas: newAreas,
+	})
 
 	return session.GetInstance().Project.Id == foundProject.Id
 }

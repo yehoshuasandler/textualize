@@ -1,7 +1,8 @@
 import { createScheduler, createWorker } from 'tesseract.js'
-import { GetAreaById, GetDocumentById, RequestAddProcessedArea } from '../wailsjs/wailsjs/go/ipc/Channel'
+import { GetAreaById, GetDocumentById, RequestAddProcessedArea, RequestSaveProcessedTextCollection } from '../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../wailsjs/wailsjs/go/models'
 import loadImage from './loadImage'
+import { saveProcessedText } from './saveData'
 
 const processImageArea = async (documentId: string, areaId: string) => {
   const foundDocument = await GetDocumentById(documentId)
@@ -60,6 +61,8 @@ const processImageArea = async (documentId: string, areaId: string) => {
       }))
     }))
   }))
+
+  saveProcessedText()
 
   return addProcessesAreaRequest
 }

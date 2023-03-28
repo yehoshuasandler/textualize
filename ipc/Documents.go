@@ -472,3 +472,56 @@ func (c *Channel) RequestSaveGroupCollection() bool {
 
 	return successfulWrite
 }
+
+func (c *Channel) RequestSaveProcessedTextCollection() bool {
+	processedAreaCollection := document.GetProcessedAreaCollection()
+	projectName := c.GetCurrentSession().Project.Name
+
+	areasToWrite := make([]storage.LocalProcessedArea, 0)
+	for _, a := range processedAreaCollection.Areas {
+		linesOfAreaToWrite := make([]storage.LocalProcessedLine, 0)
+		for _, l := range a.Lines {
+			wordsOfLineToWrite := make([]storage.LocalProcessedWord, 0)
+
+			for _, w := range l.Words {
+				symbolsOfWordToWrite := make([]storage.LocalProcessedSymbol, 0)
+
+				for _, s := range w.Symbols {
+					symbolsOfWordToWrite = append(symbolsOfWordToWrite, storage.LocalProcessedSymbol{
+						Text:        s.Text,
+						Confidence:  s.Confidence,
+						BoundingBox: storage.LocalProcessedBoundingBox(s.BoundingBox),
+					})
+				}
+
+				wordsOfLineToWrite = append(wordsOfLineToWrite, storage.LocalProcessedWord{
+					FullText:    w.FullText,
+					Confidence:  w.Confidence,
+					Direction:   w.Direction,
+					BoundingBox: storage.LocalProcessedBoundingBox(w.BoundingBox),
+					Symbols:     symbolsOfWordToWrite,
+				})
+			}
+
+			linesOfAreaToWrite = append(linesOfAreaToWrite, storage.LocalProcessedLine{
+				FullText: l.FullText,
+				Words:    wordsOfLineToWrite,
+			})
+		}
+
+		areasToWrite = append(areasToWrite, storage.LocalProcessedArea{
+			Id:         a.Id,
+			DocumentId: a.DocumentId,
+			FullText:   a.FullText,
+			Order:      a.Order,
+			Lines:      linesOfAreaToWrite,
+		})
+	}
+
+	processedAreaCollectionToWrite := storage.LocalProcessedAreaCollection{
+		Areas: areasToWrite,
+	}
+
+	successfulWrite := storage.WriteLocalProcessedAreaCollection(processedAreaCollectionToWrite, projectName)
+	return successfulWrite
+}

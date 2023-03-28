@@ -90,6 +90,10 @@ export function RequestSaveGroupCollection() {
   return window['go']['ipc']['Channel']['RequestSaveGroupCollection']();
 }
 
+export function RequestSaveProcessedTextCollection() {
+  return window['go']['ipc']['Channel']['RequestSaveProcessedTextCollection']();
+}
+
 export function RequestUpdateArea(arg1) {
   return window['go']['ipc']['Channel']['RequestUpdateArea'](arg1);
 }

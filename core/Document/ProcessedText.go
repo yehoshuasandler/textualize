@@ -47,6 +47,10 @@ func GetProcessedAreaCollection() *ProcessedAreaCollection {
 	return processedAreaCollectionInstnace
 }
 
+func SetProcessedAreaCollection(collection ProcessedAreaCollection) {
+	processedAreaCollectionInstnace = &collection
+}
+
 func (collection *ProcessedAreaCollection) AddProcessedArea(area ProcessedArea) {
 	collection.Areas = append(collection.Areas, area)
 }

@@ -68,3 +68,41 @@ type LocalGroupCollection struct {
 	Groups    []LocalGroup `json:"groups"`
 	ProjectId string       `json:"projectId"`
 }
+
+type LocalProcessedBoundingBox struct {
+	X0 int32 `json:"x0"`
+	Y0 int32 `json:"y0"`
+	X1 int32 `json:"x1"`
+	Y1 int32 `json:"y1"`
+}
+
+type LocalProcessedSymbol struct {
+	Text        string                    `json:"text"`
+	Confidence  float32                   `json:"confidence"`
+	BoundingBox LocalProcessedBoundingBox `json:"boundingBox"`
+}
+
+type LocalProcessedWord struct {
+	FullText    string                    `json:"fullText"`
+	Symbols     []LocalProcessedSymbol    `json:"symbols"`
+	Confidence  float32                   `json:"confidence"`
+	Direction   string                    `json:"direction"`
+	BoundingBox LocalProcessedBoundingBox `json:"boundingBox"`
+}
+
+type LocalProcessedLine struct {
+	FullText string               `json:"fullText"`
+	Words    []LocalProcessedWord `json:"words"`
+}
+
+type LocalProcessedArea struct {
+	Id         string               `json:"id"`
+	DocumentId string               `json:"documentId"`
+	FullText   string               `json:"fullText"`
+	Order      int                  `json:"order"`
+	Lines      []LocalProcessedLine `json:"lines"`
+}
+
+type LocalProcessedAreaCollection struct {
+	Areas []LocalProcessedArea
+}

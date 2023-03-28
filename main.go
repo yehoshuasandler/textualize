@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	ipc "textualize/Ipc"
 	app "textualize/core/App"
+	ipc "textualize/ipc"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"

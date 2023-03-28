@@ -1,8 +1,8 @@
-import { RequestSaveDocumentCollection, RequestSaveGroupCollection } from '../wailsjs/wailsjs/go/ipc/Channel'
+import { RequestSaveDocumentCollection, RequestSaveGroupCollection, RequestSaveProcessedTextCollection } from '../wailsjs/wailsjs/go/ipc/Channel'
 
 const saveDocuments = async () => {
   try {
-    const sucessfulSave = RequestSaveDocumentCollection()
+    const sucessfulSave = await RequestSaveDocumentCollection()
     if (!sucessfulSave) console.error('Could not save DocumentCollection')
   } catch (err) {
     console.error('Could not save DocumentCollection:', err)
@@ -11,14 +11,24 @@ const saveDocuments = async () => {
 
 const saveGroups = async () => {
   try {
-    const sucessfulSave = RequestSaveGroupCollection()
+    const sucessfulSave = await RequestSaveGroupCollection()
     if (!sucessfulSave) console.error('Could not save GroupCollection')
   } catch (err) {
     console.error('Could not save GroupCollection:', err)
   }
 }
 
+const saveProcessedText = async () => {
+  try {
+    const sucessfulSave = await RequestSaveProcessedTextCollection()
+    if (!sucessfulSave) console.error('Could not save ProcessedTextCollection')
+  } catch (err) {
+    console.error('Could not save ProcessedTextCollection: ', err)
+  }
+}
+
 export {
   saveDocuments,
   saveGroups,
+  saveProcessedText,
 }
