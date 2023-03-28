@@ -26,7 +26,7 @@ const htmlWrappers = [
 
 const getHtmlWrappedText = (text: string, htmlWrapper: (typeof htmlWrappers)[number])  => {
   if (htmlWrapper === MarkdownOperator.RIGHTALIGN) {
-    return `<span style="text-align:right">\n\n${text}\n\n</span>\n`
+    return `<span dir="rtl">\n\n${text}\n\n</span>\n`
   }
 }
 
