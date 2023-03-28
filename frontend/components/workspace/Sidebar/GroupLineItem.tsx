@@ -12,7 +12,7 @@ import { SidebarGroup } from './types'
 
 
 
-const GroupLineItem = (props: { group: SidebarGroup }) => {
+const GroupLineItem = (props: { group: SidebarGroup, dragOverGroupId?: string }) => {
   const {
     requestAddDocument,
     requestChangeGroupOrder,
@@ -26,11 +26,11 @@ const GroupLineItem = (props: { group: SidebarGroup }) => {
     setSelectedGroupId,
     setIsAddNewDocumentInputShowing,
     setIsAddNewGroupInputShowing,
+    dragOverGroupId,
+    setDragOverGroupId
   } = useSidebar()
 
   const addDocumentTextInput = useRef<HTMLInputElement>(null)
-
-  const [dragOverGroupId, setDragOverGroupId] = useState('')
 
   const onConfirmAddDocumentClickHandler = async (groupId: string) => {
     const documentName = addDocumentTextInput.current?.value
@@ -63,10 +63,12 @@ const GroupLineItem = (props: { group: SidebarGroup }) => {
   }
 
   const onGroupDropEnd = (groupId: string) => {
-    const areaDroppedOn = getGroupById(groupId)
-    console.log('areaDroppedOn', areaDroppedOn)
-    if (!areaDroppedOn) return
-    const response = requestChangeGroupOrder(groupId, areaDroppedOn.order)
+    if (!groupId || groupId == dragOverGroupId) return
+
+    const groupDroppedOn = getGroupById(dragOverGroupId)
+    console.log('groupDroppedOn', groupDroppedOn)
+    if (!groupDroppedOn) return
+    requestChangeGroupOrder(groupId, groupDroppedOn.order)
     setDragOverGroupId('')
   }
 

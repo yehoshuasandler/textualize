@@ -18,6 +18,7 @@ import {
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps, UpdateDocumentRequest, UserProps } from './types'
 import makeDefaultProject from './makeDefaultProject'
+import { saveDocuments, saveGroups } from '../../useCases/saveData'
 
 const ProjectContext = createContext<ProjectContextType>(makeDefaultProject())
 
@@ -33,25 +34,11 @@ export function ProjectProvider({ children, projectProps }: Props) {
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>('')
   const [currentSession, setCurrentSession] = useState<ipc.Session>(new ipc.Session())
 
-  const saveDocumentsAndGroups = () => {
-    RequestSaveDocumentCollection().then(success => {
-      if (!success) console.error('Could not save DocumentCollection')
-    }).catch(err => {
-      console.error('Could not save DocumentCollection:', err)
-    })
-    RequestSaveGroupCollection().then(success => {
-      if (!success) console.error('Could not save GroupCollection')
-    }).catch(err => {
-      console.error('Could not save GroupCollection:', err)
-    })
-  }
-
   const updateDocuments = async () => {
     GetDocuments().then(response => {
       console.log(response)
       if (response.documents.length) setDocuments(response.documents)
       if (response.groups.length) setGroups(response.groups)
-      saveDocumentsAndGroups()
       Promise.resolve(response)
     })
   }
@@ -59,18 +46,21 @@ export function ProjectProvider({ children, projectProps }: Props) {
   const requestAddDocument = async (groupId: string, documentName: string) => {
     const response = await RequestAddDocument(groupId, documentName)
     if (response.id) await updateDocuments()
+    saveDocuments()
     return response
   }
 
   const requestAddDocumentGroup = async (groupName: string) => {
     const response = await RequestAddDocumentGroup(groupName)
     if (response.id) await updateDocuments()
+    saveGroups()
     return response
   }
 
   const requestAddArea = async (documentId: string, area: AddAreaProps): Promise<ipc.Area> => {
     const response = await RequestAddArea(documentId, new ipc.Area(area))
     if (response.id) await updateDocuments()
+    saveDocuments()
     return response
   }
 
@@ -78,6 +68,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
     const response = await RequestUpdateArea(new ipc.Area(updatedArea))
 
     if (response.id) await updateDocuments()
+    saveDocuments()
     return response
   }
 
@@ -88,6 +79,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
   const requestDeleteAreaById = async (areaId: string): Promise<boolean> => {
     const wasSuccessfulDeletion = await RequestDeleteAreaById(areaId)
     if (wasSuccessfulDeletion) updateDocuments()
+    saveDocuments()
     return wasSuccessfulDeletion
   }
 
@@ -154,12 +146,14 @@ export function ProjectProvider({ children, projectProps }: Props) {
   const requestUpdateDocument = async (docuemntProps: UpdateDocumentRequest) => {
     const response = await RequestUpdateDocument(new ipc.Document(docuemntProps))
     await updateDocuments()
+    saveDocuments()
     return response
   }
 
   const requestChangeAreaOrder = async (areaId: string, newOrder: number) => {
     const response = await RequestChangeAreaOrder(areaId, newOrder)
     await updateDocuments()
+    saveDocuments()
     return response
   }
 
@@ -169,7 +163,10 @@ export function ProjectProvider({ children, projectProps }: Props) {
 
   const requestChangeGroupOrder = async (groupId: string, newOrder: number) => {
     const response = await RequestChangeGroupOrder(groupId, newOrder)
+    console.log('should be at ', newOrder)
+    console.log(response)
     await updateDocuments()
+    saveGroups()
     return response
   }
 

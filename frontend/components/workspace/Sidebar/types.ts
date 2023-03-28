@@ -14,6 +14,10 @@ export type SidebarContextType = {
   setIsAddNewGroupInputShowing: (_: boolean) => void,
   isEditAreaNameInputShowing: boolean,
   setIsEditAreaNameInputShowing: (_: boolean) => void,
+  dragOverGroupId: string,
+  setDragOverGroupId: (_: string) => void,
+  dragOverAreaId: string,
+  setDragOverAreaId: (_: string) => void,
 }
 
 export type SidebarArea = {

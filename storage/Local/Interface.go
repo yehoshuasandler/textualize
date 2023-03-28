@@ -30,7 +30,7 @@ func createLocalStorageDirIfNeeded() bool {
 	}
 
 	errorCreatingDir := os.Mkdir(localStoragePath, os.ModePerm)
-	return errorCreatingDir != nil
+	return errorCreatingDir == nil
 }
 
 func createLocalStorageSubDirIfNeeded(relativeSubdirectoryPath string) bool {
@@ -48,7 +48,7 @@ func createLocalStorageSubDirIfNeeded(relativeSubdirectoryPath string) bool {
 	}
 
 	errorCreatingDir := os.MkdirAll(fullLocalStoragePath, os.ModePerm)
-	return errorCreatingDir != nil
+	return errorCreatingDir == nil
 }
 
 func WriteLocalUserData(user LocalUser) bool {
@@ -110,13 +110,15 @@ func WriteLocalProjectData(project LocalProject) bool {
 		return false
 	}
 
+	fmt.Println(project)
+
 	subdirectory := "/projects/" + project.Name + "/"
 	isLocalStorageDirectoryCreated := createLocalStorageSubDirIfNeeded(subdirectory)
 	if !isLocalStorageDirectoryCreated {
 		return false
 	}
 
-	err := os.WriteFile(GetLocalStoragePath()+subdirectory+project.Name+"/Project.json", file, 0644)
+	err := os.WriteFile(GetLocalStoragePath()+subdirectory+"Project.json", file, 0644)
 
 	return err == nil
 }

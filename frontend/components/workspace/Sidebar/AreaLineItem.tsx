@@ -24,11 +24,12 @@ const AreaLineItem = (props: { area: SidebarArea, documentId: string, index: num
     selectedAreaId,
     isEditAreaNameInputShowing,
     setIsEditAreaNameInputShowing,
+    dragOverAreaId,
+    setDragOverAreaId,
   } = useSidebar()
 
   const editAreaNameTextInput = useRef<HTMLInputElement>(null)
 
-  const [dragOverAreaId, setDragOverAreaId] = useState('')
 
   const onConfirmAreaNameChangeHandler = async (areaDetails: { areaId: string, areaName: string }) => {
     const { areaId, areaName } = areaDetails
@@ -66,6 +67,8 @@ const AreaLineItem = (props: { area: SidebarArea, documentId: string, index: num
   }
 
   const onAreaDropEnd = (areaId: string) => {
+    if (!areaId || areaId == dragOverAreaId) return
+
     const areaDroppedOn = getAreaById(dragOverAreaId)
     console.log(areaDroppedOn)
     if (!areaDroppedOn) return

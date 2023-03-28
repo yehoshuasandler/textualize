@@ -19,6 +19,9 @@ export function SidebarProvider({ children }: Props) {
   const [isEditDocumentNameInputShowing, setIsEditDocumentNameInputShowing] = useState(false)
   const [isAddNewGroupInputShowing, setIsAddNewGroupInputShowing] = useState(false)
   const [isEditAreaNameInputShowing, setIsEditAreaNameInputShowing] = useState(false)
+  const [dragOverGroupId, setDragOverGroupId] = useState('')
+  const [dragOverAreaId, setDragOverAreaId] = useState('')
+
 
   const {
     selectedDocumentId, setSelectedDocumentId,
@@ -44,7 +47,11 @@ export function SidebarProvider({ children }: Props) {
     isAddNewGroupInputShowing,
     setIsAddNewGroupInputShowing,
     isEditAreaNameInputShowing,
-    setIsEditAreaNameInputShowing
+    setIsEditAreaNameInputShowing,
+    dragOverGroupId,
+    setDragOverGroupId,
+    dragOverAreaId,
+    setDragOverAreaId,
   }
 
   return <SidebarContext.Provider value={value}>

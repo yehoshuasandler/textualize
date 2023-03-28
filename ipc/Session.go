@@ -57,9 +57,9 @@ func (c *Channel) CreateNewProject(name string) Session {
 	}
 
 	successfulProjectWrite := storage.WriteLocalProjectData(storage.LocalProject{
-		Id:             uuid.NewString(),
-		OrganizationId: currentSession.Project.OrganizationId,
-		Name:           name,
+		Id:             newProject.Id,
+		OrganizationId: newProject.OrganizationId,
+		Name:           newProject.Name,
 	})
 
 	if !successfulProjectWrite {
