@@ -74,8 +74,8 @@ const TextEditor = () => {
       try {
         const response = await getProcessedAreasByDocumentId(selectedDocumentId)
         if (!response || response.length === 0) return
-        const fullTextOfAreas = response.map(area => area.fullText + '\n').join('\n')
-        setEditorValue(fullTextOfAreas)
+        const linesofArea = response.map(area => area.lines.map(line => line.fullText + '\n')).join('\n')
+        setEditorValue(linesofArea)
       } catch (err) {
         console.error(err)
         setEditorValue('# No Areas on Document were textualized')
