@@ -6,7 +6,8 @@ import (
 	consts "textualize/core/Consts"
 	document "textualize/core/Document"
 	session "textualize/core/Session"
-	storage "textualize/storage/Local"
+	storage "textualize/storage"
+	storageEntity "textualize/storage/Entities"
 
 	"github.com/google/uuid"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -408,40 +409,40 @@ func (c *Channel) RequestSaveDocumentCollection() bool {
 	documentCollection := document.GetDocumentCollection()
 	projectName := c.GetCurrentSession().Project.Name
 
-	fullProject := storage.ReadLocalProjectByName(projectName)
+	fullProject := storage.GetDriver().ReadProjectDataByName(projectName)
 
 	if fullProject.Id == "" {
 		return false
 	}
 
-	var documentsToWrite []storage.LocalDocument
+	var documentsToWrite []storageEntity.Document
 	for _, d := range documentCollection.Documents {
-		var areasToWrite []storage.LocalArea
+		var areasToWrite []storageEntity.Area
 		for _, a := range d.Areas {
-			areasToWrite = append(areasToWrite, storage.LocalArea{
+			areasToWrite = append(areasToWrite, storageEntity.Area{
 				Id:       a.Id,
 				Name:     a.Name,
 				StartX:   a.StartX,
 				StartY:   a.StartY,
 				EndX:     a.EndX,
 				EndY:     a.EndY,
-				Language: storage.Language(a.Language),
+				Language: storageEntity.Language(a.Language),
 				Order:    a.Order,
 			})
 		}
 
-		documentsToWrite = append(documentsToWrite, storage.LocalDocument{
+		documentsToWrite = append(documentsToWrite, storageEntity.Document{
 			Id:              d.Id,
 			GroupId:         d.GroupId,
 			Name:            d.Name,
 			Path:            d.Path,
 			ProjectId:       d.ProjectId,
 			Areas:           areasToWrite,
-			DefaultLanguage: storage.Language(d.DefaultLanguage),
+			DefaultLanguage: storageEntity.Language(d.DefaultLanguage),
 		})
 	}
 
-	successfulWrite := storage.WriteLocalDocumentCollection(storage.LocalDocumentCollection{
+	successfulWrite := storage.GetDriver().WriteDocumentCollection(storageEntity.DocumentCollection{
 		Documents: documentsToWrite,
 		ProjectId: fullProject.Id,
 	}, projectName)
@@ -453,18 +454,18 @@ func (c *Channel) RequestSaveGroupCollection() bool {
 	groupCollection := document.GetGroupCollection()
 	projectName := c.GetCurrentSession().Project.Name
 
-	fullProject := storage.ReadLocalProjectByName(projectName)
+	fullProject := storage.GetDriver().ReadProjectDataByName(projectName)
 
 	if fullProject.Id == "" {
 		return false
 	}
 
-	var groupsToWrite []storage.LocalGroup
+	var groupsToWrite []storageEntity.Group
 	for _, g := range groupCollection.Groups {
-		groupsToWrite = append(groupsToWrite, storage.LocalGroup(g))
+		groupsToWrite = append(groupsToWrite, storageEntity.Group(g))
 	}
 
-	successfulWrite := storage.WriteLocalGroupCollection(storage.LocalGroupCollection{
+	successfulWrite := storage.GetDriver().WriteGroupCollection(storageEntity.GroupCollection{
 		Id:        groupCollection.Id,
 		ProjectId: groupCollection.ProjectId,
 		Groups:    groupsToWrite,
@@ -477,39 +478,39 @@ func (c *Channel) RequestSaveProcessedTextCollection() bool {
 	processedAreaCollection := document.GetProcessedAreaCollection()
 	projectName := c.GetCurrentSession().Project.Name
 
-	areasToWrite := make([]storage.LocalProcessedArea, 0)
+	areasToWrite := make([]storageEntity.ProcessedArea, 0)
 	for _, a := range processedAreaCollection.Areas {
-		linesOfAreaToWrite := make([]storage.LocalProcessedLine, 0)
+		linesOfAreaToWrite := make([]storageEntity.ProcessedLine, 0)
 		for _, l := range a.Lines {
-			wordsOfLineToWrite := make([]storage.LocalProcessedWord, 0)
+			wordsOfLineToWrite := make([]storageEntity.ProcessedWord, 0)
 
 			for _, w := range l.Words {
-				symbolsOfWordToWrite := make([]storage.LocalProcessedSymbol, 0)
+				symbolsOfWordToWrite := make([]storageEntity.ProcessedSymbol, 0)
 
 				for _, s := range w.Symbols {
-					symbolsOfWordToWrite = append(symbolsOfWordToWrite, storage.LocalProcessedSymbol{
+					symbolsOfWordToWrite = append(symbolsOfWordToWrite, storageEntity.ProcessedSymbol{
 						Text:        s.Text,
 						Confidence:  s.Confidence,
-						BoundingBox: storage.LocalProcessedBoundingBox(s.BoundingBox),
+						BoundingBox: storageEntity.ProcessedBoundingBox(s.BoundingBox),
 					})
 				}
 
-				wordsOfLineToWrite = append(wordsOfLineToWrite, storage.LocalProcessedWord{
+				wordsOfLineToWrite = append(wordsOfLineToWrite, storageEntity.ProcessedWord{
 					FullText:    w.FullText,
 					Confidence:  w.Confidence,
 					Direction:   w.Direction,
-					BoundingBox: storage.LocalProcessedBoundingBox(w.BoundingBox),
+					BoundingBox: storageEntity.ProcessedBoundingBox(w.BoundingBox),
 					Symbols:     symbolsOfWordToWrite,
 				})
 			}
 
-			linesOfAreaToWrite = append(linesOfAreaToWrite, storage.LocalProcessedLine{
+			linesOfAreaToWrite = append(linesOfAreaToWrite, storageEntity.ProcessedLine{
 				FullText: l.FullText,
 				Words:    wordsOfLineToWrite,
 			})
 		}
 
-		areasToWrite = append(areasToWrite, storage.LocalProcessedArea{
+		areasToWrite = append(areasToWrite, storageEntity.ProcessedArea{
 			Id:         a.Id,
 			DocumentId: a.DocumentId,
 			FullText:   a.FullText,
@@ -518,11 +519,11 @@ func (c *Channel) RequestSaveProcessedTextCollection() bool {
 		})
 	}
 
-	processedAreaCollectionToWrite := storage.LocalProcessedAreaCollection{
+	processedAreaCollectionToWrite := storageEntity.ProcessedTextCollection{
 		Areas: areasToWrite,
 	}
 
-	successfulWrite := storage.WriteLocalProcessedAreaCollection(processedAreaCollectionToWrite, projectName)
+	successfulWrite := storage.GetDriver().WriteProcessedTextCollection(processedAreaCollectionToWrite, projectName)
 	return successfulWrite
 }
 
@@ -530,22 +531,20 @@ func (c *Channel) RequestSaveLocalUserProcessedMarkdownCollection() bool {
 	userProcessedMarkdownCollection := document.GetUserMarkdownCollection()
 	projectName := c.GetCurrentSession().Project.Name
 
-	fullProject := storage.ReadLocalProjectByName(projectName)
+	fullProject := storage.GetDriver().ReadProjectDataByName(projectName)
 
 	if fullProject.Id == "" {
 		return false
 	}
 
-	var valuesToWrite []storage.LocalUserMarkdown
+	var valuesToWrite []storageEntity.ProcessedUserMarkdown
 	for _, v := range userProcessedMarkdownCollection.Values {
-		valuesToWrite = append(valuesToWrite, storage.LocalUserMarkdown(v))
+		valuesToWrite = append(valuesToWrite, storageEntity.ProcessedUserMarkdown(v))
 	}
 
-	successfulWrite := storage.WriteLocalUserProcessedMarkdownCollection(storage.LocalUserMarkdownCollection{
+	successfulWrite := storage.GetDriver().WriteProcessedUserMarkdownCollection(storageEntity.ProcessedUserMarkdownCollection{
 		Values: valuesToWrite,
 	}, projectName)
 
 	return successfulWrite
 }
-
-

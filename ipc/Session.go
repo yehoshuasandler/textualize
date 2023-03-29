@@ -5,7 +5,8 @@ import (
 	consts "textualize/core/Consts"
 	document "textualize/core/Document"
 	session "textualize/core/Session"
-	storage "textualize/storage/Local"
+	storage "textualize/storage"
+	storageEntity "textualize/storage/Entities"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
@@ -55,7 +56,7 @@ func (c *Channel) CreateNewProject(name string) Session {
 		Name:           name,
 	}
 
-	successfulProjectWrite := storage.WriteLocalProjectData(storage.LocalProject{
+	successfulProjectWrite := storage.GetDriver().WriteProjectData(storageEntity.Project{
 		Id:             newProject.Id,
 		OrganizationId: newProject.OrganizationId,
 		Name:           newProject.Name,
@@ -94,7 +95,7 @@ func (c *Channel) RequestUpdateCurrentUser(updatedUserRequest User) User {
 
 	sessionUser.AvatarPath = updatedUserRequest.AvatarPath
 
-	successfulUserWrite := storage.WriteLocalUserData(storage.LocalUser(sessionUser))
+	successfulUserWrite := storage.GetDriver().WriteUserData(storageEntity.User(sessionUser))
 	if !successfulUserWrite {
 		return User{}
 	}
@@ -124,7 +125,7 @@ func (c *Channel) RequestChooseUserAvatar() string {
 }
 
 func (c *Channel) GetAllLocalProjects() []Project {
-	readLocalProjects := storage.ReadAllLocalProjects()
+	readLocalProjects := storage.GetDriver().ReadAllProjects()
 	response := make([]Project, 0)
 
 	for _, p := range readLocalProjects {
@@ -144,7 +145,7 @@ func (c *Channel) GetAllLocalProjects() []Project {
 }
 
 func (c *Channel) GetProjectByName(projectName string) Project {
-	foundProject := storage.ReadLocalProjectByName(projectName)
+	foundProject := storage.GetDriver().ReadProjectDataByName(projectName)
 
 	if foundProject.Id == "" {
 		return Project{}
@@ -163,6 +164,7 @@ func (c *Channel) GetProjectByName(projectName string) Project {
 }
 
 func (c *Channel) RequestChangeSessionProjectByName(projectName string) bool {
+	storageDriver := storage.GetDriver()
 	foundProject := c.GetProjectByName(projectName)
 
 	if foundProject.Id == "" {
@@ -180,7 +182,7 @@ func (c *Channel) RequestChangeSessionProjectByName(projectName string) bool {
 		},
 	}
 
-	localDocumentCollection := storage.ReadLocalDocumentCollection(projectName)
+	localDocumentCollection := storageDriver.ReadDocumentCollection(projectName)
 	newDocuments := make([]document.Entity, 0)
 	for _, d := range localDocumentCollection.Documents {
 		newAreas := make([]document.Area, 0)
@@ -212,7 +214,7 @@ func (c *Channel) RequestChangeSessionProjectByName(projectName string) bool {
 	}
 	document.SetDocumentCollection(newDocumentColllection)
 
-	localGroupsCollection := storage.ReadLocalGroupCollection(projectName)
+	localGroupsCollection := storageDriver.ReadGroupCollection(projectName)
 	newGroups := make([]document.Group, 0)
 	for _, g := range localGroupsCollection.Groups {
 		newGroups = append(newGroups, document.Group(g))
@@ -226,7 +228,7 @@ func (c *Channel) RequestChangeSessionProjectByName(projectName string) bool {
 
 	// Processed Texts
 
-	localProcessedAreaCollection := storage.ReadLocalProcessedAreaCollection(projectName)
+	localProcessedAreaCollection := storageDriver.ReadProcessedTextCollection(projectName)
 	newAreas := make([]document.ProcessedArea, 0)
 	for _, a := range localProcessedAreaCollection.Areas {
 		linesOfArea := make([]document.ProcessedLine, 0)
@@ -274,7 +276,7 @@ func (c *Channel) RequestChangeSessionProjectByName(projectName string) bool {
 
 	// UserProcessedMarkdown
 
-	localUserProcessedMarkdown := storage.ReadLocalUserProcessedMarkdownCollection(projectName)
+	localUserProcessedMarkdown := storageDriver.ReadProcessedUserMarkdownCollection(projectName)
 
 	newUserProcessedMarkdown := make([]document.UserMarkdown, 0)
 	for _, v := range localUserProcessedMarkdown.Values {

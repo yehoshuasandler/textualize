@@ -5,7 +5,7 @@ import (
 	"fmt"
 	document "textualize/core/Document"
 	session "textualize/core/Session"
-	storage "textualize/storage/Local"
+	storage "textualize/storage"
 )
 
 type App struct {
@@ -24,7 +24,7 @@ func GetInstance() *App {
 
 func (a *App) Startup(ctx context.Context) {
 	a.Context = ctx
-	localUserData := storage.ReadLocalUserData()
+	localUserData := storage.GetDriver().ReadUserData()
 	session.InitializeModule(session.Session{
 		User: session.User(localUserData),
 	})
