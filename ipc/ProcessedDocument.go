@@ -146,25 +146,26 @@ func deserializeProcessedArea(area ProcessedArea) document.ProcessedArea {
 }
 
 func (c *Channel) RequestAddProcessedArea(processedArea ProcessedArea) ProcessedArea {
-	doesAreaAlreadyExist := false
-	processedAreasOfDocument := document.GetProcessedAreaCollection().GetAreasByDocumentId(processedArea.DocumentId)
-	for _, a := range processedAreasOfDocument {
-		if a.Order == processedArea.Order {
-			doesAreaAlreadyExist = true
-			break
-		}
-	}
+	// doesAreaAlreadyExist := false
+	// processedAreasOfDocuments := document.GetProcessedAreaCollection().GetAreasByDocumentId(processedArea.DocumentId)
+
+	// for _, a := range processedAreasOfDocuments {
+	// 	if a.Order == processedArea.Order {
+	// 		doesAreaAlreadyExist = true
+	// 		break
+	// 	}
+	// }
 
 	deserializedProcessedArea := deserializeProcessedArea(processedArea)
 
-	if doesAreaAlreadyExist {
-		storedProcessedArea := document.GetProcessedAreaCollection().GetAreaById(processedArea.Id)
-		if storedProcessedArea.Id != "" {
-			storedProcessedArea = &deserializedProcessedArea
-		}
-	} else {
-		document.GetProcessedAreaCollection().AddProcessedArea((deserializedProcessedArea))
-	}
+	// if doesAreaAlreadyExist {
+	// 	storedProcessedArea := document.GetProcessedAreaCollection().GetAreaById(processedArea.Id)
+	// 	if storedProcessedArea.Id != "" {
+	// 		storedProcessedArea = &deserializedProcessedArea
+	// 	}
+	// } else {
+	document.GetProcessedAreaCollection().AddProcessedArea((deserializedProcessedArea))
+	// }
 
 	return processedArea
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { useProject } from '../../../context/Project/provider'
 import AddGroupInput from './AddGroupInput'
 import GroupLineItem from './GroupLineItem'

@@ -144,6 +144,26 @@ func (c *Channel) RequestAddDocument(groupId string, documentName string) Docume
 	return documentResponse
 }
 
+func (c *Channel) deleteDocumentById(documentId string) bool {
+	collection := document.GetDocumentCollection()
+
+	documentToDeleteIndex := -1
+	for i, d := range collection.Documents {
+		if d.Id == documentId {
+			documentToDeleteIndex = i
+			break
+		}
+	}
+
+	if documentToDeleteIndex < 0 {
+		return false
+	}
+
+	collection.Documents[documentToDeleteIndex] = collection.Documents[len(collection.Documents)-1]
+	collection.Documents = collection.Documents[:len(collection.Documents)-1]
+	return true
+}
+
 func (c *Channel) RequestUpdateDocumentUserMarkdown(documentId string, markdown string) UserMarkdown {
 	markdownCollection := document.GetUserMarkdownCollection()
 	markdownToUpdate := markdownCollection.GetUserMarkdownByDocumentId(documentId)
@@ -164,6 +184,26 @@ func (c *Channel) RequestUpdateDocumentUserMarkdown(documentId string, markdown 
 		DocumentId: updatedMarkdown.DocumentId,
 		Value:      updatedMarkdown.Value,
 	}
+}
+
+func (c *Channel) deleteDocumentUserMarkdown(documentId string) bool {
+	collection := document.GetUserMarkdownCollection()
+
+	markdownToDeleteIndex := -1
+	for i, d := range collection.Values {
+		if d.DocumentId == documentId {
+			markdownToDeleteIndex = i
+			break
+		}
+	}
+
+	if markdownToDeleteIndex < 0 {
+		return false
+	}
+
+	collection.Values[markdownToDeleteIndex] = collection.Values[len(collection.Values)-1]
+	collection.Values = collection.Values[:len(collection.Values)-1]
+	return true
 }
 
 func (c *Channel) GetUserMarkdownByDocumentId(documentId string) UserMarkdown {
@@ -547,4 +587,20 @@ func (c *Channel) RequestSaveLocalUserProcessedMarkdownCollection() bool {
 	}, projectName)
 
 	return successfulWrite
+}
+
+func (c *Channel) RequestDeleteDocumentAndChildren(documentId string) bool {
+	success := true
+
+	deletedDocument := c.deleteDocumentById(documentId)
+	if !deletedDocument {
+		success = false
+	}
+
+	deletedUserMarkDown := c.deleteDocumentUserMarkdown(documentId)
+	if !deletedUserMarkDown {
+		success = false
+	}
+
+	return success
 }

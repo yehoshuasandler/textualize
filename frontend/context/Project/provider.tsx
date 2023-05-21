@@ -12,6 +12,7 @@ import {
   RequestDeleteAreaById,
   RequestChangeGroupOrder,
   RequestChangeSessionProjectByName,
+  RequestDeleteDocumentAndChildren,
 } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps, UpdateDocumentRequest, UserProps } from './types'
@@ -35,8 +36,8 @@ export function ProjectProvider({ children, projectProps }: Props) {
   const updateDocuments = async () => {
     GetDocuments().then(response => {
       console.log(response)
-      if (response.documents.length) setDocuments(response.documents)
-      if (response.groups.length) setGroups(response.groups)
+      setDocuments(response.documents)
+      setGroups(response.groups)
       Promise.resolve(response)
     })
   }
@@ -46,6 +47,13 @@ export function ProjectProvider({ children, projectProps }: Props) {
     if (response.id) await updateDocuments()
     saveDocuments()
     return response
+  }
+
+  const requestDeleteDocumentById = async (documentId: string): Promise<boolean> => {
+    const wasSuccessfulDeletion = await RequestDeleteDocumentAndChildren(documentId)
+    updateDocuments()
+    saveDocuments()
+    return wasSuccessfulDeletion
   }
 
   const requestAddDocumentGroup = async (groupName: string) => {
@@ -195,6 +203,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
     getAreaById,
     requestAddArea,
     requestAddDocument,
+    requestDeleteDocumentById,
     requestAddDocumentGroup,
     requestUpdateArea,
     requestDeleteAreaById,

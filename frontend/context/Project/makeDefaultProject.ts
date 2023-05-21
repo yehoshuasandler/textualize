@@ -15,6 +15,7 @@ const makeDefaultProject = (): ProjectContextType => ({
   requestUpdateArea: (updatedArea) => Promise.resolve(new ipc.Area()),
   requestDeleteAreaById: (areaId) => Promise.resolve(false),
   requestAddDocument: (groupId, documentName) => Promise.resolve(new ipc.Document()),
+  requestDeleteDocumentById: (documentId) => Promise.resolve(false),
   requestAddDocumentGroup: (groupName: string) => Promise.resolve(new ipc.Group()),
   requestUpdateDocumentUserMarkdown: (documentId: string, markdown: string) => Promise.resolve(new ipc.UserMarkdown()),
   getUserMarkdownByDocumentId: (documentId) => Promise.resolve(new ipc.UserMarkdown),

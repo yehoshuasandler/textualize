@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { useProject } from '../../../context/Project/provider'
 import classNames from '../../../utils/classNames'
 import { ArrowPathIcon, XMarkIcon } from '@heroicons/react/24/outline'

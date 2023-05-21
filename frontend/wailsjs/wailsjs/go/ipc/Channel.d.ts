@@ -42,6 +42,8 @@ export function RequestChooseUserAvatar():Promise<string>;
 
 export function RequestDeleteAreaById(arg1:string):Promise<boolean>;
 
+export function RequestDeleteDocumentAndChildren(arg1:string):Promise<boolean>;
+
 export function RequestSaveDocumentCollection():Promise<boolean>;
 
 export function RequestSaveGroupCollection():Promise<boolean>;

@@ -16,7 +16,7 @@ loader.config({
 })
 
 let editorInteractions: ReturnType<typeof createDiffEditorInteractions>
-const editorHeightOffset = 234
+const editorHeightOffset = 174
 
 const fontSizeStep = 1
 const maxFontSize = 36
