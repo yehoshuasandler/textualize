@@ -3,6 +3,8 @@ package ipc
 import (
 	"sort"
 	document "textualize/core/Document"
+
+	"github.com/google/uuid"
 )
 
 func serializeBoundingBox(bbox document.ProcessedBoundingBox) ProcessedBoundingBox {
@@ -30,6 +32,7 @@ func serialzeWord(word document.ProcessedWord) ProcessedWord {
 	}
 
 	return ProcessedWord{
+		Id:          word.Id,
 		FullText:    word.FullText,
 		Symbols:     symbols,
 		Confidence:  word.Confidence,
@@ -106,8 +109,15 @@ func deserialzeWord(word ProcessedWord) document.ProcessedWord {
 	for _, symbol := range word.Symbols {
 		symbols = append(symbols, deserializeSymbol(symbol))
 	}
+	var wordId string
+	if word.Id == "" {
+		wordId = uuid.NewString()
+	} else {
+		wordId = word.Id
+	}
 
 	return document.ProcessedWord{
+		Id:          wordId,
 		FullText:    word.FullText,
 		Symbols:     symbols,
 		Confidence:  word.Confidence,
@@ -168,4 +178,53 @@ func (c *Channel) RequestAddProcessedArea(processedArea ProcessedArea) Processed
 	// }
 
 	return processedArea
+}
+
+func (c *Channel) RequestUpdateProcessedWordById(wordId string, newTextValue string) bool {
+	areas := document.GetProcessedAreaCollection().Areas
+
+	var areaOfWordIndex int = -1
+	var lineOfWordIndex int = -1
+	var foundWordIndex int = -1
+	for areaIndex, area := range areas {
+
+		for lineIndex, line := range area.Lines {
+
+			for wordIndex, word := range line.Words {
+				if word.Id == wordId {
+					areaOfWordIndex = areaIndex
+					lineOfWordIndex = lineIndex
+					foundWordIndex = wordIndex
+					break
+				}
+			}
+
+			if foundWordIndex >= 0 {
+				break
+			}
+		}
+
+		if foundWordIndex >= 0 {
+			break
+		}
+	}
+
+	if areaOfWordIndex < 0 || lineOfWordIndex < 0 || foundWordIndex < 0 {
+		return false
+	}
+
+	wordProps := areas[areaOfWordIndex].Lines[lineOfWordIndex].Words[foundWordIndex]
+	areas[areaOfWordIndex].Lines[lineOfWordIndex].Words[foundWordIndex] = document.ProcessedWord{
+		Id:          wordProps.Id,
+		Direction:   wordProps.Direction,
+		FullText:    newTextValue,
+		BoundingBox: wordProps.BoundingBox,
+	}
+
+	if areas[areaOfWordIndex].Lines[lineOfWordIndex].Words[foundWordIndex].FullText == newTextValue {
+		successfulSave := c.RequestSaveDocumentCollection()
+		return successfulSave
+	} else {
+		return false
+	}
 }

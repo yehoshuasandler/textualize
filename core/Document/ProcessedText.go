@@ -14,6 +14,7 @@ type ProcessedSymbol struct {
 }
 
 type ProcessedWord struct {
+	Id          string
 	FullText    string
 	Symbols     []ProcessedSymbol
 	Confidence  float32

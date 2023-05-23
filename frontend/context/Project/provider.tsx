@@ -13,6 +13,7 @@ import {
   RequestChangeGroupOrder,
   RequestChangeSessionProjectByName,
   RequestDeleteDocumentAndChildren,
+  RequestUpdateProcessedWordById
 } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps, ProjectContextType, ProjectProps, UpdateDocumentRequest, UserProps } from './types'
@@ -35,7 +36,6 @@ export function ProjectProvider({ children, projectProps }: Props) {
 
   const updateDocuments = async () => {
     GetDocuments().then(response => {
-      console.log(response)
       setDocuments(response.documents)
       setGroups(response.groups)
       Promise.resolve(response)
@@ -184,6 +184,13 @@ export function ProjectProvider({ children, projectProps }: Props) {
     return successfulResponse
   }
 
+  const requestUpdateProcessedWordById = async (wordId: string, newTextValue: string) => {
+    const successfulResponse = await RequestUpdateProcessedWordById(wordId, newTextValue)
+    // if (successfulResponse) await updateDocuments()
+    return successfulResponse
+  }
+
+
   useEffect(() => {
     if (!documents.length && !groups.length) updateDocuments()
   }, [documents.length, groups.length])
@@ -224,6 +231,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
     requestChangeGroupOrder,
     getGroupById,
     requestSelectProjectByName,
+    requestUpdateProcessedWordById,
   }
 
   return <ProjectContext.Provider value={value}>

@@ -269,6 +269,7 @@ export namespace ipc {
 		}
 	}
 	export class ProcessedWord {
+	    id: string;
 	    fullText: string;
 	    symbols: ProcessedSymbol[];
 	    confidence: number;
@@ -281,6 +282,7 @@ export namespace ipc {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
 	        this.fullText = source["fullText"];
 	        this.symbols = this.convertValues(source["symbols"], ProcessedSymbol);
 	        this.confidence = source["confidence"];

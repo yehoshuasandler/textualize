@@ -117,3 +117,7 @@ export function RequestUpdateDocument(arg1) {
 export function RequestUpdateDocumentUserMarkdown(arg1, arg2) {
   return window['go']['ipc']['Channel']['RequestUpdateDocumentUserMarkdown'](arg1, arg2);
 }
+
+export function RequestUpdateProcessedWordById(arg1, arg2) {
+  return window['go']['ipc']['Channel']['RequestUpdateProcessedWordById'](arg1, arg2);
+}

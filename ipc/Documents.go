@@ -536,6 +536,7 @@ func (c *Channel) RequestSaveProcessedTextCollection() bool {
 				}
 
 				wordsOfLineToWrite = append(wordsOfLineToWrite, storageEntity.ProcessedWord{
+					Id:          w.Id,
 					FullText:    w.FullText,
 					Confidence:  w.Confidence,
 					Direction:   w.Direction,

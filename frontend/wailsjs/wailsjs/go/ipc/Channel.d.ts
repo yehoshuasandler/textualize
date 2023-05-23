@@ -59,3 +59,5 @@ export function RequestUpdateCurrentUser(arg1:ipc.User):Promise<ipc.User>;
 export function RequestUpdateDocument(arg1:ipc.Document):Promise<ipc.Document>;
 
 export function RequestUpdateDocumentUserMarkdown(arg1:string,arg2:string):Promise<ipc.UserMarkdown>;
+
+export function RequestUpdateProcessedWordById(arg1:string,arg2:string):Promise<boolean>;

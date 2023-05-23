@@ -30,6 +30,7 @@ const makeDefaultProject = (): ProjectContextType => ({
   requestChangeGroupOrder: (groupId: string, newOrder: number) => Promise.resolve(new ipc.Group()),
   getGroupById: (groupId) => undefined,
   requestSelectProjectByName: (projectName) => Promise.resolve(false),
+  requestUpdateProcessedWordById: (wordId, newTestValue) => Promise.resolve(false),
 })
 
 export default makeDefaultProject

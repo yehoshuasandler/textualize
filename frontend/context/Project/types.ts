@@ -62,4 +62,5 @@ export type ProjectContextType = {
   requestChangeGroupOrder: (groupId: string, newOrder: number) => Promise<ipc.Group>
   getGroupById: (groupId: string) => ipc.Group | undefined
   requestSelectProjectByName: (projectName: string) => Promise<boolean>
+  requestUpdateProcessedWordById: (wordId: string, newTextValue: string) => Promise<boolean>
 } & ProjectProps

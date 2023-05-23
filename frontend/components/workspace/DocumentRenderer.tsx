@@ -9,22 +9,32 @@ import classNames from '../../utils/classNames'
 import LanguageSelect from './LanguageSelect'
 import isInBounds from '../../utils/isInBounds'
 import { ipc } from '../../wailsjs/wailsjs/go/models'
+import onEnterHandler from '../../utils/onEnterHandler'
 
 const zoomStep = 0.025
 const maxZoomLevel = 4
 
 const DocumentRenderer = () => {
-  const { getSelectedDocument, requestAddArea, selectedAreaId, setSelectedAreaId, getProcessedAreasByDocumentId } = useProject()
+  const {
+    getSelectedDocument,
+    requestAddArea,
+    selectedAreaId,
+    setSelectedAreaId,
+    getProcessedAreasByDocumentId,
+    requestUpdateProcessedWordById
+  } = useProject()
   const selectedDocument = getSelectedDocument()
   const areas = selectedDocument?.areas
   const documentCanvas = useRef<HTMLCanvasElement>(null)
   const areaCanvas = useRef<HTMLCanvasElement>(null)
   const uiCanvas = useRef<HTMLCanvasElement>(null)
   const drawingCanvas = useRef<HTMLCanvasElement>(null)
+  const editWordInput = useRef<HTMLInputElement>(null)
 
   const [zoomLevel, setZoomLevel] = useState(1)
   const [hoverOverAreaId, setHoverOverAreaId] = useState('')
   const [hoveredProcessedArea, setHoveredProcessedArea] = useState<ipc.ProcessedArea | undefined>()
+  const [wordToEdit, setWordToEdit] = useState<{ word: ipc.ProcessedWord, areaId: string } | undefined>()
 
   let downClickX = 0
   let downClickY = 0
@@ -134,10 +144,16 @@ const DocumentRenderer = () => {
   }
 
   const getProcessedAreaById = async (areaId: string) => {
-    if (!selectedDocument || !selectedDocument.id || !areaId) return
-    const processedAreas = await getProcessedAreasByDocumentId(selectedDocument.id)
-    const foundProcessedArea = processedAreas.find(a => a.id === areaId)
-    return foundProcessedArea
+    try {
+      if (!selectedDocument || !selectedDocument.id || !areaId) return
+      const processedAreas = await getProcessedAreasByDocumentId(selectedDocument.id)
+      const foundProcessedArea = processedAreas.find(a => a.id === areaId)
+      console.log(foundProcessedArea)
+      return foundProcessedArea
+    } catch (err) {
+      console.error(err)
+      return
+    }
   }
 
   const handleHoverOverArea = (e: React.MouseEvent) => {
@@ -155,7 +171,6 @@ const DocumentRenderer = () => {
 
     setHoverOverAreaId(areaContainingCoords?.id || '')
     getProcessedAreaById(areaContainingCoords?.id || '').then(response => {
-      console.log(response)
       setHoveredProcessedArea(response)
     })
   }
@@ -237,6 +252,19 @@ const DocumentRenderer = () => {
     else if (zoomLevel > (zoomStep * 2)) setZoomLevel(zoomLevel - zoomStep)
   }
 
+  const handleWordCorrectionSubmit = (wordId: string, newWordValue: string) => {
+    console.log(newWordValue)
+    requestUpdateProcessedWordById(wordId, newWordValue)
+    .then(res => {
+      console.log('res', res)
+      getProcessedAreaById(hoverOverAreaId|| '').then(response => {
+        setHoveredProcessedArea(response)
+      })
+    })
+    .catch(console.error)
+    setWordToEdit(undefined)
+  }
+
   useEffect(() => {
     if (selectedDocument?.path) applyDocumentToCanvas(selectedDocument.path)
   })
@@ -260,19 +288,73 @@ const DocumentRenderer = () => {
           return <span
             key={i}
             dir={w.direction === 'RIGHT_TO_LEFT' ? 'rtl' : 'ltr'}
-            className='absolute text-center inline-block p-1 bg-opacity-60 bg-black text-white rounded-md shadow-zinc-900 shadow-2xl'
+            className={classNames('absolute text-center inline-block p-1 rounded-md shadow-zinc-900 shadow-2xl',
+              'hover:bg-opacity-60 hover:bg-black hover:text-white',
+              'bg-opacity-80 bg-slate-300 text-slate-500'
+            )}
             style={{
               fontSize: `${3.4 * zoomLevel}vmin`,
               width,
               top: Math.floor(w.boundingBox.y0 * zoomLevel) + height,
               left: Math.floor(w.boundingBox.x0 * zoomLevel)
-            }}>
+            }}
+            onDoubleClick={() => setWordToEdit({ word: w, areaId: hoverArea.id })}>
             {w.fullText}
           </span>
         })
       }
     </div>
   }
+
+  const renderEditWord = () => {
+    if (!wordToEdit) return <></>
+
+    const { word, areaId } = wordToEdit
+    const width = Math.floor((word.boundingBox.x1 - word.boundingBox.x0) * zoomLevel) + 2
+    const height = Math.floor(((word.boundingBox.y1 - word.boundingBox.y0) * zoomLevel) * 2) + 4
+    return <div
+      dir={word.direction === 'RIGHT_TO_LEFT' ? 'rtl' : 'ltr'}
+      className={classNames('absolute inline-block p-1 rounded-md',
+        'bg-opacity-60 bg-black text-white',
+      )}
+      style={{
+        width,
+        height,
+        top: Math.floor(word.boundingBox.y0 * zoomLevel) + (height / 2),
+        left: Math.floor(word.boundingBox.x0 * zoomLevel)
+      }}
+      onBlur={() => setWordToEdit(undefined)}
+    >
+      <div
+        className={classNames('text-center align-middle block p-1 rounded-md shadow-zinc-900 shadow-2xl',
+          'bg-opacity-60 bg-black text-white',
+        )}
+        style={{
+          fontSize: `${3.4 * zoomLevel}vmin`,
+          height: height / 2,
+        }}>
+        {word.fullText}
+      </div>
+
+      <input
+        type='text'
+        className='inline-block text-slate-900 p-0 m-0 w-full'
+        autoFocus
+        width={width}
+        ref={editWordInput}
+        placeholder={word.fullText}
+        defaultValue={word.fullText}
+        style={{
+          fontSize: `${3.4 * zoomLevel}vmin`,
+          height: height / 2,
+        }}
+        onFocus={(e) => e.currentTarget.select()}
+        onBlur={(e) => handleWordCorrectionSubmit(word.id, e.currentTarget.value)}
+        onKeyDown={(e) => onEnterHandler(e, () => handleWordCorrectionSubmit(word.id, e.currentTarget.value))}
+        />
+    </div>
+  }
+
 
   return <div className='relative'>
     <div className='flex justify-between align-top mb-2'>
@@ -315,6 +397,7 @@ const DocumentRenderer = () => {
         onMouseMove={handleMouseMove}
       />
       {renderAreaPreview()}
+      {renderEditWord()}
     </div>
   </div >
 }
