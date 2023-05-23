@@ -38,7 +38,7 @@ const DocumentRenderer = () => {
 
   let downClickX = 0
   let downClickY = 0
-  let isMouseDown = false
+  let isDrawing = false
 
   const applyCanvasSizes = (size: { width: number, height: number }) => {
     const documentCanvasInstance = documentCanvas.current
@@ -175,73 +175,80 @@ const DocumentRenderer = () => {
     })
   }
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDrawArea = (x: number, y: number) => {
     const drawingCanvasInstance = drawingCanvas.current
     if (!drawingCanvasInstance) return
+    const context = drawingCanvasInstance.getContext('2d')
+    if (!context) return
 
-    downClickX = e.nativeEvent.offsetX
-    downClickY = e.nativeEvent.offsetY
-    isMouseDown = true
+    context.clearRect(0, 0, drawingCanvasInstance.width, drawingCanvasInstance.height)
+    context.beginPath()
+    const width = x - downClickX
+    const height = y - downClickY
+    context.rect(downClickX, downClickY, width, height)
+    context.strokeStyle = '#000'
+    context.lineWidth = 2
+    context.stroke()
+  }
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    console.log(e)
+    if (e.nativeEvent.shiftKey) {
+      const drawingCanvasInstance = drawingCanvas.current
+      if (!drawingCanvasInstance) return
+
+      downClickX = e.nativeEvent.offsetX
+      downClickY = e.nativeEvent.offsetY
+      isDrawing = true
+    }
   }
 
   const handleMouseUp = async (e: React.MouseEvent) => {
-    const drawingCanvasInstance = drawingCanvas.current
-    if (!drawingCanvasInstance) return
+    if (isDrawing) {
+      const drawingCanvasInstance = drawingCanvas.current
+      if (!drawingCanvasInstance) return
 
-    const mouseX = e.nativeEvent.offsetX
-    const mouseY = e.nativeEvent.offsetY
+      const mouseX = e.nativeEvent.offsetX
+      const mouseY = e.nativeEvent.offsetY
 
-    let startX: number, endX: number
-    if (downClickX < mouseX) {
-      startX = Math.floor(downClickX / zoomLevel)
-      endX = Math.floor(mouseX / zoomLevel)
-    } else {
-      startX = Math.floor(mouseX / zoomLevel)
-      endX = Math.floor(downClickX / zoomLevel)
+      let startX: number, endX: number
+      if (downClickX < mouseX) {
+        startX = Math.floor(downClickX / zoomLevel)
+        endX = Math.floor(mouseX / zoomLevel)
+      } else {
+        startX = Math.floor(mouseX / zoomLevel)
+        endX = Math.floor(downClickX / zoomLevel)
+      }
+
+      let startY: number, endY: number
+      if (downClickY < mouseY) {
+        startY = Math.floor(downClickY / zoomLevel)
+        endY = Math.floor(mouseY / zoomLevel)
+      } else {
+        startY = Math.floor(mouseY / zoomLevel)
+        endY = Math.floor(downClickY / zoomLevel)
+      }
+
+      if (selectedDocument?.id) {
+        const addedArea = await requestAddArea(selectedDocument.id, { startX, startY, endX, endY })
+        setSelectedAreaId(addedArea.id)
+        processImageArea(selectedDocument.id, addedArea.id)
+      }
+
+      const context = drawingCanvasInstance.getContext('2d')
+      context?.clearRect(0, 0, drawingCanvasInstance.width, drawingCanvasInstance.height)
+      isDrawing = false
+      downClickX = 0
+      downClickY = 0
     }
-
-    let startY: number, endY: number
-    if (downClickY < mouseY) {
-      startY = Math.floor(downClickY / zoomLevel)
-      endY = Math.floor(mouseY / zoomLevel)
-    } else {
-      startY = Math.floor(mouseY / zoomLevel)
-      endY = Math.floor(downClickY / zoomLevel)
-    }
-
-    if (selectedDocument?.id) {
-      const addedArea = await requestAddArea(selectedDocument.id, { startX, startY, endX, endY })
-      setSelectedAreaId(addedArea.id)
-      processImageArea(selectedDocument.id, addedArea.id)
-    }
-
-    const context = drawingCanvasInstance.getContext('2d')
-    context?.clearRect(0, 0, drawingCanvasInstance.width, drawingCanvasInstance.height)
-    isMouseDown = false
-    downClickX = 0
-    downClickY = 0
   }
 
   const handleMouseMove = (e: React.MouseEvent) => {
     let mouseX = e.nativeEvent.offsetX
     let mouseY = e.nativeEvent.offsetY
 
-    if (!isMouseDown) handleHoverOverArea(e)
-    else {
-      const drawingCanvasInstance = drawingCanvas.current
-      if (!drawingCanvasInstance) return
-      const context = drawingCanvasInstance.getContext('2d')
-      if (!context) return
-
-      context.clearRect(0, 0, drawingCanvasInstance.width, drawingCanvasInstance.height)
-      context.beginPath()
-      const width = mouseX - downClickX
-      const height = mouseY - downClickY
-      context.rect(downClickX, downClickY, width, height)
-      context.strokeStyle = '#000'
-      context.lineWidth = 2
-      context.stroke()
-    }
+    if (isDrawing) handleMouseDrawArea(mouseX, mouseY)
+    else handleHoverOverArea(e)
   }
 
   const handleWheelEvent = (e: WheelEvent<HTMLDivElement>) => {
@@ -255,13 +262,13 @@ const DocumentRenderer = () => {
   const handleWordCorrectionSubmit = (wordId: string, newWordValue: string) => {
     console.log(newWordValue)
     requestUpdateProcessedWordById(wordId, newWordValue)
-    .then(res => {
-      console.log('res', res)
-      getProcessedAreaById(hoverOverAreaId|| '').then(response => {
-        setHoveredProcessedArea(response)
+      .then(res => {
+        console.log('res', res)
+        getProcessedAreaById(hoverOverAreaId || '').then(response => {
+          setHoveredProcessedArea(response)
+        })
       })
-    })
-    .catch(console.error)
+      .catch(console.error)
     setWordToEdit(undefined)
   }
 
@@ -351,7 +358,7 @@ const DocumentRenderer = () => {
         onFocus={(e) => e.currentTarget.select()}
         onBlur={(e) => handleWordCorrectionSubmit(word.id, e.currentTarget.value)}
         onKeyDown={(e) => onEnterHandler(e, () => handleWordCorrectionSubmit(word.id, e.currentTarget.value))}
-        />
+      />
     </div>
   }
 

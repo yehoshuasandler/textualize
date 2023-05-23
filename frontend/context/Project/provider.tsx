@@ -186,7 +186,6 @@ export function ProjectProvider({ children, projectProps }: Props) {
 
   const requestUpdateProcessedWordById = async (wordId: string, newTextValue: string) => {
     const successfulResponse = await RequestUpdateProcessedWordById(wordId, newTextValue)
-    // if (successfulResponse) await updateDocuments()
     return successfulResponse
   }
 
