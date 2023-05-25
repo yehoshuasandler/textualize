@@ -189,6 +189,18 @@ export function ProjectProvider({ children, projectProps }: Props) {
     return successfulResponse
   }
 
+  const getProcessedAreaById = async (areaId: string) => {
+    try {
+      if (!selectedDocumentId || !areaId) return
+      const processedAreas = await getProcessedAreasByDocumentId(selectedDocumentId)
+      const foundProcessedArea = processedAreas.find(a => a.id === areaId)
+      return foundProcessedArea
+    } catch (err) {
+      console.error(err)
+      return Promise.resolve(undefined)
+    }
+  }
+
 
   useEffect(() => {
     if (!documents.length && !groups.length) updateDocuments()
@@ -231,6 +243,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
     getGroupById,
     requestSelectProjectByName,
     requestUpdateProcessedWordById,
+    getProcessedAreaById,
   }
 
   return <ProjectContext.Provider value={value}>

@@ -3,7 +3,7 @@
 import { useNavigation } from '../../context/Navigation/provider'
 import { workspaces } from '../../context/Navigation/types'
 import { useProject } from '../../context/Project/provider'
-import DocumentRenderer from './DocumentRenderer'
+import DocumentCanvas from '../DocumentCanvas'
 import NoSelectedDocument from './NoSelectedDocument'
 import TextEditor from './TextEditor'
 
@@ -13,7 +13,7 @@ const MainWorkspace = () => {
 
 const renderSelectedWorkSpace = () => {
   if (selectedWorkspace === workspaces.TEXTEDITOR) return <TextEditor />
-  else return !selectedDocumentId ? <NoSelectedDocument /> : <DocumentRenderer />
+  else return !selectedDocumentId ? <NoSelectedDocument /> : <DocumentCanvas />
 }
 
   return <main className=" bg-gray-100 min-h-[calc(100vh-118px)] ml-64 overflow-y-scroll">

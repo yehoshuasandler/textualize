@@ -31,6 +31,7 @@ const makeDefaultProject = (): ProjectContextType => ({
   getGroupById: (groupId) => undefined,
   requestSelectProjectByName: (projectName) => Promise.resolve(false),
   requestUpdateProcessedWordById: (wordId, newTestValue) => Promise.resolve(false),
+  getProcessedAreaById: (areaId) => Promise.resolve(undefined),
 })
 
 export default makeDefaultProject
