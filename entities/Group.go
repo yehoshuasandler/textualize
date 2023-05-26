@@ -1,4 +1,4 @@
-package storage
+package entities
 
 type Group struct {
 	Id        string `json:"id"`

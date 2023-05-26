@@ -1,4 +1,4 @@
-package storage
+package entities
 
 type ProcessedBoundingBox struct {
 	X0 int32 `json:"x0"`

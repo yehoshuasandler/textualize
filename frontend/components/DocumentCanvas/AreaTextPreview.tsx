@@ -1,12 +1,12 @@
 import React from 'react'
-import { ipc } from '../../wailsjs/wailsjs/go/models'
+import { entities } from '../../wailsjs/wailsjs/go/models'
 import classNames from '../../utils/classNames'
 
 type Props = {
-  areas: ipc.Area[]
-  processedArea?: ipc.ProcessedArea
+  areas: entities.Area[]
+  processedArea?: entities.ProcessedArea
   zoomLevel: number
-  setWordToEdit: (props: { word: ipc.ProcessedWord, areaId: string }) => void
+  setWordToEdit: (props: { word: entities.ProcessedWord, areaId: string }) => void
 }
 
 const AreaTextPreview = ({ areas, processedArea, zoomLevel, setWordToEdit }: Props) => {

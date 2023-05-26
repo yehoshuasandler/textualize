@@ -1,15 +1,15 @@
 import React, { useRef } from 'react'
-import { ipc } from '../../wailsjs/wailsjs/go/models'
+import { ipc, entities } from '../../wailsjs/wailsjs/go/models'
 import classNames from '../../utils/classNames'
 import onEnterHandler from '../../utils/onEnterHandler'
 import { useProject } from '../../context/Project/provider'
 
 type Props = {
   zoomLevel: number
-  processedArea?: ipc.ProcessedArea
-  wordToEdit?: ipc.ProcessedWord
-  setWordToEdit: (props?: { word: ipc.ProcessedWord, areaId: string }) => void
-  setHoveredProcessedArea: (area?: ipc.ProcessedArea) => void
+  processedArea?: entities.ProcessedArea
+  wordToEdit?: entities.ProcessedWord
+  setWordToEdit: (props?: { word: entities.ProcessedWord, areaId: string }) => void
+  setHoveredProcessedArea: (area?: entities.ProcessedArea) => void
 }
 
 const EditProcessedWord = ({ setWordToEdit, zoomLevel, wordToEdit, processedArea, setHoveredProcessedArea }: Props) => {

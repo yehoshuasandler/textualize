@@ -2,36 +2,36 @@ package storage
 
 import (
 	"encoding/json"
-	entity "textualize/storage/Entities"
+	"textualize/entities"
 )
 
-func (d LocalDriver) WriteProcessedTextCollection(collection entity.ProcessedTextCollection, projectName string) bool {
+func (d LocalDriver) WriteProcessedTextCollection(collection entities.ProcessedTextCollection, projectName string) bool {
 	jsonData, _ := json.MarshalIndent(collection, "", " ")
 	writeError := WriteDataToAppDir(jsonData, "/projects/"+projectName+"/", "ProcessedTexts.json")
 	return writeError == nil
 }
 
-func (d LocalDriver) ReadProcessedTextCollection(projectName string) entity.ProcessedTextCollection {
-	collectionData := entity.ProcessedTextCollection{}
+func (d LocalDriver) ReadProcessedTextCollection(projectName string) entities.ProcessedTextCollection {
+	collectionData := entities.ProcessedTextCollection{}
 	readError := AssignFileDataToStruct("/projects/"+projectName+"/ProcessedTexts.json", &collectionData)
 	if readError != nil {
-		return entity.ProcessedTextCollection{}
+		return entities.ProcessedTextCollection{}
 	}
 
 	return collectionData
 }
 
-func (d LocalDriver) WriteProcessedUserMarkdownCollection(collection entity.ProcessedUserMarkdownCollection, projectName string) bool {
+func (d LocalDriver) WriteProcessedUserMarkdownCollection(collection entities.ProcessedUserMarkdownCollection, projectName string) bool {
 	jsonData, _ := json.MarshalIndent(collection, "", " ")
 	writeError := WriteDataToAppDir(jsonData, "/projects/"+projectName+"/", "UserProcessedMarkdown.json")
 	return writeError == nil
 }
 
-func (d LocalDriver) ReadProcessedUserMarkdownCollection(projectName string) entity.ProcessedUserMarkdownCollection {
-	collectionData := entity.ProcessedUserMarkdownCollection{}
+func (d LocalDriver) ReadProcessedUserMarkdownCollection(projectName string) entities.ProcessedUserMarkdownCollection {
+	collectionData := entities.ProcessedUserMarkdownCollection{}
 	readError := AssignFileDataToStruct("/projects/"+projectName+"/UserProcessedMarkdown.json", &collectionData)
 	if readError != nil {
-		return entity.ProcessedUserMarkdownCollection{}
+		return entities.ProcessedUserMarkdownCollection{}
 	}
 
 	return collectionData

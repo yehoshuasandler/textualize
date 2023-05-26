@@ -5,17 +5,17 @@ import { useEffect, useState } from 'react'
 import { useProject } from '../../context/Project/provider'
 import classNames from '../../utils/classNames'
 import getSupportedLanguages from '../../utils/getSupportedLanguages'
-import { ipc } from '../../wailsjs/wailsjs/go/models'
+import { entities } from '../../wailsjs/wailsjs/go/models'
 
 type forAreaType = { shouldUpdateArea?: true, shouldUpdateDocument?: never }
 type forDocumentType = { shouldUpdateDocument?: true, shouldUpdateArea?: never }
-type Props = (forAreaType | forDocumentType) & { defaultLanguage?: ipc.Language }
+type Props = (forAreaType | forDocumentType) & { defaultLanguage?: entities.Language }
 
 const LanguageSelect = (props?: Props) => {
   const { requestUpdateDocument, getSelectedDocument } = useProject()
-  const [languages, setLanguages] = useState<ipc.Language[]>([])
+  const [languages, setLanguages] = useState<entities.Language[]>([])
   const [query, setQuery] = useState('')
-  const [selectedLanguage, setSelectedLanguage] = useState<ipc.Language | undefined>(props?.defaultLanguage)
+  const [selectedLanguage, setSelectedLanguage] = useState<entities.Language | undefined>(props?.defaultLanguage)
 
 
   const filteredLanguages = query === ''
@@ -47,7 +47,7 @@ const LanguageSelect = (props?: Props) => {
         style={{'maxWidth': '240px', 'height': '30px'}}
         className="rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
         onChange={(event) => setQuery(event.target.value)}
-        displayValue={(language: ipc.Language) => language?.displayName}
+        displayValue={(language: entities.Language) => language?.displayName}
         placeholder='Document Language'
       />
       <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">

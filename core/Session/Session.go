@@ -1,10 +1,8 @@
 package session
 
-type Session struct {
-	Project      Project
-	Organization Organization
-	User         User
-}
+import "textualize/entities"
+
+type Session entities.Session
 
 var sessionInstance *Session
 
@@ -22,7 +20,7 @@ func InitializeModule(newSession Session) *Session {
 	return sessionInstance
 }
 
-func (s *Session) UpdateCurrentUser(updatedUser User) User {
-	s.User = User(updatedUser)
+func (s *Session) UpdateCurrentUser(updatedUser entities.User) entities.User {
+	s.User = entities.User(updatedUser)
 	return s.User
 }

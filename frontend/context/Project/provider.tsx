@@ -2,7 +2,7 @@
 
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
 import { GetCurrentSession, GetDocuments, } from '../../wailsjs/wailsjs/go/ipc/Channel'
-import { ipc } from '../../wailsjs/wailsjs/go/models'
+import { entities } from '../../wailsjs/wailsjs/go/models'
 import { ProjectContextType, ProjectProps } from './types'
 import makeDefaultProject from './makeDefaultProject'
 import { saveDocuments } from '../../useCases/saveData'
@@ -19,11 +19,11 @@ export function useProject() {
 
 type Props = { children: ReactNode, projectProps: ProjectProps }
 export function ProjectProvider({ children, projectProps }: Props) {
-  const [documents, setDocuments] = useState<ipc.Document[]>(projectProps.documents)
-  const [groups, setGroups] = useState<ipc.Group[]>(projectProps.groups)
+  const [documents, setDocuments] = useState<entities.Document[]>(projectProps.documents)
+  const [groups, setGroups] = useState<entities.Group[]>(projectProps.groups)
   const [selectedAreaId, setSelectedAreaId] = useState<string>('')
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>('')
-  const [currentSession, setCurrentSession] = useState<ipc.Session>(new ipc.Session())
+  const [currentSession, setCurrentSession] = useState<entities.Session>(new entities.Session())
 
   const updateDocuments = async () => {
     const response = await GetDocuments()

@@ -3,47 +3,23 @@ package ipc
 import (
 	"sort"
 	app "textualize/core/App"
-	consts "textualize/core/Consts"
 	document "textualize/core/Document"
 	session "textualize/core/Session"
+	"textualize/entities"
 	storage "textualize/storage"
-	storageEntity "textualize/storage/Entities"
 
 	"github.com/google/uuid"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type GetDocumentsResponse struct {
-	Documents []Document `json:"documents"`
-	Groups    []Group    `json:"groups"`
+	Documents []entities.Document `json:"documents"`
+	Groups    []entities.Group    `json:"groups"`
 }
 
-func (c *Channel) GetDocumentById(id string) Document {
+func (c *Channel) GetDocumentById(id string) entities.Document {
 	foundDocument := document.GetDocumentCollection().GetDocumentById(id)
-	var jsonAreas []Area
-
-	for _, a := range foundDocument.Areas {
-		jsonAreas = append(jsonAreas, Area{
-			Id:       a.Id,
-			Name:     a.Name,
-			StartX:   a.StartX,
-			StartY:   a.StartY,
-			EndX:     a.EndX,
-			EndY:     a.EndY,
-			Order:    a.Order,
-			Language: Language(a.Language),
-		})
-	}
-	response := Document{
-		Id:              foundDocument.Id,
-		Name:            foundDocument.Name,
-		GroupId:         foundDocument.GroupId,
-		Path:            foundDocument.Path,
-		ProjectId:       foundDocument.ProjectId,
-		Areas:           jsonAreas,
-		DefaultLanguage: Language(foundDocument.DefaultLanguage),
-	}
-	return response
+	return entities.Document(*foundDocument)
 }
 
 func (c *Channel) GetDocuments() GetDocumentsResponse {
@@ -51,63 +27,33 @@ func (c *Channel) GetDocuments() GetDocumentsResponse {
 	groups := document.GetGroupCollection().Groups
 
 	response := GetDocumentsResponse{
-		Groups:    make([]Group, 0),
-		Documents: make([]Document, 0),
+		Groups:    make([]entities.Group, 0),
+		Documents: make([]entities.Document, 0),
 	}
 
 	for _, d := range documents {
-		jsonAreas := make([]Area, 0)
-		for _, a := range d.Areas {
-			jsonAreas = append(jsonAreas, Area{
-				Id:       a.Id,
-				Name:     a.Name,
-				StartX:   a.StartX,
-				StartY:   a.StartY,
-				EndX:     a.EndX,
-				EndY:     a.EndY,
-				Order:    a.Order,
-				Language: Language(a.Language),
-			})
-		}
-
-		sort.Slice(jsonAreas, func(i, j int) bool {
-			return jsonAreas[i].Order < jsonAreas[j].Order
+		sortedAreas := d.Areas
+		sort.Slice(sortedAreas, func(i, j int) bool {
+			return sortedAreas[i].Order < sortedAreas[j].Order
 		})
 
-		jsonDocument := Document{
-			Id:              d.Id,
-			GroupId:         d.GroupId,
-			Name:            d.Name,
-			Path:            d.Path,
-			ProjectId:       d.ProjectId,
-			Areas:           jsonAreas,
-			DefaultLanguage: Language(d.DefaultLanguage),
-		}
+		jsonDocument := entities.Document(d)
+		d.Areas = sortedAreas
 		response.Documents = append(response.Documents, jsonDocument)
 	}
 
-	jsonGroups := make([]Group, 0)
-	for _, g := range groups {
-		jsonGroup := Group{
-			Id:        g.Id,
-			ParentId:  g.ParentId,
-			ProjectId: g.ProjectId,
-			Name:      g.Name,
-			Order:     g.Order,
-		}
-		jsonGroups = append(jsonGroups, jsonGroup)
+	if len(groups) > 0 {
+		sortedGroups := groups
+		sort.Slice(sortedGroups, func(i, j int) bool {
+			return sortedGroups[i].Order < sortedGroups[j].Order
+		})
+		response.Groups = sortedGroups
 	}
-
-	sort.Slice(jsonGroups, func(i, j int) bool {
-		return jsonGroups[i].Order < jsonGroups[j].Order
-	})
-
-	response.Groups = jsonGroups
 
 	return response
 }
 
-func (c *Channel) RequestAddDocument(groupId string, documentName string) Document {
+func (c *Channel) RequestAddDocument(groupId string, documentName string) entities.Document {
 	filePath, err := runtime.OpenFileDialog(app.GetInstance().Context, runtime.OpenDialogOptions{
 		Title: "Select an Image",
 		Filters: []runtime.FileFilter{
@@ -120,7 +66,7 @@ func (c *Channel) RequestAddDocument(groupId string, documentName string) Docume
 
 	if err != nil {
 		runtime.LogError(app.GetInstance().Context, err.Error())
-		return Document{}
+		return entities.Document{}
 	}
 
 	newDocument := document.Entity{
@@ -133,15 +79,7 @@ func (c *Channel) RequestAddDocument(groupId string, documentName string) Docume
 
 	document.GetDocumentCollection().AddDocument(newDocument)
 
-	documentResponse := Document{
-		Id:        newDocument.Id,
-		Name:      newDocument.Name,
-		Path:      newDocument.Path,
-		GroupId:   newDocument.GroupId,
-		ProjectId: newDocument.ProjectId,
-	}
-
-	return documentResponse
+	return entities.Document(newDocument)
 }
 
 func (c *Channel) deleteDocumentById(documentId string) bool {
@@ -164,11 +102,11 @@ func (c *Channel) deleteDocumentById(documentId string) bool {
 	return true
 }
 
-func (c *Channel) RequestUpdateDocumentUserMarkdown(documentId string, markdown string) UserMarkdown {
+func (c *Channel) RequestUpdateDocumentUserMarkdown(documentId string, markdown string) entities.UserMarkdown {
 	markdownCollection := document.GetUserMarkdownCollection()
 	markdownToUpdate := markdownCollection.GetUserMarkdownByDocumentId(documentId)
 
-	newMarkdown := document.UserMarkdown{
+	newMarkdown := entities.UserMarkdown{
 		DocumentId: documentId,
 		Value:      markdown,
 	}
@@ -179,11 +117,7 @@ func (c *Channel) RequestUpdateDocumentUserMarkdown(documentId string, markdown 
 	}
 
 	updatedMarkdown := markdownCollection.UpdateUserMarkdown(newMarkdown)
-	return UserMarkdown{
-		Id:         updatedMarkdown.Id,
-		DocumentId: updatedMarkdown.DocumentId,
-		Value:      updatedMarkdown.Value,
-	}
+	return entities.UserMarkdown(updatedMarkdown)
 }
 
 func (c *Channel) deleteDocumentUserMarkdown(documentId string) bool {
@@ -206,26 +140,15 @@ func (c *Channel) deleteDocumentUserMarkdown(documentId string) bool {
 	return true
 }
 
-func (c *Channel) GetUserMarkdownByDocumentId(documentId string) UserMarkdown {
+func (c *Channel) GetUserMarkdownByDocumentId(documentId string) entities.UserMarkdown {
 	foundUserMarkdown := document.GetUserMarkdownCollection().GetUserMarkdownByDocumentId((documentId))
-
-	response := UserMarkdown{}
-
-	if foundUserMarkdown != nil {
-		response = UserMarkdown{
-			Id:         foundUserMarkdown.Id,
-			DocumentId: foundUserMarkdown.DocumentId,
-			Value:      foundUserMarkdown.Value,
-		}
-	}
-
-	return response
+	return entities.UserMarkdown(*foundUserMarkdown)
 }
 
-func (c *Channel) RequestAddDocumentGroup(name string) Group {
+func (c *Channel) RequestAddDocumentGroup(name string) entities.Group {
 	groupCollection := document.GetGroupCollection()
 
-	newGroup := document.Group{
+	newGroup := entities.Group{
 		Id:        uuid.NewString(),
 		Name:      name,
 		ProjectId: session.GetInstance().Project.Id,
@@ -234,60 +157,41 @@ func (c *Channel) RequestAddDocumentGroup(name string) Group {
 
 	groupCollection.AddDocumentGroup(newGroup)
 
-	response := Group{
-		Id:        newGroup.Id,
-		Name:      newGroup.Name,
-		ParentId:  newGroup.ParentId,
-		ProjectId: newGroup.ProjectId,
-		Order:     newGroup.Order,
-	}
-
-	return response
+	return newGroup
 }
 
-func (c *Channel) RequestChangeGroupOrder(groupId string, newOrder int) Group {
+func (c *Channel) RequestChangeGroupOrder(groupId string, newOrder int) entities.Group {
 	groupCollection := document.GetGroupCollection()
 
 	for _, g := range groupCollection.Groups {
 		if g.Id == groupId {
-			// document.GetGroupCollection().Groups[index].Order = newOrder
 			document.GetGroupCollection().GetGroupById(groupId).Order = newOrder
 		} else if g.Order >= newOrder {
-			// document.GetGroupCollection().Groups[index].Order = g.Order + 1
 			document.GetGroupCollection().GetGroupById(groupId).Order = g.Order + 1
 		}
 	}
 
-	return Group(*document.GetGroupCollection().GetGroupById(groupId))
+	return *document.GetGroupCollection().GetGroupById(groupId)
 }
 
-func (c *Channel) GetAreaById(areaId string) Area {
+func (c *Channel) GetAreaById(areaId string) entities.Area {
 	foundDocument := document.GetDocumentCollection().GetDocumentByAreaId(areaId)
 
 	if len(foundDocument.Areas) == 0 {
-		return Area{}
+		return entities.Area{}
 	}
 
-	var foundArea document.Area
+	var foundArea entities.Area
 	for i, a := range foundDocument.Areas {
 		if a.Id == areaId {
 			foundArea = foundDocument.Areas[i]
 		}
 	}
 
-	return Area{
-		Id:       foundArea.Id,
-		Name:     foundArea.Name,
-		StartX:   foundArea.StartX,
-		EndX:     foundArea.EndX,
-		StartY:   foundArea.StartY,
-		EndY:     foundArea.EndY,
-		Order:    foundArea.Order,
-		Language: Language(foundArea.Language),
-	}
+	return foundArea
 }
 
-func (c *Channel) RequestAddArea(documentId string, area Area) Area {
+func (c *Channel) RequestAddArea(documentId string, area entities.Area) entities.Area {
 	foundDocument := document.GetDocumentCollection().GetDocumentById(documentId)
 
 	var id string
@@ -302,7 +206,7 @@ func (c *Channel) RequestAddArea(documentId string, area Area) Area {
 		order = len(foundDocument.Areas)
 	}
 
-	newArea := document.Area{
+	newArea := entities.Area{
 		Id:       id,
 		Name:     area.Name,
 		StartX:   area.StartX,
@@ -310,30 +214,26 @@ func (c *Channel) RequestAddArea(documentId string, area Area) Area {
 		StartY:   area.StartY,
 		EndY:     area.EndY,
 		Order:    order,
-		Language: consts.Language(area.Language),
+		Language: entities.Language(area.Language),
 	}
 	foundDocument.AddArea(newArea)
 
-	responseArea := area
-	responseArea.Id = id
-
-	return responseArea
+	return newArea
 }
 
-func (c *Channel) RequestUpdateArea(updatedArea Area) Area {
+func (c *Channel) RequestUpdateArea(updatedArea entities.Area) entities.Area {
 	documentOfArea := document.GetDocumentCollection().GetDocumentByAreaId(updatedArea.Id)
 
 	if documentOfArea.Id == "" {
-		return Area{}
+		return entities.Area{}
 	}
 
 	areaToUpdate := documentOfArea.GetAreaById(updatedArea.Id)
 
 	if areaToUpdate.Id == "" {
-		return Area{}
+		return entities.Area{}
 	}
 
-	// TODO: add more prop changes when needed
 	if updatedArea.Name != "" {
 		areaToUpdate.Name = updatedArea.Name
 	}
@@ -341,16 +241,7 @@ func (c *Channel) RequestUpdateArea(updatedArea Area) Area {
 		areaToUpdate.Order = updatedArea.Order
 	}
 
-	return Area{
-		Id:       areaToUpdate.Id,
-		Name:     areaToUpdate.Name,
-		StartX:   areaToUpdate.StartX,
-		StartY:   areaToUpdate.StartY,
-		EndX:     areaToUpdate.EndX,
-		EndY:     areaToUpdate.EndY,
-		Order:    areaToUpdate.Order,
-		Language: Language(areaToUpdate.Language),
-	}
+	return *areaToUpdate
 }
 
 func (c *Channel) RequestDeleteAreaById(areaId string) bool {
@@ -379,11 +270,11 @@ func (c *Channel) RequestDeleteAreaById(areaId string) bool {
 
 }
 
-func (c *Channel) RequestUpdateDocument(updatedDocument Document) Document {
+func (c *Channel) RequestUpdateDocument(updatedDocument entities.Document) entities.Document {
 	documentToUpdate := document.GetDocumentCollection().GetDocumentById(updatedDocument.Id)
 
 	if documentToUpdate == nil {
-		return Document{}
+		return entities.Document{}
 	}
 
 	if updatedDocument.Id != "" {
@@ -399,20 +290,20 @@ func (c *Channel) RequestUpdateDocument(updatedDocument Document) Document {
 		documentToUpdate.Path = updatedDocument.Path
 	}
 	if updatedDocument.DefaultLanguage.DisplayName != "" {
-		documentToUpdate.DefaultLanguage = consts.Language(updatedDocument.DefaultLanguage)
+		documentToUpdate.DefaultLanguage = updatedDocument.DefaultLanguage
 	}
 
 	return updatedDocument
 }
 
-func (c *Channel) RequestChangeAreaOrder(areaId string, newOrder int) Document {
+func (c *Channel) RequestChangeAreaOrder(areaId string, newOrder int) entities.Document {
 	documentOfArea := document.GetDocumentCollection().GetDocumentByAreaId((areaId))
 
 	if documentOfArea == nil {
-		return Document{}
+		return entities.Document{}
 	}
 
-	var foundArea document.Area
+	var foundArea entities.Area
 	for _, a := range documentOfArea.Areas {
 		if a.Id == areaId {
 			foundArea = a
@@ -421,7 +312,7 @@ func (c *Channel) RequestChangeAreaOrder(areaId string, newOrder int) Document {
 	}
 
 	if foundArea.Id == "" {
-		return Document{}
+		return entities.Document{}
 	}
 
 	processedAreasCollection := document.GetProcessedAreaCollection()
@@ -455,37 +346,18 @@ func (c *Channel) RequestSaveDocumentCollection() bool {
 		return false
 	}
 
-	var documentsToWrite []storageEntity.Document
-	for _, d := range documentCollection.Documents {
-		var areasToWrite []storageEntity.Area
-		for _, a := range d.Areas {
-			areasToWrite = append(areasToWrite, storageEntity.Area{
-				Id:       a.Id,
-				Name:     a.Name,
-				StartX:   a.StartX,
-				StartY:   a.StartY,
-				EndX:     a.EndX,
-				EndY:     a.EndY,
-				Language: storageEntity.Language(a.Language),
-				Order:    a.Order,
-			})
-		}
-
-		documentsToWrite = append(documentsToWrite, storageEntity.Document{
-			Id:              d.Id,
-			GroupId:         d.GroupId,
-			Name:            d.Name,
-			Path:            d.Path,
-			ProjectId:       d.ProjectId,
-			Areas:           areasToWrite,
-			DefaultLanguage: storageEntity.Language(d.DefaultLanguage),
-		})
+	documentCount := len(documentCollection.Documents)
+	writableDocuments := make([]entities.Document, documentCount)
+	for i := 0; i < documentCount; i++ {
+		writableDocuments[i] = entities.Document(documentCollection.Documents[i])
 	}
 
-	successfulWrite := storage.GetDriver().WriteDocumentCollection(storageEntity.DocumentCollection{
-		Documents: documentsToWrite,
-		ProjectId: fullProject.Id,
-	}, projectName)
+	successfulWrite := storage.GetDriver().WriteDocumentCollection(
+		entities.DocumentCollection{
+			ProjectId: fullProject.Id,
+			Documents: writableDocuments,
+		},
+		projectName)
 
 	return successfulWrite
 }
@@ -500,15 +372,16 @@ func (c *Channel) RequestSaveGroupCollection() bool {
 		return false
 	}
 
-	var groupsToWrite []storageEntity.Group
-	for _, g := range groupCollection.Groups {
-		groupsToWrite = append(groupsToWrite, storageEntity.Group(g))
+	groupCount := len(groupCollection.Groups)
+	writableGroups := make([]entities.Group, groupCount)
+	for i := 0; i < groupCount; i++ {
+		writableGroups[i] = entities.Group(groupCollection.Groups[i])
 	}
 
-	successfulWrite := storage.GetDriver().WriteGroupCollection(storageEntity.GroupCollection{
+	successfulWrite := storage.GetDriver().WriteGroupCollection(entities.GroupCollection{
 		Id:        groupCollection.Id,
 		ProjectId: groupCollection.ProjectId,
-		Groups:    groupsToWrite,
+		Groups:    writableGroups,
 	}, projectName)
 
 	return successfulWrite
@@ -518,53 +391,18 @@ func (c *Channel) RequestSaveProcessedTextCollection() bool {
 	processedAreaCollection := document.GetProcessedAreaCollection()
 	projectName := c.GetCurrentSession().Project.Name
 
-	areasToWrite := make([]storageEntity.ProcessedArea, 0)
-	for _, a := range processedAreaCollection.Areas {
-		linesOfAreaToWrite := make([]storageEntity.ProcessedLine, 0)
-		for _, l := range a.Lines {
-			wordsOfLineToWrite := make([]storageEntity.ProcessedWord, 0)
-
-			for _, w := range l.Words {
-				symbolsOfWordToWrite := make([]storageEntity.ProcessedSymbol, 0)
-
-				for _, s := range w.Symbols {
-					symbolsOfWordToWrite = append(symbolsOfWordToWrite, storageEntity.ProcessedSymbol{
-						Text:        s.Text,
-						Confidence:  s.Confidence,
-						BoundingBox: storageEntity.ProcessedBoundingBox(s.BoundingBox),
-					})
-				}
-
-				wordsOfLineToWrite = append(wordsOfLineToWrite, storageEntity.ProcessedWord{
-					Id:          w.Id,
-					FullText:    w.FullText,
-					Confidence:  w.Confidence,
-					Direction:   w.Direction,
-					BoundingBox: storageEntity.ProcessedBoundingBox(w.BoundingBox),
-					Symbols:     symbolsOfWordToWrite,
-				})
-			}
-
-			linesOfAreaToWrite = append(linesOfAreaToWrite, storageEntity.ProcessedLine{
-				FullText: l.FullText,
-				Words:    wordsOfLineToWrite,
-			})
-		}
-
-		areasToWrite = append(areasToWrite, storageEntity.ProcessedArea{
-			Id:         a.Id,
-			DocumentId: a.DocumentId,
-			FullText:   a.FullText,
-			Order:      a.Order,
-			Lines:      linesOfAreaToWrite,
-		})
+	processedAreasCount := len(processedAreaCollection.Areas)
+	writableProcessedAreasAreas := make([]entities.ProcessedArea, processedAreasCount)
+	for i := 0; i < processedAreasCount; i++ {
+		writableProcessedAreasAreas[i] = entities.ProcessedArea(processedAreaCollection.Areas[i])
 	}
 
-	processedAreaCollectionToWrite := storageEntity.ProcessedTextCollection{
-		Areas: areasToWrite,
-	}
-
-	successfulWrite := storage.GetDriver().WriteProcessedTextCollection(processedAreaCollectionToWrite, projectName)
+	successfulWrite := storage.GetDriver().WriteProcessedTextCollection(
+		entities.ProcessedTextCollection{
+			Areas: writableProcessedAreasAreas,
+		},
+		projectName,
+	)
 	return successfulWrite
 }
 
@@ -578,14 +416,18 @@ func (c *Channel) RequestSaveLocalUserProcessedMarkdownCollection() bool {
 		return false
 	}
 
-	var valuesToWrite []storageEntity.ProcessedUserMarkdown
-	for _, v := range userProcessedMarkdownCollection.Values {
-		valuesToWrite = append(valuesToWrite, storageEntity.ProcessedUserMarkdown(v))
+	groupCount := len(userProcessedMarkdownCollection.Values)
+	writableMarkdownValues := make([]entities.ProcessedUserMarkdown, groupCount)
+	for i := 0; i < groupCount; i++ {
+		writableMarkdownValues[i] = entities.ProcessedUserMarkdown(userProcessedMarkdownCollection.Values[i])
 	}
 
-	successfulWrite := storage.GetDriver().WriteProcessedUserMarkdownCollection(storageEntity.ProcessedUserMarkdownCollection{
-		Values: valuesToWrite,
-	}, projectName)
+	successfulWrite := storage.GetDriver().WriteProcessedUserMarkdownCollection(
+		entities.ProcessedUserMarkdownCollection{
+			Values: writableMarkdownValues,
+		},
+		projectName,
+	)
 
 	return successfulWrite
 }

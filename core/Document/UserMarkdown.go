@@ -1,13 +1,11 @@
 package document
 
-type UserMarkdown struct {
-	Id         string
-	DocumentId string
-	Value      string
-}
+import "textualize/entities"
+
+type UserMarkdown entities.UserMarkdown
 
 type UserMarkdownCollection struct {
-	Values []UserMarkdown
+	Values []entities.UserMarkdown
 }
 
 var userMarkdownCollection *UserMarkdownCollection
@@ -24,8 +22,8 @@ func SetUserMarkdownCollection(collection UserMarkdownCollection) {
 	userMarkdownCollection = &collection
 }
 
-func (collection *UserMarkdownCollection) GetUserMarkdownByDocumentId(documentId string) *UserMarkdown {
-	var foundUserMarkdown *UserMarkdown
+func (collection *UserMarkdownCollection) GetUserMarkdownByDocumentId(documentId string) *entities.UserMarkdown {
+	var foundUserMarkdown *entities.UserMarkdown
 
 	for index, m := range collection.Values {
 		if m.DocumentId == documentId {
@@ -37,12 +35,12 @@ func (collection *UserMarkdownCollection) GetUserMarkdownByDocumentId(documentId
 	return foundUserMarkdown
 }
 
-func (collection *UserMarkdownCollection) AddUserMarkdown(userMarkdown UserMarkdown) UserMarkdown {
+func (collection *UserMarkdownCollection) AddUserMarkdown(userMarkdown entities.UserMarkdown) entities.UserMarkdown {
 	collection.Values = append(collection.Values, userMarkdown)
 	return userMarkdown
 }
 
-func (collection *UserMarkdownCollection) UpdateUserMarkdown(userMarkdown UserMarkdown) UserMarkdown {
+func (collection *UserMarkdownCollection) UpdateUserMarkdown(userMarkdown entities.UserMarkdown) entities.UserMarkdown {
 	currentUserMarkdown := collection.GetUserMarkdownByDocumentId(userMarkdown.DocumentId)
 
 	if currentUserMarkdown != nil {

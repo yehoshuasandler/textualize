@@ -1,6 +1,6 @@
-import { ipc } from '../../wailsjs/wailsjs/go/models'
+import { entities } from '../../wailsjs/wailsjs/go/models'
 
-type Props = { projects: ipc.Project[], onSelectProjectHandler: (projectName: string) => void }
+type Props = { projects: entities.Project[], onSelectProjectHandler: (projectName: string) => void }
 const ProjectListModal = (props: Props) => {
 
   return (

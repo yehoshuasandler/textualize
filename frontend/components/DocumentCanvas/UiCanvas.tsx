@@ -2,7 +2,7 @@
 
 import React, { WheelEvent, useEffect, useRef, useState } from 'react'
 import { useProject } from '../../context/Project/provider'
-import { ipc } from '../../wailsjs/wailsjs/go/models'
+import { entities } from '../../wailsjs/wailsjs/go/models'
 import createUiCanvasInteractions from './createUiCanvasInteractions'
 import processImageArea from '../../useCases/processImageArea'
 import AreaTextPreview from './AreaTextPreview'
@@ -30,8 +30,8 @@ const UiCanvas = (props: Props) => {
   } = useProject()
   const canvas = useRef<HTMLCanvasElement>(null)
   const [hoverOverAreaId, setHoverOverAreaId] = useState('')
-  const [wordToEdit, setWordToEdit] = useState<{ word: ipc.ProcessedWord, areaId: string } | undefined>()
-  const [hoveredProcessedArea, setHoveredProcessedArea] = useState<ipc.ProcessedArea | undefined>()
+  const [wordToEdit, setWordToEdit] = useState<{ word: entities.ProcessedWord, areaId: string } | undefined>()
+  const [hoveredProcessedArea, setHoveredProcessedArea] = useState<entities.ProcessedArea | undefined>()
 
   const areas = getSelectedDocument()?.areas || []
   const { width, height, zoomDetails, setZoomLevel } = props

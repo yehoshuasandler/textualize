@@ -1,20 +1,20 @@
 import { saveGroups } from '../../useCases/saveData'
 import { RequestAddDocument, RequestAddDocumentGroup, RequestChangeGroupOrder, RequestDeleteDocumentAndChildren, RequestUpdateDocument, RequestUpdateProcessedWordById } from '../../wailsjs/wailsjs/go/ipc/Channel'
-import { ipc } from '../../wailsjs/wailsjs/go/models'
+import { ipc, entities } from '../../wailsjs/wailsjs/go/models'
 import { UpdateDocumentRequest } from './types'
 
 type Dependencies = {
   selectedDocumentId: string
-  documents: ipc.Document[]
+  documents: entities.Document[]
   saveDocuments: () => Promise<void>
   updateDocuments: () => Promise<ipc.GetDocumentsResponse>
-  groups: ipc.Group[]
+  groups: entities.Group[]
 }
 
 const createDocumentProviderMethods = (dependencies: Dependencies) => {
   const { selectedDocumentId, documents, saveDocuments, updateDocuments, groups } = dependencies
 
-  const getGroupById = (groupId: string): ipc.Group | undefined => (
+  const getGroupById = (groupId: string): entities.Group | undefined => (
     groups.find(g => g.id === groupId)
   )
 
@@ -42,7 +42,7 @@ const createDocumentProviderMethods = (dependencies: Dependencies) => {
   }
 
   const requestUpdateDocument = async (documentProps: UpdateDocumentRequest) => {
-    const response = await RequestUpdateDocument(new ipc.Document(documentProps))
+    const response = await RequestUpdateDocument(new entities.Document(documentProps))
     await updateDocuments()
     saveDocuments()
     return response

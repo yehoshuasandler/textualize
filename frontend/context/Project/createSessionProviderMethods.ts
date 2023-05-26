@@ -1,9 +1,9 @@
 import { CreateNewProject, RequestChangeSessionProjectByName, RequestChooseUserAvatar, RequestUpdateCurrentUser } from '../../wailsjs/wailsjs/go/ipc/Channel'
-import { ipc } from '../../wailsjs/wailsjs/go/models'
+import { ipc, entities } from '../../wailsjs/wailsjs/go/models'
 import { UserProps } from './types'
 
 type Dependencies = {
-  updateSession: () => Promise<ipc.Session>
+  updateSession: () => Promise<entities.Session>
   updateDocuments: () => Promise<ipc.GetDocumentsResponse>
 }
 
@@ -17,7 +17,7 @@ const createSessionProviderMethods = (dependencies: Dependencies) => {
   }
 
   const requestUpdateCurrentUser = async (userProps: UserProps) => {
-    const response = await RequestUpdateCurrentUser(new ipc.User(userProps))
+    const response = await RequestUpdateCurrentUser(new entities.User(userProps))
     await updateSession()
     return response
   }

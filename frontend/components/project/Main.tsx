@@ -7,7 +7,7 @@ import { useNavigation } from '../../context/Navigation/provider'
 import { mainPages } from '../../context/Navigation/types'
 import { useProject } from '../../context/Project/provider'
 import { GetAllLocalProjects } from '../../wailsjs/wailsjs/go/ipc/Channel'
-import { ipc } from '../../wailsjs/wailsjs/go/models'
+import { entities } from '../../wailsjs/wailsjs/go/models'
 import NewProjectModal from './NewProjectModal'
 import ProjectListModal from './ProjectListModal'
 
@@ -17,7 +17,7 @@ const MainProject = () => {
   const [isProjectListModal, setIsProjectListModal] = useState(false)
   const [canPopoverBeOpen, setCanPopoverBeOpen] = useState(true)
 
-  const [avalibleProjects, setAvalibleProjects] = useState<ipc.Project[]>([])
+  const [avalibleProjects, setAvalibleProjects] = useState<entities.Project[]>([])
   const { createNewProject, requestSelectProjectByName } = useProject()
   const { setSelectedMainPage } = useNavigation()
 

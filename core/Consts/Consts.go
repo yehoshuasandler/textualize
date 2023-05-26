@@ -1,13 +1,15 @@
 package consts
 
-type Language struct {
-	DisplayName   string
-	ProcessCode   string
-	TranslateCode string
-}
+import "textualize/entities"
 
-func GetSuppportedLanguages() []Language {
-	return []Language{
+// type Language struct {
+// 	DisplayName   string
+// 	ProcessCode   string
+// 	TranslateCode string
+// }
+
+func GetSuppportedLanguages() []entities.Language {
+	return []entities.Language{
 		{
 			DisplayName:   "English",
 			ProcessCode:   "eng",

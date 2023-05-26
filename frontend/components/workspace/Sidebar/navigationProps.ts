@@ -1,7 +1,7 @@
-import { ipc } from '../../../wailsjs/wailsjs/go/models'
+import { entities } from '../../../wailsjs/wailsjs/go/models'
 import { SidebarGroup } from './types'
 
-const getNavigationProps = (documents: ipc.Document[], groups: ipc.Group[]) : SidebarGroup[] => {
+const getNavigationProps = (documents: entities.Document[], groups: entities.Group[]) : SidebarGroup[] => {
   const groupsWithDocuments = groups.map(g => {
     const childrenDocuments = documents
       .filter(d => d.groupId === g.id)

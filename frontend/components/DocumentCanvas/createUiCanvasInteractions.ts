@@ -1,5 +1,5 @@
 import isInBounds from '../../utils/isInBounds'
-import { ipc } from '../../wailsjs/wailsjs/go/models'
+import { entities } from '../../wailsjs/wailsjs/go/models'
 
 
 type MouseCoordinates = {
@@ -75,7 +75,7 @@ const createUiCanvasInteractions = (uiCanvas: HTMLCanvasElement) => {
       if (shouldAttemptToZoomIn) setZoomCallBack(currentZoomLevel + zoomStep)
       else if (currentZoomLevel > (zoomStep * 2)) setZoomCallBack(currentZoomLevel - zoomStep)
     },
-    onHoverOverArea: (mouseX: number, mouseY: number, zoomLevel: number, areas: ipc.Area[], callback: HoverOverAreaCallback) => {
+    onHoverOverArea: (mouseX: number, mouseY: number, zoomLevel: number, areas: entities.Area[], callback: HoverOverAreaCallback) => {
       if (!areas.length) return
 
       const domRect = uiCanvas.getBoundingClientRect()
