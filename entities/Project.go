@@ -1,4 +1,4 @@
-package storage
+package entities
 
 type Project struct {
 	Id             string          `json:"id"`

@@ -1,18 +1,9 @@
 package session
 
 import (
-	consts "textualize/core/Consts"
+	"textualize/entities"
 )
 
-type Project struct {
-	Id             string
-	OrganizationId string
-	Name           string
-	Settings       ProjectSettings
-}
+type Project entities.Project
 
-type ProjectSettings struct {
-	DefaultProcessLanguage         consts.Language
-	DefaultTranslateTargetLanguage consts.Language
-	IsHosted                       bool
-}
+type ProjectSettings entities.ProjectSettings

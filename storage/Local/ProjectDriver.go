@@ -3,27 +3,27 @@ package storage
 import (
 	"encoding/json"
 	"os"
-	storage "textualize/storage/Entities"
+	"textualize/entities"
 )
 
-func (d LocalDriver) WriteProjectData(project storage.Project) bool {
+func (d LocalDriver) WriteProjectData(project entities.Project) bool {
 	jsonData, _ := json.MarshalIndent(project, "", " ")
 	writeError := WriteDataToAppDir(jsonData, "/projects/"+project.Name+"/", "Project.json")
 	return writeError == nil
 }
 
-func (d LocalDriver) ReadProjectDataByName(projectName string) storage.Project {
-	projectData := storage.Project{}
+func (d LocalDriver) ReadProjectDataByName(projectName string) entities.Project {
+	projectData := entities.Project{}
 	readError := AssignFileDataToStruct("/projects/"+projectName+"/Project.json", &projectData)
 	if readError != nil {
-		return storage.Project{}
+		return entities.Project{}
 	}
 
 	return projectData
 }
 
-func (d LocalDriver) ReadAllProjects() []storage.Project {
-	localProjects := make([]storage.Project, 0)
+func (d LocalDriver) ReadAllProjects() []entities.Project {
+	localProjects := make([]entities.Project, 0)
 
 	subdirectory := "/projects/"
 	isLocalStorageDirectoryCreated := createLocalStorageSubDirIfNeeded(subdirectory)

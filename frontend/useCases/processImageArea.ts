@@ -1,6 +1,6 @@
 import { createScheduler, createWorker } from 'tesseract.js'
 import { GetAreaById, GetDocumentById, RequestAddProcessedArea, RequestSaveProcessedTextCollection } from '../wailsjs/wailsjs/go/ipc/Channel'
-import { ipc } from '../wailsjs/wailsjs/go/models'
+import { entities } from '../wailsjs/wailsjs/go/models'
 import loadImage from './loadImage'
 import { saveProcessedText } from './saveData'
 
@@ -31,27 +31,27 @@ const processImageArea = async (documentId: string, areaId: string) => {
     }
   })
 
-  const addProcessesAreaRequest = await RequestAddProcessedArea(new ipc.ProcessedArea({
+  const addProcessesAreaRequest = await RequestAddProcessedArea(new entities.ProcessedArea({
     id: foundArea.id,
     documentId,
     order: foundArea.order,
     fullText: result.data.text,
-    lines: result.data.lines.map((l: any) => new ipc.ProcessedLine({
+    lines: result.data.lines.map((l: any) => new entities.ProcessedLine({
       fullText: l.text,
-      words: l.words.map((w: any) => new ipc.ProcessedWord({
+      words: l.words.map((w: any) => new entities.ProcessedWord({
         fullText: w.text,
         direction: w.direction,
         confidence: w.confidence,
-        boundingBox: new ipc.ProcessedBoundingBox({
+        boundingBox: new entities.ProcessedBoundingBox({
           x0: w.bbox.x0,
           y0: w.bbox.y0,
           x1: w.bbox.x1,
           y1: w.bbox.y1,
         }),
-        symbols: w.symbols.map((s: any) => new ipc.ProcessedSymbol({
+        symbols: w.symbols.map((s: any) => new entities.ProcessedSymbol({
           fullText: s.text,
           confidence: s.confidence,
-          boundingBox: new ipc.ProcessedBoundingBox({
+          boundingBox: new entities.ProcessedBoundingBox({
             x0: s.bbox.x0,
             y0: s.bbox.y0,
             x1: s.bbox.x1,

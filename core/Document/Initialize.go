@@ -1,6 +1,8 @@
 package document
 
-func InitizeModule() {
+import "textualize/entities"
+
+func InitializeModule() {
 	GetDocumentCollection()
 	GetGroupCollection()
 }
@@ -9,7 +11,7 @@ func createTestData() {
 	documentCollection := GetDocumentCollection()
 	documentGroupCollection := GetGroupCollection()
 
-	documentGroupCollection.AddDocumentGroup(Group{
+	documentGroupCollection.AddDocumentGroup(entities.Group{
 		Id:   "XYZ",
 		Name: "Test Group One",
 	})

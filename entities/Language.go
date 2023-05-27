@@ -1,4 +1,4 @@
-package storage
+package entities
 
 type Language struct {
 	DisplayName   string `json:"displayName"`

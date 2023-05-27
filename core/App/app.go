@@ -5,6 +5,7 @@ import (
 	"fmt"
 	document "textualize/core/Document"
 	session "textualize/core/Session"
+	"textualize/entities"
 	storage "textualize/storage"
 )
 
@@ -26,10 +27,10 @@ func (a *App) Startup(ctx context.Context) {
 	a.Context = ctx
 	localUserData := storage.GetDriver().ReadUserData()
 	session.InitializeModule(session.Session{
-		User: session.User(localUserData),
+		User: entities.User(localUserData),
 	})
 
-	document.InitizeModule()
+	document.InitializeModule()
 
 	fmt.Println(localUserData)
 }

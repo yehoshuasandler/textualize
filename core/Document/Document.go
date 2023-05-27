@@ -1,36 +1,19 @@
 package document
 
 import (
-	consts "textualize/core/Consts"
+	"textualize/entities"
 )
 
-type Entity struct {
-	Id              string
-	GroupId         string
-	Name            string
-	Path            string
-	ProjectId       string
-	Areas           []Area
-	DefaultLanguage consts.Language
-}
+type Entity entities.Document
 
-type Area struct {
-	Id       string
-	Name     string
-	StartX   int
-	StartY   int
-	EndX     int
-	EndY     int
-	Language consts.Language
-	Order    int
-}
+type Area entities.Area
 
-func (e *Entity) AddArea(a Area) {
+func (e *Entity) AddArea(a entities.Area) {
 	e.Areas = append(e.Areas, a)
 }
 
-func (e *Entity) GetAreaById(areaId string) *Area {
-	var foundArea *Area
+func (e *Entity) GetAreaById(areaId string) *entities.Area {
+	var foundArea *entities.Area
 
 	for index, a := range e.Areas {
 		if a.Id == areaId {

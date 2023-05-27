@@ -1,10 +1,10 @@
 import { saveDocuments } from '../../useCases/saveData'
 import { GetProcessedAreasByDocumentId, RequestAddArea, RequestAddProcessedArea, RequestChangeAreaOrder, RequestDeleteAreaById, RequestUpdateArea } from '../../wailsjs/wailsjs/go/ipc/Channel'
-import { ipc } from '../../wailsjs/wailsjs/go/models'
+import { entities, ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps } from './types'
 
 type Dependencies = {
-  documents: ipc.Document[]
+  documents: entities.Document[]
   updateDocuments: () => Promise<ipc.GetDocumentsResponse>
   selectedDocumentId: string
 }
@@ -12,7 +12,7 @@ type Dependencies = {
 const createAreaProviderMethods = (dependencies: Dependencies) => {
   const { documents, updateDocuments, selectedDocumentId } = dependencies
 
-  const getAreaById = (areaId: string): ipc.Area | undefined => (
+  const getAreaById = (areaId: string): entities.Area | undefined => (
     documents.map(d => d.areas).flat().find(a => a.id === areaId)
   )
 
@@ -29,7 +29,7 @@ const createAreaProviderMethods = (dependencies: Dependencies) => {
   }
 
   const getProcessedAreasByDocumentId = async (documentId: string) => {
-    let response: ipc.ProcessedArea[] = []
+    let response: entities.ProcessedArea[] = []
     try {
       response = await GetProcessedAreasByDocumentId(documentId)
     } catch (err) {
@@ -38,15 +38,15 @@ const createAreaProviderMethods = (dependencies: Dependencies) => {
     return response
   }
 
-  const requestAddArea = async (documentId: string, area: AddAreaProps): Promise<ipc.Area> => {
-    const response = await RequestAddArea(documentId, new ipc.Area(area))
+  const requestAddArea = async (documentId: string, area: AddAreaProps): Promise<entities.Area> => {
+    const response = await RequestAddArea(documentId, new entities.Area(area))
     if (response.id) await updateDocuments()
     saveDocuments()
     return response
   }
 
-  const requestUpdateArea = async (updatedArea: AreaProps): Promise<ipc.Area> => {
-    const response = await RequestUpdateArea(new ipc.Area(updatedArea))
+  const requestUpdateArea = async (updatedArea: AreaProps): Promise<entities.Area> => {
+    const response = await RequestUpdateArea(new entities.Area(updatedArea))
 
     if (response.id) await updateDocuments()
     saveDocuments()
@@ -60,7 +60,7 @@ const createAreaProviderMethods = (dependencies: Dependencies) => {
     return wasSuccessfulDeletion
   }
 
-  const requestAddProcessedArea = async (processedArea: ipc.ProcessedArea) => await RequestAddProcessedArea(processedArea)
+  const requestAddProcessedArea = async (processedArea: entities.ProcessedArea) => await RequestAddProcessedArea(processedArea)
 
   const requestChangeAreaOrder = async (areaId: string, newOrder: number) => {
     const response = await RequestChangeAreaOrder(areaId, newOrder)

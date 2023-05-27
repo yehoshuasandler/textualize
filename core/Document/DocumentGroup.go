@@ -1,18 +1,10 @@
 package document
 
-type Group struct {
-	Id        string
-	ParentId  string
-	ProjectId string
-	Name      string
-	Order     int
-}
+import "textualize/entities"
 
-type GroupCollection struct {
-	Id        string
-	Groups    []Group
-	ProjectId string
-}
+type Group entities.Group
+
+type GroupCollection entities.GroupCollection
 
 var groupCollectionInstance *GroupCollection
 
@@ -29,12 +21,12 @@ func SetGroupCollection(collection GroupCollection) *GroupCollection {
 	return groupCollectionInstance
 }
 
-func (collection *GroupCollection) AddDocumentGroup(group Group) {
+func (collection *GroupCollection) AddDocumentGroup(group entities.Group) {
 	collection.Groups = append(collection.Groups, group)
 }
 
-func (collection *GroupCollection) GetGroupById(groupId string) *Group {
-	var foundGroup *Group
+func (collection *GroupCollection) GetGroupById(groupId string) *entities.Group {
+	var foundGroup *entities.Group
 
 	for index, g := range collection.Groups {
 		if g.Id == groupId {

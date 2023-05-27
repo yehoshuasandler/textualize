@@ -1,13 +1,13 @@
 import { saveUserProcessedMarkdown } from '../../useCases/saveData'
 import { GetUserMarkdownByDocumentId, RequestUpdateDocumentUserMarkdown } from '../../wailsjs/wailsjs/go/ipc/Channel'
-import { ipc } from '../../wailsjs/wailsjs/go/models'
+import { ipc, entities } from '../../wailsjs/wailsjs/go/models'
 
 type Dependencies = {}
 
 const createUserMarkdownProviderMethods = (dependencies?: Dependencies) => {
 
   const requestUpdateDocumentUserMarkdown = async (documentId: string, markdown: string) => {
-    let response: ipc.UserMarkdown = new ipc.UserMarkdown()
+    let response = new entities.UserMarkdown()
     try {
       response = await RequestUpdateDocumentUserMarkdown(documentId, markdown)
       await saveUserProcessedMarkdown()
@@ -17,8 +17,8 @@ const createUserMarkdownProviderMethods = (dependencies?: Dependencies) => {
     return response
   }
 
-  const getUserMarkdownByDocumentId = async (documentId: string): Promise<ipc.UserMarkdown> => {
-    let response: ipc.UserMarkdown = new ipc.UserMarkdown({})
+  const getUserMarkdownByDocumentId = async (documentId: string): Promise<entities.UserMarkdown> => {
+    let response = new entities.UserMarkdown({})
     try {
       response = await GetUserMarkdownByDocumentId(documentId)
     } catch (err) {

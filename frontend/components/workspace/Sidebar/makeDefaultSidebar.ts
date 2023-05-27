@@ -16,6 +16,10 @@ const makeDefaultSidebar = (): SidebarContextType => ({
   setIsAddNewGroupInputShowing: (_: boolean) => {},
   isEditAreaNameInputShowing: false,
   setIsEditAreaNameInputShowing: (_: boolean) => {},
+  dragOverGroupId: '',
+  setDragOverGroupId: (_: string) => {},
+  dragOverAreaId: '',
+  setDragOverAreaId: (_: string) => {},
 })
 
 export default makeDefaultSidebar

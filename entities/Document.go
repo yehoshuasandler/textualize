@@ -1,4 +1,4 @@
-package storage
+package entities
 
 type DocumentCollection struct {
 	Documents []Document `json:"documents"`

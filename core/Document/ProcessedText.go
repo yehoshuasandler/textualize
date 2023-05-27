@@ -1,42 +1,9 @@
 package document
 
-type ProcessedBoundingBox struct {
-	X0 int32
-	Y0 int32
-	X1 int32
-	Y1 int32
-}
-
-type ProcessedSymbol struct {
-	Text        string
-	Confidence  float32
-	BoundingBox ProcessedBoundingBox
-}
-
-type ProcessedWord struct {
-	Id          string
-	FullText    string
-	Symbols     []ProcessedSymbol
-	Confidence  float32
-	Direction   string
-	BoundingBox ProcessedBoundingBox
-}
-
-type ProcessedLine struct {
-	FullText string
-	Words    []ProcessedWord
-}
-
-type ProcessedArea struct {
-	Id         string
-	DocumentId string
-	FullText   string
-	Order      int
-	Lines      []ProcessedLine
-}
+import "textualize/entities"
 
 type ProcessedAreaCollection struct {
-	Areas []ProcessedArea
+	Areas []entities.ProcessedArea
 }
 
 var processedAreaCollectionInstnace *ProcessedAreaCollection
@@ -52,12 +19,12 @@ func SetProcessedAreaCollection(collection ProcessedAreaCollection) {
 	processedAreaCollectionInstnace = &collection
 }
 
-func (collection *ProcessedAreaCollection) AddProcessedArea(area ProcessedArea) {
+func (collection *ProcessedAreaCollection) AddProcessedArea(area entities.ProcessedArea) {
 	collection.Areas = append(collection.Areas, area)
 }
 
-func (collection *ProcessedAreaCollection) GetAreasByDocumentId(id string) []*ProcessedArea {
-	var foundAreas []*ProcessedArea
+func (collection *ProcessedAreaCollection) GetAreasByDocumentId(id string) []*entities.ProcessedArea {
+	var foundAreas []*entities.ProcessedArea
 
 	for index, a := range collection.Areas {
 		if a.DocumentId == id {
@@ -68,8 +35,8 @@ func (collection *ProcessedAreaCollection) GetAreasByDocumentId(id string) []*Pr
 	return foundAreas
 }
 
-func (collection *ProcessedAreaCollection) GetAreaById(areaId string) *ProcessedArea {
-	var foundArea *ProcessedArea
+func (collection *ProcessedAreaCollection) GetAreaById(areaId string) *entities.ProcessedArea {
+	var foundArea *entities.ProcessedArea
 
 	for index, a := range collection.Areas {
 		if a.Id == areaId {

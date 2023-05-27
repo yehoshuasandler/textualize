@@ -1,9 +1,9 @@
-import { ipc } from '../../wailsjs/wailsjs/go/models'
+import { ipc, entities } from '../../wailsjs/wailsjs/go/models'
 
 export type ProjectProps = {
   id: string,
-  documents: ipc.Document[],
-  groups: ipc.Group[],
+  documents: entities.Document[],
+  groups: entities.Group[],
 }
 
 export type AddAreaProps = {
@@ -32,36 +32,36 @@ export type UpdateDocumentRequest = {
   groupId?: string,
   name?: string,
   path?: string,
-  areas?: ipc.Area[]
-  defaultLanguage?: ipc.Language
+  areas?: entities.Area[]
+  defaultLanguage?: entities.Language
 }
 
 export type ProjectContextType = {
-  getSelectedDocument: () => ipc.Document | undefined
-  getAreaById: (areaId: string) => ipc.Area | undefined
-  getProcessedAreasByDocumentId: (documentId: string) => Promise<ipc.ProcessedArea[]>
-  requestAddProcessedArea: (processedArea: ipc.ProcessedArea) => Promise<ipc.ProcessedArea>
-  requestAddArea: (documentId: string, area: AddAreaProps) => Promise<ipc.Area>
-  requestUpdateArea: (area: AreaProps) => Promise<ipc.Area>
+  getSelectedDocument: () => entities.Document | undefined
+  getAreaById: (areaId: string) => entities.Area | undefined
+  getProcessedAreasByDocumentId: (documentId: string) => Promise<entities.ProcessedArea[]>
+  requestAddProcessedArea: (processedArea: entities.ProcessedArea) => Promise<entities.ProcessedArea>
+  requestAddArea: (documentId: string, area: AddAreaProps) => Promise<entities.Area>
+  requestUpdateArea: (area: AreaProps) => Promise<entities.Area>
   requestDeleteAreaById: (areaId: string) => Promise<boolean>
-  requestAddDocument: (groupId: string, documentName: string) => Promise<ipc.Document>
+  requestAddDocument: (groupId: string, documentName: string) => Promise<entities.Document>
   requestDeleteDocumentById: (documentId: string) => Promise<boolean>
-  requestAddDocumentGroup: (groupName: string) => Promise<ipc.Group>
-  requestUpdateDocumentUserMarkdown: (documentId: string, markdown: string) => Promise<ipc.UserMarkdown>
-  getUserMarkdownByDocumentId: (documentId: string) => Promise<ipc.UserMarkdown>
+  requestAddDocumentGroup: (groupName: string) => Promise<entities.Group>
+  requestUpdateDocumentUserMarkdown: (documentId: string, markdown: string) => Promise<entities.UserMarkdown>
+  getUserMarkdownByDocumentId: (documentId: string) => Promise<entities.UserMarkdown>
   selectedAreaId: string
   setSelectedAreaId: (id: string) => void
   selectedDocumentId: string
   setSelectedDocumentId: (id: string) => void
-  currentSession: ipc.Session
-  createNewProject: (name: string) => Promise<ipc.Session>
-  requestUpdateCurrentUser: (updatedUserProps: UserProps) => Promise<ipc.User>
+  currentSession: entities.Session
+  createNewProject: (name: string) => Promise<entities.Session>
+  requestUpdateCurrentUser: (updatedUserProps: UserProps) => Promise<entities.User>
   requestChooseUserAvatar: () => Promise<string>
-  requestUpdateDocument: (request: UpdateDocumentRequest) => Promise<ipc.Document>
-  requestChangeAreaOrder: (areaId: string, newOrder: number) => Promise<ipc.Document>
-  requestChangeGroupOrder: (groupId: string, newOrder: number) => Promise<ipc.Group>
-  getGroupById: (groupId: string) => ipc.Group | undefined
+  requestUpdateDocument: (request: UpdateDocumentRequest) => Promise<entities.Document>
+  requestChangeAreaOrder: (areaId: string, newOrder: number) => Promise<entities.Document>
+  requestChangeGroupOrder: (groupId: string, newOrder: number) => Promise<entities.Group>
+  getGroupById: (groupId: string) => entities.Group | undefined
   requestSelectProjectByName: (projectName: string) => Promise<boolean>
   requestUpdateProcessedWordById: (wordId: string, newTextValue: string) => Promise<boolean>
-  getProcessedAreaById: (areaId: string) => Promise<ipc.ProcessedArea | undefined>
+  getProcessedAreaById: (areaId: string) => Promise<entities.ProcessedArea | undefined>
 } & ProjectProps

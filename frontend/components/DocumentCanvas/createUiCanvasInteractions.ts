@@ -1,28 +1,6 @@
 import isInBounds from '../../utils/isInBounds'
-import { ipc } from '../../wailsjs/wailsjs/go/models'
-
-
-type MouseCoordinates = {
-  startMouseX: number, startMouseY: number, endMouseX: number, endMouseY: number
-}
-
-type RectangleCoordinates = {
-  startX: number, startY: number, endX: number, endY: number
-}
-
-type AddAreaToStoreCallback =
-  (startX: number, startY: number, endX: number, endY: number)
-    => Promise<void>
-
-type SetZoomCallback = (newZoomLevel: number) => void
-
-type ZoomDetails = {
-  currentZoomLevel: number,
-  maxZoomLevel: number,
-  zoomStep: number
-}
-
-type HoverOverAreaCallback = (areaId?: string) => void
+import { entities } from '../../wailsjs/wailsjs/go/models'
+import { AddAreaToStoreCallback, HoverOverAreaCallback, MouseCoordinates, RectangleCoordinates, SetZoomCallback, ZoomDetails } from './types'
 
 /**
  * @param uiCanvas 
@@ -75,7 +53,7 @@ const createUiCanvasInteractions = (uiCanvas: HTMLCanvasElement) => {
       if (shouldAttemptToZoomIn) setZoomCallBack(currentZoomLevel + zoomStep)
       else if (currentZoomLevel > (zoomStep * 2)) setZoomCallBack(currentZoomLevel - zoomStep)
     },
-    onHoverOverArea: (mouseX: number, mouseY: number, zoomLevel: number, areas: ipc.Area[], callback: HoverOverAreaCallback) => {
+    onHoverOverArea: (mouseX: number, mouseY: number, zoomLevel: number, areas: entities.Area[], callback: HoverOverAreaCallback) => {
       if (!areas.length) return
 
       const domRect = uiCanvas.getBoundingClientRect()
