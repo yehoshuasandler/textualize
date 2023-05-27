@@ -1,28 +1,6 @@
 import isInBounds from '../../utils/isInBounds'
 import { entities } from '../../wailsjs/wailsjs/go/models'
-
-
-type MouseCoordinates = {
-  startMouseX: number, startMouseY: number, endMouseX: number, endMouseY: number
-}
-
-type RectangleCoordinates = {
-  startX: number, startY: number, endX: number, endY: number
-}
-
-type AddAreaToStoreCallback =
-  (startX: number, startY: number, endX: number, endY: number)
-    => Promise<void>
-
-type SetZoomCallback = (newZoomLevel: number) => void
-
-type ZoomDetails = {
-  currentZoomLevel: number,
-  maxZoomLevel: number,
-  zoomStep: number
-}
-
-type HoverOverAreaCallback = (areaId?: string) => void
+import { AddAreaToStoreCallback, HoverOverAreaCallback, MouseCoordinates, RectangleCoordinates, SetZoomCallback, ZoomDetails } from './types'
 
 /**
  * @param uiCanvas 

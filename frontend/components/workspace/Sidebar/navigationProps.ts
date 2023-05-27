@@ -8,7 +8,7 @@ const getNavigationProps = (documents: entities.Document[], groups: entities.Gro
       .map(d => ({
         id: d.id,
         name: d.name,
-        areas: d.areas.map(a => ({ id: a.id, name: a.name, order: a.order }))//.sort((a, b) => a.order - b.order)
+        areas: d.areas?.map(a => ({ id: a.id, name: a.name, order: a.order }))//.sort((a, b) => a.order - b.order)
       }))
 
     return {
@@ -23,7 +23,7 @@ const getNavigationProps = (documents: entities.Document[], groups: entities.Gro
     .map(d => ({
       id: d.id,
       name: d.name,
-      areas: d.areas.map(a => ({ id: a.id, name: a.name, order: a.order }))//.sort((a, b) => a.order - b.order)
+      areas: d.areas?.map(a => ({ id: a.id, name: a.name, order: a.order }))//.sort((a, b) => a.order - b.order)
     }))
 
   return [
