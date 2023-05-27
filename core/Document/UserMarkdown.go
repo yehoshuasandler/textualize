@@ -2,8 +2,6 @@ package document
 
 import "textualize/entities"
 
-type UserMarkdown entities.UserMarkdown
-
 type UserMarkdownCollection struct {
 	Values []entities.UserMarkdown
 }

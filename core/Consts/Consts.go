@@ -2,12 +2,6 @@ package consts
 
 import "textualize/entities"
 
-// type Language struct {
-// 	DisplayName   string
-// 	ProcessCode   string
-// 	TranslateCode string
-// }
-
 func GetSuppportedLanguages() []entities.Language {
 	return []entities.Language{
 		{

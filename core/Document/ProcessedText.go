@@ -2,16 +2,6 @@ package document
 
 import "textualize/entities"
 
-type ProcessedBoundingBox entities.ProcessedBoundingBox
-
-type ProcessedSymbol entities.ProcessedSymbol
-
-type ProcessedWord entities.ProcessedWord
-
-type ProcessedLine entities.ProcessedLine
-
-type ProcessedArea entities.ProcessedArea
-
 type ProcessedAreaCollection struct {
 	Areas []entities.ProcessedArea
 }
