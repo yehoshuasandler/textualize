@@ -17,7 +17,7 @@ const MainProject = () => {
   const [isProjectListModal, setIsProjectListModal] = useState(false)
   const [canPopoverBeOpen, setCanPopoverBeOpen] = useState(true)
 
-  const [avalibleProjects, setAvalibleProjects] = useState<entities.Project[]>([])
+  const [availableProjects, setAvailableProjects] = useState<entities.Project[]>([])
   const { createNewProject, requestSelectProjectByName } = useProject()
   const { setSelectedMainPage } = useNavigation()
 
@@ -39,7 +39,7 @@ const MainProject = () => {
         setCanPopoverBeOpen(false)
         GetAllLocalProjects().then(response => {
           console.log(response)
-          setAvalibleProjects(response)
+          setAvailableProjects(response)
           setIsProjectListModal(true)
         })
       },
@@ -73,7 +73,7 @@ const MainProject = () => {
 
     {isNewProjectModalOpen ? <NewProjectModal onCreateNewProjectHandler={onCreateNewProjectHandler} /> : ''}
 
-    {isProjectListModal ? <ProjectListModal onSelectProjectHandler={onSelectProjectHandler} projects={avalibleProjects} /> : '' }
+    {isProjectListModal ? <ProjectListModal onSelectProjectHandler={onSelectProjectHandler} projects={availableProjects} /> : '' }
 
     <div className="py-20 px-6 sm:px-6 sm:py-32 lg:px-8">
       <div className="mx-auto max-w-2xl text-center">
