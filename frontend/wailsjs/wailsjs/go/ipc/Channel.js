@@ -38,8 +38,8 @@ export function GetProjectByName(arg1) {
   return window['go']['ipc']['Channel']['GetProjectByName'](arg1);
 }
 
-export function GetSuppportedLanguages() {
-  return window['go']['ipc']['Channel']['GetSuppportedLanguages']();
+export function GetSupportedLanguages() {
+  return window['go']['ipc']['Channel']['GetSupportedLanguages']();
 }
 
 export function GetUserMarkdownByDocumentId(arg1) {

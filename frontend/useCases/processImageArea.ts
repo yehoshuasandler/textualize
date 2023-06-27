@@ -16,8 +16,18 @@ const processImageArea = async (documentId: string, areaId: string) => {
   const { path } = foundDocument
   const imageData = await loadImage(path)
 
+  let workerOptions: Partial<Tesseract.WorkerOptions> = {}
+  if (foundDocument.defaultLanguage.isBundledCustom) {
+    workerOptions = {
+      langPath: '/customLanguages',
+      gzip: false,
+      logger: m => console.log(m)
+    }
+  }
+
+  const worker = await createWorker(workerOptions)
   const scheduler = createScheduler()
-  const worker = await createWorker()
+
   await worker.loadLanguage(processLanguage)
   await worker.initialize(processLanguage)
   scheduler.addWorker(worker)

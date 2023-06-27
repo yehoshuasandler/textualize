@@ -4,6 +4,7 @@ export namespace entities {
 	    displayName: string;
 	    processCode: string;
 	    translateCode: string;
+	    isBundledCustom: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new Language(source);
@@ -14,6 +15,7 @@ export namespace entities {
 	        this.displayName = source["displayName"];
 	        this.processCode = source["processCode"];
 	        this.translateCode = source["translateCode"];
+	        this.isBundledCustom = source["isBundledCustom"];
 	    }
 	}
 	export class Area {

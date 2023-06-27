@@ -3,15 +3,15 @@
 import { AppProps } from 'next/app'
 import { ProjectProvider } from '../context/Project/provider'
 import '../styles/globals.css'
-import { ipc } from '../wailsjs/wailsjs/go/models'
+import { entities } from '../wailsjs/wailsjs/go/models'
 import '../styles/globals.css'
 import { NavigationProvidor } from '../context/Navigation/provider'
 import { mainPages, workspaces } from '../context/Navigation/types'
 
 const initialProjectProps = {
   id: '',
-  documents: [] as ipc.Document[],
-  groups: [] as ipc.Group[]
+  documents: [] as entities.Document[],
+  groups: [] as entities.Group[]
 }
 
 const initialNavigationProps = {
