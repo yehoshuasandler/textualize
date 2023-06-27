@@ -278,7 +278,6 @@ export namespace entities {
 		}
 	}
 	export class ProcessedLine {
-	    fullText: string;
 	    words: ProcessedWord[];
 	
 	    static createFrom(source: any = {}) {
@@ -287,7 +286,6 @@ export namespace entities {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.fullText = source["fullText"];
 	        this.words = this.convertValues(source["words"], ProcessedWord);
 	    }
 	
@@ -312,7 +310,6 @@ export namespace entities {
 	export class ProcessedArea {
 	    id: string;
 	    documentId: string;
-	    fullText: string;
 	    order: number;
 	    lines: ProcessedLine[];
 	
@@ -324,7 +321,6 @@ export namespace entities {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.id = source["id"];
 	        this.documentId = source["documentId"];
-	        this.fullText = source["fullText"];
 	        this.order = source["order"];
 	        this.lines = this.convertValues(source["lines"], ProcessedLine);
 	    }

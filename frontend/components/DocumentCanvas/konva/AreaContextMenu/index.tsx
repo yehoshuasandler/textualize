@@ -35,10 +35,10 @@ const AreaContextMenu = (props: Props) => {
 
   const handleCopyButtonClick = async () => {
     const processedArea = await getProcessedAreaById(area.id)
-    console.log(processedArea)
-    const fullText = processedArea?.fullText // TODO: change when `fullText` is calculated from processed words
-    console.log('fullText: ', fullText)
+    const wordsOfProcessedArea = processedArea?.lines.flatMap(l => l.words.map(w => w.fullText))
+    const fullText = wordsOfProcessedArea?.join(' ')
     if (!fullText) return // TODO: change to show notification when copy fails
+
     await navigator.clipboard.writeText(fullText)
     setIsAreaContextMenuOpen(false)
   }
@@ -46,12 +46,14 @@ const AreaContextMenu = (props: Props) => {
   const handleDeleteButtonClick = async () => {
     const response = await requestDeleteAreaById(area.id)
     if (!response) return // TODO: change to show notification when copy fails
+
     setIsAreaContextMenuOpen(false)
   }
 
   const handleReprocessButtonClick = async () => {
-    const documentId = await getSelectedDocument()?.id
+    const documentId = getSelectedDocument()?.id
     if (!documentId) return // TODO: change to show notification when copy fails
+
     setIsAreaContextMenuOpen(false) // TODO: possibly have loading animation and wait until after process
     await processImageArea(documentId, area.id)
   }

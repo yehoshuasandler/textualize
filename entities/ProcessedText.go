@@ -23,14 +23,12 @@ type ProcessedWord struct {
 }
 
 type ProcessedLine struct {
-	FullText string          `json:"fullText"`
-	Words    []ProcessedWord `json:"words"`
+	Words []ProcessedWord `json:"words"`
 }
 
 type ProcessedArea struct {
 	Id         string          `json:"id"`
 	DocumentId string          `json:"documentId"`
-	FullText   string          `json:"fullText"`
 	Order      int             `json:"order"`
 	Lines      []ProcessedLine `json:"lines"`
 }
