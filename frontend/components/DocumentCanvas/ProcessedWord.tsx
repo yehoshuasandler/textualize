@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Group, Rect, Text } from 'react-konva'
-import { entities } from '../../../wailsjs/wailsjs/go/models'
+import { entities } from '../../wailsjs/wailsjs/go/models'
 
 type Props = {
   area: entities.ProcessedArea,

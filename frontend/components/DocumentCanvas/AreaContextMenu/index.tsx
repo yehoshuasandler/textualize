@@ -1,12 +1,12 @@
 'use client'
 
 import React from 'react'
-import { entities } from '../../../../wailsjs/wailsjs/go/models'
+import { entities } from '../../../wailsjs/wailsjs/go/models'
 import { Html } from 'react-konva-utils'
 import { copyButtonColors, deleteButtonColors, makeFormStyles, makeSharedButtonStyles, reprocessButtonColors, setMutableStylesOnElement, setPosition, setScale } from './styles'
-import { useProject } from '../../../../context/Project/provider'
-import asyncClick from '../../../../utils/asyncClick'
-import processImageArea from '../../../../useCases/processImageArea'
+import { useProject } from '../../../context/Project/provider'
+import asyncClick from '../../../utils/asyncClick'
+import processImageArea from '../../../useCases/processImageArea'
 
 type Props = {
   x: number,

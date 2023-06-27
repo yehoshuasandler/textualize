@@ -4,12 +4,12 @@ import React, { useRef, useState } from 'react'
 import { Stage, Layer, Image, } from 'react-konva'
 import { KonvaEventObject } from 'konva/lib/Node'
 import Areas from './Areas'
-import { useProject } from '../../../context/Project/provider'
+import { useProject } from '../../context/Project/provider'
 import useImage from 'use-image'
-import { RectangleCoordinates } from '../types'
+import { RectangleCoordinates } from './types'
 import DrawingArea from './DrawingArea'
-import getNormalizedRectToBounds from '../../../utils/getNormalizedRectToBounds'
-import processImageArea from '../../../useCases/processImageArea'
+import getNormalizedRectToBounds from '../../utils/getNormalizedRectToBounds'
+import processImageArea from '../../useCases/processImageArea'
 
 type Props = {
   scale: number,
@@ -23,7 +23,7 @@ let downClickX: number
 let downClickY: number
 let isDrawing = false
 
-const KonvaTest = ({ scale, scaleStep, maxScale, setScale, size }: Props) => {
+const CanvasStage = ({ scale, scaleStep, maxScale, setScale, size }: Props) => {
   const { getSelectedDocument, requestAddArea, setSelectedAreaId } = useProject()
   const [documentImage] = useImage(getSelectedDocument()?.path || '')
   const documentRef = useRef(null)
@@ -100,4 +100,4 @@ const KonvaTest = ({ scale, scaleStep, maxScale, setScale, size }: Props) => {
   </Stage>
 }
 
-export default KonvaTest
+export default CanvasStage

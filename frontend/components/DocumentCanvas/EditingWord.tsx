@@ -1,8 +1,8 @@
 import React from 'react'
 import { Html } from 'react-konva-utils'
-import { entities } from '../../../wailsjs/wailsjs/go/models'
-import { useProject } from '../../../context/Project/provider'
-import onEnterHandler from '../../../utils/onEnterHandler'
+import { entities } from '../../wailsjs/wailsjs/go/models'
+import { useProject } from '../../context/Project/provider'
+import onEnterHandler from '../../utils/onEnterHandler'
 
 type Props = {
   scale: number,

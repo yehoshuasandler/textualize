@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react'
 import { Group, Rect } from 'react-konva'
-import { entities } from '../../../wailsjs/wailsjs/go/models'
-import { useProject } from '../../../context/Project/provider'
+import { entities } from '../../wailsjs/wailsjs/go/models'
+import { useProject } from '../../context/Project/provider'
 import { KonvaEventObject } from 'konva/lib/Node'
 import Konva from 'konva'
 import AreaContextMenu from './AreaContextMenu'

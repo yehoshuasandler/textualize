@@ -1,21 +1,17 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useProject, } from '../../context/Project/provider'
 import { MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon } from '@heroicons/react/24/outline'
-import classNames from '../../utils/classNames'
 import LanguageSelect from '../workspace/LanguageSelect'
-import ImageCanvas from './ImageCanvas'
-import AreaCanvas from './AreaCanvas'
-import UiCanvas from './UiCanvas'
+
+const CanvasStage = dynamic(() => import('./CanvasStage'), {
+  ssr: false,
+})
 
 const zoomStep = 0.01
 const maxZoomLevel = 4
-
-const KonvaTest = dynamic(() => import('./konva'), {
-  ssr: false,
-})
 
 const DocumentCanvas = () => {
   const { getSelectedDocument } = useProject()
@@ -56,7 +52,7 @@ const DocumentCanvas = () => {
     </div>
 
     <div className='h-full overflow-hidden rounded-lg border-4 border-dashed border-gray-200'>
-      <KonvaTest size={size} scale={zoomLevel} scaleStep={zoomStep} setScale={setZoomLevel} maxScale={maxZoomLevel} />
+      <CanvasStage size={size} scale={zoomLevel} scaleStep={zoomStep} setScale={setZoomLevel} maxScale={maxZoomLevel} />
     </div>
   </div >
 }

@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react'
 import { Group } from 'react-konva'
-import { useProject } from '../../../context/Project/provider'
-import { entities } from '../../../wailsjs/wailsjs/go/models'
+import { useProject } from '../../context/Project/provider'
+import { entities } from '../../wailsjs/wailsjs/go/models'
 import Area from './Area'
 import ProcessedWord from './ProcessedWord'
 import EditingWord from './EditingWord'
