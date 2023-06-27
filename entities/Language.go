@@ -1,7 +1,8 @@
 package entities
 
 type Language struct {
-	DisplayName   string `json:"displayName"`
-	ProcessCode   string `json:"processCode"`
-	TranslateCode string `json:"translateCode"`
+	DisplayName     string `json:"displayName"`
+	ProcessCode     string `json:"processCode"`
+	TranslateCode   string `json:"translateCode"`
+	IsBundledCustom bool   `json:"isBundledCustom"`
 }

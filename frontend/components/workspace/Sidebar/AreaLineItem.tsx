@@ -46,7 +46,8 @@ const AreaLineItem = (props: { area: SidebarArea, documentId: string, index: num
 
   const onAreaClick = (areaId: string) => {
     setSelectedDocumentId(props.documentId)
-    setSelectedAreaId(areaId)
+    if (selectedAreaId !== areaId) setSelectedAreaId(areaId)
+    else setSelectedAreaId('')
   }
 
   const onAreaDoubleClick = (areaId: string) => {

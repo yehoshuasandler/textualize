@@ -21,7 +21,7 @@ export function GetProcessedAreasByDocumentId(arg1:string):Promise<Array<entitie
 
 export function GetProjectByName(arg1:string):Promise<entities.Project>;
 
-export function GetSuppportedLanguages():Promise<Array<entities.Language>>;
+export function GetSupportedLanguages():Promise<Array<entities.Language>>;
 
 export function GetUserMarkdownByDocumentId(arg1:string):Promise<entities.UserMarkdown>;
 

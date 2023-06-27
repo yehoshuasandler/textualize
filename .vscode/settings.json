@@ -3,7 +3,10 @@
     "*.css": "tailwindcss"
   },
   "cSpell.words": [
+    "headlessui",
     "heroicons",
+    "konva",
+    "Tesseract",
     "wailsjs"
   ]
 }

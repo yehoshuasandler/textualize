@@ -192,7 +192,7 @@ func (c *Channel) RequestChangeSessionProjectByName(projectName string) bool {
 	return session.GetInstance().Project.Id == foundProject.Id
 }
 
-func (c *Channel) GetSuppportedLanguages() []entities.Language {
-	supportedLanguages := consts.GetSuppportedLanguages()
+func (c *Channel) GetSupportedLanguages() []entities.Language {
+	supportedLanguages := consts.GetSupportedLanguages()
 	return supportedLanguages
 }

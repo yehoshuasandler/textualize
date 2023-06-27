@@ -1,7 +1,7 @@
-import { GetSuppportedLanguages } from '../wailsjs/wailsjs/go/ipc/Channel'
+import { GetSupportedLanguages } from '../wailsjs/wailsjs/go/ipc/Channel'
 
 const getSupportedLanguages = async () => {
-  const response = await GetSuppportedLanguages()
+  const response = await GetSupportedLanguages()
   return response
 }
 

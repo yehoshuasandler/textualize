@@ -1,15 +1,16 @@
 'use client'
 
-import React, { useState } from 'react'
+import dynamic from 'next/dynamic'
+import React, { useEffect, useRef, useState } from 'react'
 import { useProject, } from '../../context/Project/provider'
 import { MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon } from '@heroicons/react/24/outline'
-import classNames from '../../utils/classNames'
 import LanguageSelect from '../workspace/LanguageSelect'
-import ImageCanvas from './ImageCanvas'
-import AreaCanvas from './AreaCanvas'
-import UiCanvas from './UiCanvas'
 
-const zoomStep = 0.025
+const CanvasStage = dynamic(() => import('./CanvasStage'), {
+  ssr: false,
+})
+
+const zoomStep = 0.01
 const maxZoomLevel = 4
 
 const DocumentCanvas = () => {
@@ -18,9 +19,22 @@ const DocumentCanvas = () => {
 
   const [zoomLevel, setZoomLevel] = useState(1)
   const [size, setSize] = useState({ width: 0, height: 0 })
-  const { width, height } = size
+  const thisRef = useRef<HTMLDivElement>(null)
 
-  return <div className='relative'>
+
+  const handleWindowResize = () => {
+    const width = thisRef?.current?.clientWidth || 0
+    const height = thisRef?.current?.clientHeight || 0
+    setSize({ width, height })
+  }
+
+  useEffect(() => {
+    handleWindowResize()
+    window.addEventListener('resize', handleWindowResize)
+    return () => window.removeEventListener('resize', handleWindowResize)
+  }, [thisRef?.current?.clientWidth, thisRef?.current?.clientHeight])
+
+  return <div ref={thisRef} className='relative' style={{ height: 'calc(100vh - 200px)' }}>
     <div className='flex justify-between align-top mb-2'>
       <div className='flex align-top'>
         <h1 className="text-xl font-semibold text-gray-900 inline-block mr-2">{selectedDocument?.name}</h1>
@@ -36,21 +50,9 @@ const DocumentCanvas = () => {
         <MagnifyingGlassPlusIcon className='w-4 h-4' />
       </div>
     </div>
-    <div className={classNames('relative mt-2 overflow-scroll',
-      'w-[calc(100vw-320px)] h-[calc(100vh-174px)] border-4',
-      'border-dashed border-gray-200')}>
 
-      <ImageCanvas imagePath={selectedDocument?.path} zoomLevel={zoomLevel} setSize={setSize} />
-      <AreaCanvas width={width} height={height} zoomLevel={zoomLevel} />
-      <UiCanvas
-        width={width}
-        height={height}
-        setZoomLevel={setZoomLevel}
-        zoomDetails={{
-          currentZoomLevel: zoomLevel,
-          maxZoomLevel: maxZoomLevel,
-          zoomStep: zoomStep,
-        }} />
+    <div className='h-full overflow-hidden rounded-lg border-4 border-dashed border-gray-200'>
+      <CanvasStage size={size} scale={zoomLevel} scaleStep={zoomStep} setScale={setZoomLevel} maxScale={maxZoomLevel} />
     </div>
   </div >
 }
