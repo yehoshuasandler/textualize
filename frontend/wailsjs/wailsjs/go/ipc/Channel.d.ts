@@ -17,6 +17,8 @@ export function GetDocumentById(arg1:string):Promise<entities.Document>;
 
 export function GetDocuments():Promise<ipc.GetDocumentsResponse>;
 
+export function GetProcessedAreaById(arg1:string):Promise<entities.ProcessedArea>;
+
 export function GetProcessedAreasByDocumentId(arg1:string):Promise<Array<entities.ProcessedArea>>;
 
 export function GetProjectByName(arg1:string):Promise<entities.Project>;
@@ -31,7 +33,7 @@ export function RequestAddDocument(arg1:string,arg2:string):Promise<entities.Doc
 
 export function RequestAddDocumentGroup(arg1:string):Promise<entities.Group>;
 
-export function RequestAddProcessedArea(arg1:entities.ProcessedArea):Promise<entities.ProcessedArea>;
+export function RequestAddProcessedArea(arg1:entities.ProcessedArea):Promise<boolean>;
 
 export function RequestChangeAreaOrder(arg1:string,arg2:number):Promise<entities.Document>;
 
@@ -45,6 +47,8 @@ export function RequestDeleteAreaById(arg1:string):Promise<boolean>;
 
 export function RequestDeleteDocumentAndChildren(arg1:string):Promise<boolean>;
 
+export function RequestDeleteProcessedAreaById(arg1:string):Promise<boolean>;
+
 export function RequestSaveDocumentCollection():Promise<boolean>;
 
 export function RequestSaveGroupCollection():Promise<boolean>;
@@ -53,12 +57,14 @@ export function RequestSaveLocalUserProcessedMarkdownCollection():Promise<boolea
 
 export function RequestSaveProcessedTextCollection():Promise<boolean>;
 
-export function RequestUpdateArea(arg1:entities.Area):Promise<entities.Area>;
+export function RequestUpdateArea(arg1:entities.Area):Promise<boolean>;
 
 export function RequestUpdateCurrentUser(arg1:entities.User):Promise<entities.User>;
 
 export function RequestUpdateDocument(arg1:entities.Document):Promise<entities.Document>;
 
 export function RequestUpdateDocumentUserMarkdown(arg1:string,arg2:string):Promise<entities.UserMarkdown>;
+
+export function RequestUpdateProcessedArea(arg1:entities.ProcessedArea):Promise<boolean>;
 
 export function RequestUpdateProcessedWordById(arg1:string,arg2:string):Promise<boolean>;

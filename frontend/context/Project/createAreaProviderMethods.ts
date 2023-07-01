@@ -1,5 +1,5 @@
 import { saveDocuments } from '../../useCases/saveData'
-import { GetProcessedAreasByDocumentId, RequestAddArea, RequestAddProcessedArea, RequestChangeAreaOrder, RequestDeleteAreaById, RequestUpdateArea } from '../../wailsjs/wailsjs/go/ipc/Channel'
+import { GetProcessedAreasByDocumentId, RequestAddArea, RequestAddProcessedArea, RequestChangeAreaOrder, RequestDeleteAreaById, RequestUpdateArea, RequestUpdateProcessedArea, } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { entities, ipc } from '../../wailsjs/wailsjs/go/models'
 import { AddAreaProps, AreaProps } from './types'
 
@@ -45,12 +45,13 @@ const createAreaProviderMethods = (dependencies: Dependencies) => {
     return response
   }
 
-  const requestUpdateArea = async (updatedArea: AreaProps): Promise<entities.Area> => {
-    const response = await RequestUpdateArea(new entities.Area(updatedArea))
+  const requestUpdateArea = async (updatedArea: AreaProps): Promise<boolean> => {
+    console.log('requestUpdateArea', updatedArea)
+    const wasSuccessful = await RequestUpdateArea(new entities.Area(updatedArea))
 
-    if (response.id) await updateDocuments()
+    if (wasSuccessful) await updateDocuments()
     saveDocuments()
-    return response
+    return wasSuccessful
   }
 
   const requestDeleteAreaById = async (areaId: string): Promise<boolean> => {
@@ -61,6 +62,8 @@ const createAreaProviderMethods = (dependencies: Dependencies) => {
   }
 
   const requestAddProcessedArea = async (processedArea: entities.ProcessedArea) => await RequestAddProcessedArea(processedArea)
+
+  const requestUpdateProcessedArea = async (updatedProcessedArea: entities.ProcessedArea) => await RequestUpdateProcessedArea(updatedProcessedArea)
 
   const requestChangeAreaOrder = async (areaId: string, newOrder: number) => {
     const response = await RequestChangeAreaOrder(areaId, newOrder)
@@ -76,6 +79,7 @@ const createAreaProviderMethods = (dependencies: Dependencies) => {
     requestDeleteAreaById,
     getProcessedAreasByDocumentId,
     requestAddProcessedArea,
+    requestUpdateProcessedArea,
     requestChangeAreaOrder,
     getProcessedAreaById,
   }

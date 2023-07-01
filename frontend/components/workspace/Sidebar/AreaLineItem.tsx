@@ -3,7 +3,7 @@
 import React, { useRef } from 'react'
 import { useProject } from '../../../context/Project/provider'
 import classNames from '../../../utils/classNames'
-import { ArrowPathIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { ArrowPathIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { SidebarArea } from './types'
 import { useSidebar } from './provider'
 import onEnterHandler from '../../../utils/onEnterHandler'
@@ -29,7 +29,6 @@ const AreaLineItem = (props: { area: SidebarArea, documentId: string, index: num
   } = useSidebar()
 
   const editAreaNameTextInput = useRef<HTMLInputElement>(null)
-
 
   const onConfirmAreaNameChangeHandler = async (areaDetails: { areaId: string, areaName: string }) => {
     const { areaId, areaName } = areaDetails
@@ -126,7 +125,7 @@ const AreaLineItem = (props: { area: SidebarArea, documentId: string, index: num
           aria-hidden="true"
           onClick={handleReprocessAreaButtonClick}
         />
-        <XMarkIcon
+        <TrashIcon
           className='w-6 h-5 mr-2 text-white hover:bg-red-400 hover:text-gray-100 rounded-full p-0.5'
           onClick={() => handleAreaDeleteButtonClick(props.area.id)} />
       </div>

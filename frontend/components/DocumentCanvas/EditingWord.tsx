@@ -36,7 +36,7 @@ const EditingWord = (props: Props) => {
         display: 'block',
         width: `${width}px`,
         height: `${height}px`,
-        fontSize: `${Math.floor(48 * scale)}px`,
+        fontSize: `${Math.floor(24 * scale)}px`,
         alignContent: 'center',
         alignItems: 'center',
         lineHeight: 0,

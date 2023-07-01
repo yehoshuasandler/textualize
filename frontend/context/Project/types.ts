@@ -40,9 +40,9 @@ export type ProjectContextType = {
   getSelectedDocument: () => entities.Document | undefined
   getAreaById: (areaId: string) => entities.Area | undefined
   getProcessedAreasByDocumentId: (documentId: string) => Promise<entities.ProcessedArea[]>
-  requestAddProcessedArea: (processedArea: entities.ProcessedArea) => Promise<entities.ProcessedArea>
+  requestAddProcessedArea: (processedArea: entities.ProcessedArea) => Promise<boolean>
   requestAddArea: (documentId: string, area: AddAreaProps) => Promise<entities.Area>
-  requestUpdateArea: (area: AreaProps) => Promise<entities.Area>
+  requestUpdateArea: (area: AreaProps) => Promise<boolean>
   requestDeleteAreaById: (areaId: string) => Promise<boolean>
   requestAddDocument: (groupId: string, documentName: string) => Promise<entities.Document>
   requestDeleteDocumentById: (documentId: string) => Promise<boolean>
@@ -64,4 +64,5 @@ export type ProjectContextType = {
   requestSelectProjectByName: (projectName: string) => Promise<boolean>
   requestUpdateProcessedWordById: (wordId: string, newTextValue: string) => Promise<boolean>
   getProcessedAreaById: (areaId: string) => Promise<entities.ProcessedArea | undefined>
+  requestUpdateProcessedArea: (updatedProcessedArea: entities.ProcessedArea) => Promise<boolean>
 } & ProjectProps

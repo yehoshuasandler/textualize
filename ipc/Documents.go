@@ -1,6 +1,7 @@
 package ipc
 
 import (
+	"fmt"
 	"sort"
 	app "textualize/core/App"
 	document "textualize/core/Document"
@@ -221,17 +222,17 @@ func (c *Channel) RequestAddArea(documentId string, area entities.Area) entities
 	return newArea
 }
 
-func (c *Channel) RequestUpdateArea(updatedArea entities.Area) entities.Area {
+func (c *Channel) RequestUpdateArea(updatedArea entities.Area) bool {
 	documentOfArea := document.GetDocumentCollection().GetDocumentByAreaId(updatedArea.Id)
 
 	if documentOfArea.Id == "" {
-		return entities.Area{}
+		return false
 	}
 
 	areaToUpdate := documentOfArea.GetAreaById(updatedArea.Id)
 
 	if areaToUpdate.Id == "" {
-		return entities.Area{}
+		return false
 	}
 
 	if updatedArea.Name != "" {
@@ -240,8 +241,14 @@ func (c *Channel) RequestUpdateArea(updatedArea entities.Area) entities.Area {
 	if updatedArea.Order != areaToUpdate.Order {
 		areaToUpdate.Order = updatedArea.Order
 	}
+	if updatedArea.Language.ProcessCode != "" {
+		areaToUpdate.Language = updatedArea.Language
+	}
 
-	return *areaToUpdate
+	fmt.Println(areaToUpdate.Language)
+	fmt.Println(documentOfArea.GetAreaById(updatedArea.Id))
+
+	return true
 }
 
 func (c *Channel) RequestDeleteAreaById(areaId string) bool {

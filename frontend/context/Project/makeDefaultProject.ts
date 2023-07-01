@@ -12,7 +12,7 @@ const makeDefaultProject = (): ProjectContextType => ({
   getProcessedAreasByDocumentId: (documentId) => Promise.resolve([new entities.ProcessedArea()]),
   requestAddProcessedArea: (processesArea) => Promise.resolve(new entities.ProcessedArea()),
   requestAddArea: (documentId, area) => Promise.resolve(new entities.Area()),
-  requestUpdateArea: (updatedArea) => Promise.resolve(new entities.Area()),
+  requestUpdateArea: (updatedArea) => Promise.resolve(false),
   requestDeleteAreaById: (areaId) => Promise.resolve(false),
   requestAddDocument: (groupId, documentName) => Promise.resolve(new entities.Document()),
   requestDeleteDocumentById: (documentId) => Promise.resolve(false),
@@ -32,6 +32,7 @@ const makeDefaultProject = (): ProjectContextType => ({
   requestSelectProjectByName: (projectName) => Promise.resolve(false),
   requestUpdateProcessedWordById: (wordId, newTestValue) => Promise.resolve(false),
   getProcessedAreaById: (areaId) => Promise.resolve(undefined),
+  requestUpdateProcessedArea: updatedProcessedArea => Promise.resolve(false),
 })
 
 export default makeDefaultProject
