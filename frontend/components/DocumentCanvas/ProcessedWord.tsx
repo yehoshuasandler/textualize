@@ -27,7 +27,7 @@ const ProcessedWord = (props: Props) => {
       height={y1 - y0}
       scale={{ x: scale, y: scale }}
       x={x0 * scale}
-      y={y1 * scale}
+      y={y0 * scale}
       strokeEnabled={false}
       shadowForStrokeEnabled={false}
       strokeScaleEnabled={false}
@@ -42,7 +42,7 @@ const ProcessedWord = (props: Props) => {
       height={y1 - y0}
       scale={{ x: scale, y: scale }}
       x={x0 * scale}
-      y={y1 * scale}
+      y={y0 * scale}
       align='center'
       verticalAlign='middle'
       fontSize={36}

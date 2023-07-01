@@ -5,8 +5,9 @@ import { ProjectProvider } from '../context/Project/provider'
 import '../styles/globals.css'
 import { entities } from '../wailsjs/wailsjs/go/models'
 import '../styles/globals.css'
-import { NavigationProvidor } from '../context/Navigation/provider'
+import { NavigationProvider } from '../context/Navigation/provider'
 import { mainPages, workspaces } from '../context/Navigation/types'
+import { NotificationProvider } from '../context/Notification/provider'
 
 const initialProjectProps = {
   id: '',
@@ -21,10 +22,12 @@ const initialNavigationProps = {
 
 export default function MainAppLayout({ Component, pageProps }: AppProps) {
   return <div className='min-h-screen' >
-    <NavigationProvidor navigationProps={initialNavigationProps}>
+    <NavigationProvider navigationProps={initialNavigationProps}>
       <ProjectProvider projectProps={initialProjectProps}>
-        <Component {...pageProps} />
+        <NotificationProvider>
+          <Component {...pageProps} />
+        </NotificationProvider>
       </ProjectProvider>
-    </NavigationProvidor>
+    </NavigationProvider>
   </div>
 }

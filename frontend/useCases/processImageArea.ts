@@ -1,5 +1,5 @@
 import { createScheduler, createWorker } from 'tesseract.js'
-import { GetAreaById, GetDocumentById, RequestAddProcessedArea, RequestSaveProcessedTextCollection } from '../wailsjs/wailsjs/go/ipc/Channel'
+import { GetAreaById, GetDocumentById, GetProcessedAreaById, RequestAddProcessedArea, RequestSaveProcessedTextCollection, RequestUpdateProcessedArea } from '../wailsjs/wailsjs/go/ipc/Channel'
 import { entities } from '../wailsjs/wailsjs/go/models'
 import loadImage from './loadImage'
 import { saveProcessedText } from './saveData'
@@ -9,7 +9,9 @@ const processImageArea = async (documentId: string, areaId: string) => {
   const foundArea = await GetAreaById(areaId)
   if (!foundDocument.path || !foundDocument.areas?.length || !foundArea.id) return
 
-  const processLanguage = foundDocument.defaultLanguage.processCode
+  console.log(foundArea)
+
+  const processLanguage = foundArea.language.processCode || foundDocument.defaultLanguage.processCode
 
   if (!processLanguage) return console.error('No process language selected')
 
@@ -41,7 +43,7 @@ const processImageArea = async (documentId: string, areaId: string) => {
     }
   })
 
-  const addProcessesAreaRequest = await RequestAddProcessedArea(new entities.ProcessedArea({
+  const newProcessedArea = new entities.ProcessedArea({
     id: foundArea.id,
     documentId,
     order: foundArea.order,
@@ -70,11 +72,18 @@ const processImageArea = async (documentId: string, areaId: string) => {
         }))
       }))
     }))
-  }))
+  })
+
+  console.log(newProcessedArea)
+
+
+  const existingProcessedArea = await GetProcessedAreaById(areaId)
+  let didSuccessfullyProcess = false
+  if (existingProcessedArea.id !== areaId) didSuccessfullyProcess = await RequestAddProcessedArea(newProcessedArea)
+  else await RequestUpdateProcessedArea(newProcessedArea)
 
   saveProcessedText()
-
-  return addProcessesAreaRequest
+  return didSuccessfullyProcess
 }
 
 export default processImageArea

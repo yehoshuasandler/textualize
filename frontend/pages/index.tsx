@@ -1,5 +1,4 @@
 import { NextPage } from 'next'
-import { useEffect, useState } from 'react'
 import MainHead from '../components/head'
 import MainProject from '../components/project/Main'
 import User from '../components/settings/User'

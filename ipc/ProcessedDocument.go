@@ -1,12 +1,17 @@
 package ipc
 
 import (
+	"fmt"
 	"sort"
 	document "textualize/core/Document"
 	"textualize/entities"
 
 	"github.com/google/uuid"
 )
+
+func (c *Channel) GetProcessedAreaById(id string) entities.ProcessedArea {
+	return *document.GetProcessedAreaCollection().GetAreaById(id)
+}
 
 func (c *Channel) GetProcessedAreasByDocumentId(id string) []entities.ProcessedArea {
 	areas := document.GetProcessedAreaCollection().GetAreasByDocumentId(id)
@@ -25,7 +30,7 @@ func (c *Channel) GetProcessedAreasByDocumentId(id string) []entities.ProcessedA
 	return sortedAreas
 }
 
-func (c *Channel) RequestAddProcessedArea(processedArea entities.ProcessedArea) entities.ProcessedArea {
+func (c *Channel) RequestAddProcessedArea(processedArea entities.ProcessedArea) bool {
 
 	for lineIndex, line := range processedArea.Lines {
 		for wordIndex, word := range line.Words {
@@ -36,7 +41,55 @@ func (c *Channel) RequestAddProcessedArea(processedArea entities.ProcessedArea) 
 	}
 
 	document.GetProcessedAreaCollection().AddProcessedArea(processedArea)
-	return processedArea
+	return true
+}
+
+func (c *Channel) RequestDeleteProcessedAreaById(id string) bool {
+	processedAreas := document.GetProcessedAreaCollection().Areas
+	areaToUpdate := document.GetProcessedAreaCollection().GetAreaById(id)
+	if areaToUpdate.Id == "" {
+		return false
+	}
+
+	areaToDeleteIndex := -1
+
+	for i, a := range processedAreas {
+		if a.Id == id {
+			areaToDeleteIndex = i
+			break
+		}
+	}
+
+	if areaToDeleteIndex < 0 {
+		return false
+	}
+
+	processedAreas[areaToDeleteIndex] = processedAreas[len(processedAreas)-1]
+	// processedAreas = processedAreas[:len(processedAreas)-1]
+	return true
+}
+
+func (c *Channel) RequestUpdateProcessedArea(updatedProcessedArea entities.ProcessedArea) bool {
+	fmt.Println("updatedProcessedArea")
+	fmt.Println(&updatedProcessedArea)
+	fmt.Println()
+	if updatedProcessedArea.Id == "" {
+		return false
+	}
+
+	successfulDelete := c.RequestDeleteProcessedAreaById(updatedProcessedArea.Id)
+	if !successfulDelete {
+		return false
+	}
+
+	successfulAdd := c.RequestAddProcessedArea(updatedProcessedArea)
+	if !successfulAdd {
+		return false
+	}
+
+	fmt.Println("document.GetProcessedAreaCollection().GetAreaById(updatedProcessedArea.Id)")
+	fmt.Println(document.GetProcessedAreaCollection().GetAreaById(updatedProcessedArea.Id))
+	return true
 }
 
 func (c *Channel) RequestUpdateProcessedWordById(wordId string, newTextValue string) bool {

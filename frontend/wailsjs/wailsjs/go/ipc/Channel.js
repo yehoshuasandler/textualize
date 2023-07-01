@@ -30,6 +30,10 @@ export function GetDocuments() {
   return window['go']['ipc']['Channel']['GetDocuments']();
 }
 
+export function GetProcessedAreaById(arg1) {
+  return window['go']['ipc']['Channel']['GetProcessedAreaById'](arg1);
+}
+
 export function GetProcessedAreasByDocumentId(arg1) {
   return window['go']['ipc']['Channel']['GetProcessedAreasByDocumentId'](arg1);
 }
@@ -86,6 +90,10 @@ export function RequestDeleteDocumentAndChildren(arg1) {
   return window['go']['ipc']['Channel']['RequestDeleteDocumentAndChildren'](arg1);
 }
 
+export function RequestDeleteProcessedAreaById(arg1) {
+  return window['go']['ipc']['Channel']['RequestDeleteProcessedAreaById'](arg1);
+}
+
 export function RequestSaveDocumentCollection() {
   return window['go']['ipc']['Channel']['RequestSaveDocumentCollection']();
 }
@@ -116,6 +124,10 @@ export function RequestUpdateDocument(arg1) {
 
 export function RequestUpdateDocumentUserMarkdown(arg1, arg2) {
   return window['go']['ipc']['Channel']['RequestUpdateDocumentUserMarkdown'](arg1, arg2);
+}
+
+export function RequestUpdateProcessedArea(arg1) {
+  return window['go']['ipc']['Channel']['RequestUpdateProcessedArea'](arg1);
 }
 
 export function RequestUpdateProcessedWordById(arg1, arg2) {

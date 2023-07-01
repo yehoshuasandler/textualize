@@ -19,7 +19,7 @@ type Props = {
 type coordinates = { x: number, y: number }
 
 const Area = (props: Props) => {
-  const { getProcessedAreaById, setSelectedAreaId } = useProject()
+  const { getProcessedAreaById, selectedAreaId, setSelectedAreaId } = useProject()
   const shapeRef = React.useRef<Konva.Rect>(null)
   const [isAreaContextMenuOpen, setIsAreaContextMenuOpen] = useState(false)
   const [areaContextMenuPosition, setAreaContextMenuPosition] = useState<coordinates>()
@@ -56,6 +56,11 @@ const Area = (props: Props) => {
     setIsAreaContextMenuOpen(true)
   }
 
+  const handleAreaClick = (areaId: string) => {
+    if (areaId === selectedAreaId) setSelectedAreaId('')
+    else setSelectedAreaId(areaId)
+  }
+
   return <Group>
     <Rect
       ref={shapeRef}
@@ -72,7 +77,7 @@ const Area = (props: Props) => {
       shadowForStrokeEnabled={false}
       onMouseEnter={handleEnterOrLeave}
       onMouseLeave={handleEnterOrLeave}
-      onDblClick={() => setSelectedAreaId(a.id)}
+      onClick={() => handleAreaClick(a.id)}
       onContextMenu={handleContextMenu}
       isArea />
     {!isAreaContextMenuOpen
