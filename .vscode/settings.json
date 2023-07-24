@@ -8,6 +8,7 @@
     "konva",
     "libretranslate",
     "Tesseract",
+    "Textualize",
     "wailsjs"
   ]
 }
