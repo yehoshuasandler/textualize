@@ -10,7 +10,12 @@ import (
 )
 
 func (c *Channel) GetProcessedAreaById(id string) entities.ProcessedArea {
-	return *document.GetProcessedAreaCollection().GetAreaById(id)
+	foundArea := document.GetProcessedAreaCollection().GetAreaById(id)
+	if foundArea != nil {
+		return *foundArea
+	} else {
+		return entities.ProcessedArea{}
+	}
 }
 
 func (c *Channel) GetProcessedAreasByDocumentId(id string) []entities.ProcessedArea {

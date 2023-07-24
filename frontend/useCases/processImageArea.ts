@@ -51,6 +51,7 @@ const processImageArea = async (documentId: string, areaId: string) => {
     lines: result.data.lines.map((l: any) => new entities.ProcessedLine({
       fullText: l.text,
       words: l.words.map((w: any) => new entities.ProcessedWord({
+        areaId: foundArea.id,
         fullText: w.text,
         direction: w.direction,
         confidence: w.confidence,

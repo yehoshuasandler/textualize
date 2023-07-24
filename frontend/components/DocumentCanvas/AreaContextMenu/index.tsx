@@ -11,6 +11,7 @@ import processImageArea from '../../../useCases/processImageArea'
 import classNames from '../../../utils/classNames'
 import { useNotification } from '../../../context/Notification/provider'
 import LanguageSelect from '../../utils/LanguageSelect'
+import { RequestTranslateArea } from '../../../wailsjs/wailsjs/go/ipc/Channel'
 
 type Props = {
   x: number,
@@ -77,6 +78,19 @@ const AreaContextMenu = (props: Props) => {
     }
   }
 
+
+  const handleTranslateArea = async () => {
+    setIsAreaContextMenuOpen(false)
+
+    try {
+      const wasSuccessful = await RequestTranslateArea(area.id)
+      if (wasSuccessful) addNotificationToQueue({ message: 'Successfully translated area' })
+      else addNotificationToQueue({ message: 'Issue translating area', level: 'warning' })
+    } catch (err) {
+      addNotificationToQueue({ message: 'Error translating area', level: 'error' })
+    }
+  }
+
   const handleProcessLanguageSelect = async (selectedLanguage: entities.Language) => {
     setIsAreaContextMenuOpen(false)
 
@@ -87,7 +101,6 @@ const AreaContextMenu = (props: Props) => {
       addNotificationToQueue({ message: 'Error updating area language', level: 'error' })
       return
     }
-
 
     const selectedDocumentId = getSelectedDocument()?.id
     if (!successfullyUpdatedLanguageOnArea || !selectedDocumentId) {
@@ -114,7 +127,7 @@ const AreaContextMenu = (props: Props) => {
   return <Html>
     <div style={makeFormStyles(x, y, scale)} tabIndex={1} onBlur={handleOnBlur}>
       <div className={classNames(
-        'z-40 min-w-max py-1 rounded-md shadow-sm outline-none font-light',
+        'z-40 min-w-max py-1 rounded-lg shadow-sm outline-none font-light',
         'bg-white border border-gray-200',)}
       >
 
@@ -134,6 +147,17 @@ const AreaContextMenu = (props: Props) => {
             )}>
           <span className="mr-2">Reprocess Area</span>
           <ArrowPathIcon className="ml-2" aria-hidden="true" style={{ ...makeIconStyles(scale) }} />
+        </button>
+
+
+
+        <button tabIndex={3}
+          onClick={(e) => asyncClick(e, handleTranslateArea)} className={
+            classNames(baseMenuItemClassNames,
+              'focus:bg-neutral-100 hover:bg-slate-300',
+            )}>
+          <span className="mr-2">Translate Area</span>
+          <LanguageIcon className="ml-2" aria-hidden="true" style={{ ...makeIconStyles(scale) }} />
         </button>
 
         <button tabIndex={4}

@@ -82,6 +82,10 @@ export function RequestChooseUserAvatar() {
   return window['go']['ipc']['Channel']['RequestChooseUserAvatar']();
 }
 
+export function RequestConnectAreaAsTailToNode(arg1, arg2) {
+  return window['go']['ipc']['Channel']['RequestConnectAreaAsTailToNode'](arg1, arg2);
+}
+
 export function RequestDeleteAreaById(arg1) {
   return window['go']['ipc']['Channel']['RequestDeleteAreaById'](arg1);
 }
@@ -108,6 +112,10 @@ export function RequestSaveLocalUserProcessedMarkdownCollection() {
 
 export function RequestSaveProcessedTextCollection() {
   return window['go']['ipc']['Channel']['RequestSaveProcessedTextCollection']();
+}
+
+export function RequestTranslateArea(arg1) {
+  return window['go']['ipc']['Channel']['RequestTranslateArea'](arg1);
 }
 
 export function RequestUpdateArea(arg1) {

@@ -43,6 +43,8 @@ export function RequestChangeSessionProjectByName(arg1:string):Promise<boolean>;
 
 export function RequestChooseUserAvatar():Promise<string>;
 
+export function RequestConnectAreaAsTailToNode(arg1:string,arg2:string):Promise<boolean>;
+
 export function RequestDeleteAreaById(arg1:string):Promise<boolean>;
 
 export function RequestDeleteDocumentAndChildren(arg1:string):Promise<boolean>;
@@ -56,6 +58,8 @@ export function RequestSaveGroupCollection():Promise<boolean>;
 export function RequestSaveLocalUserProcessedMarkdownCollection():Promise<boolean>;
 
 export function RequestSaveProcessedTextCollection():Promise<boolean>;
+
+export function RequestTranslateArea(arg1:string):Promise<boolean>;
 
 export function RequestUpdateArea(arg1:entities.Area):Promise<boolean>;
 

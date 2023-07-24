@@ -1,17 +1,17 @@
 'use client'
 
 import React, { useState } from 'react'
+import Konva from 'konva'
 import { Group, Rect } from 'react-konva'
+import { KonvaEventObject } from 'konva/lib/Node'
 import { entities } from '../../wailsjs/wailsjs/go/models'
 import { useProject } from '../../context/Project/provider'
-import { KonvaEventObject } from 'konva/lib/Node'
-import Konva from 'konva'
 import AreaContextMenu from './AreaContextMenu'
+import { useStage } from './context/provider'
 
 type Props = {
   isActive: boolean,
   area: entities.Area,
-  scale: number,
   setHoveredOverAreaIds: Function
   setHoveredProcessedArea: Function
 }
@@ -20,11 +20,12 @@ type coordinates = { x: number, y: number }
 
 const Area = (props: Props) => {
   const { getProcessedAreaById, selectedAreaId, setSelectedAreaId } = useProject()
+  const { scale } = useStage()
   const shapeRef = React.useRef<Konva.Rect>(null)
   const [isAreaContextMenuOpen, setIsAreaContextMenuOpen] = useState(false)
   const [areaContextMenuPosition, setAreaContextMenuPosition] = useState<coordinates>()
 
-  const { area, scale, isActive, setHoveredOverAreaIds, setHoveredProcessedArea } = props
+  const { area, isActive, setHoveredOverAreaIds, setHoveredProcessedArea } = props
   const a = area
   const width = (a.endX - a.startX)
   const height = (a.endY - a.startY)
@@ -79,15 +80,16 @@ const Area = (props: Props) => {
       onMouseLeave={handleEnterOrLeave}
       onClick={() => handleAreaClick(a.id)}
       onContextMenu={handleContextMenu}
-      isArea />
-    {!isAreaContextMenuOpen
-      ? <></>
-      : <AreaContextMenu
+      isArea
+    />
+    {isAreaContextMenuOpen
+      ? <AreaContextMenu
         area={area}
         x={areaContextMenuPosition?.x || 0}
         y={areaContextMenuPosition?.y || 0}
         scale={scale}
         setIsAreaContextMenuOpen={setIsAreaContextMenuOpen} />
+      : <></>
     }
   </Group>
 }

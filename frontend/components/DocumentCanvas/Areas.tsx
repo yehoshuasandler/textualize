@@ -7,11 +7,13 @@ import { entities } from '../../wailsjs/wailsjs/go/models'
 import Area from './Area'
 import ProcessedWord from './ProcessedWord'
 import EditingWord from './EditingWord'
+import { useStage } from './context/provider'
 
 type Props = { scale: number }
 
 const Areas = ({ scale }: Props) => {
   const { getSelectedDocument, selectedAreaId } = useProject()
+  const { isProcessedWordsVisible } = useStage()
   const areas = getSelectedDocument()?.areas || []
   const [hoveredOverAreaIds, setHoveredOverAreaIds] = useState<string[]>([])
   const [hoveredProcessedAreas, setHoveredProcessedArea] = useState<entities.ProcessedArea[]>([])
@@ -44,7 +46,6 @@ const Areas = ({ scale }: Props) => {
   const renderAreas = (areas: entities.Area[]) => areas.map((a, index) => {
     return <Area key={index}
       area={a}
-      scale={scale}
       setHoveredOverAreaIds={setHoveredOverAreaIds}
       setHoveredProcessedArea={setHoveredProcessedArea}
       isActive={(hoveredOverAreaIds.includes(a.id) || a.id === selectedAreaId)} />
@@ -52,8 +53,8 @@ const Areas = ({ scale }: Props) => {
 
   return <Group>
     {renderAreas(areas)}
-    {renderProcessedWords()}
-    {renderEditingWord()}
+    {isProcessedWordsVisible ? renderProcessedWords() : <></>}
+    {isProcessedWordsVisible ? renderEditingWord() : <></>}
   </Group>
 }
 

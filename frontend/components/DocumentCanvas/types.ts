@@ -6,6 +6,8 @@ export type RectangleCoordinates = {
   startX: number, startY: number, endX: number, endY: number
 }
 
+export type Coordinates = { x: number, y: number }
+
 export type AddAreaToStoreCallback = (startX: number, startY: number, endX: number, endY: number) => Promise<void>
 
 export type SetZoomCallback = (newZoomLevel: number) => void

@@ -6,6 +6,7 @@ go 1.18
 
 require (
 	github.com/google/uuid v1.3.0
+	github.com/snakesel/libretranslate v0.0.2
 	github.com/wailsapp/wails/v2 v2.5.1
 )
 

@@ -16,12 +16,13 @@ type Document struct {
 }
 
 type Area struct {
-	Id       string   `json:"id"`
-	Name     string   `json:"name"`
-	StartX   int      `json:"startX"`
-	StartY   int      `json:"startY"`
-	EndX     int      `json:"endX"`
-	EndY     int      `json:"endY"`
-	Language Language `json:"language"`
-	Order    int      `json:"order"`
+	Id                string   `json:"id"`
+	Name              string   `json:"name"`
+	StartX            int      `json:"startX"`
+	StartY            int      `json:"startY"`
+	EndX              int      `json:"endX"`
+	EndY              int      `json:"endY"`
+	Language          Language `json:"language"`
+	TranslateLanguage Language `json:"translateLanguage"`
+	Order             int      `json:"order"`
 }

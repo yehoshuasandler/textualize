@@ -26,6 +26,7 @@ export namespace entities {
 	    endX: number;
 	    endY: number;
 	    language: Language;
+	    translateLanguage: Language;
 	    order: number;
 	
 	    static createFrom(source: any = {}) {
@@ -41,6 +42,7 @@ export namespace entities {
 	        this.endX = source["endX"];
 	        this.endY = source["endY"];
 	        this.language = this.convertValues(source["language"], Language);
+	        this.translateLanguage = this.convertValues(source["translateLanguage"], Language);
 	        this.order = source["order"];
 	    }
 	
@@ -239,6 +241,7 @@ export namespace entities {
 	}
 	export class ProcessedWord {
 	    id: string;
+	    areaId: string;
 	    fullText: string;
 	    symbols: ProcessedSymbol[];
 	    confidence: number;
@@ -252,6 +255,7 @@ export namespace entities {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.id = source["id"];
+	        this.areaId = source["areaId"];
 	        this.fullText = source["fullText"];
 	        this.symbols = this.convertValues(source["symbols"], ProcessedSymbol);
 	        this.confidence = source["confidence"];

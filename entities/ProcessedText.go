@@ -15,6 +15,7 @@ type ProcessedSymbol struct {
 
 type ProcessedWord struct {
 	Id          string               `json:"id"`
+	AreaId      string               `json:"areaId"`
 	FullText    string               `json:"fullText"`
 	Symbols     []ProcessedSymbol    `json:"symbols"`
 	Confidence  float32              `json:"confidence"`

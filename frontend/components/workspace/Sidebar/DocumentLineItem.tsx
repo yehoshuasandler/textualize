@@ -135,7 +135,7 @@ const DocumentLineItem = (props: { document: SidebarDocument, groupId: string, i
                   props.document.id === selectedDocumentId
                     ? 'bg-gray-900 text-white'
                     : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                  'text-left font-medium text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 '
+                  'text-left font-medium text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 inline-block'
                 )}
               >
                 {props.document.name}
@@ -143,7 +143,7 @@ const DocumentLineItem = (props: { document: SidebarDocument, groupId: string, i
             }
 
             <XMarkIcon
-              className='w-6 h-5 mr-2 text-white hover:bg-red-400 hover:text-gray-100 rounded-full p-0.5'
+              className='inline-block w-6 h-5 mr-2 text-white hover:bg-red-400 hover:text-gray-100 rounded-full p-0.5'
               onClick={() => requestDeleteDocumentById(props.document.id)} />
           </summary>
           <ul>
