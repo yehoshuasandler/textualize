@@ -4,6 +4,7 @@ export type ProjectProps = {
   id: string,
   documents: entities.Document[],
   groups: entities.Group[],
+  contextGroups: entities.SerializedLinkedProcessedArea[],
 }
 
 export type AddAreaProps = {
@@ -65,4 +66,6 @@ export type ProjectContextType = {
   requestUpdateProcessedWordById: (wordId: string, newTextValue: string) => Promise<boolean>
   getProcessedAreaById: (areaId: string) => Promise<entities.ProcessedArea | undefined>
   requestUpdateProcessedArea: (updatedProcessedArea: entities.ProcessedArea) => Promise<boolean>
+  requestConnectProcessedAreas: (headId: string, tailId: string) => Promise<boolean>
+  getSerializedContextGroups: () => Promise<entities.SerializedLinkedProcessedArea[]>
 } & ProjectProps

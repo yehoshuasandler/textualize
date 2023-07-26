@@ -422,6 +422,22 @@ export namespace entities {
 		}
 	}
 	
+	export class SerializedLinkedProcessedArea {
+	    areaId: string;
+	    previousId: string;
+	    nextId: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SerializedLinkedProcessedArea(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.areaId = source["areaId"];
+	        this.previousId = source["previousId"];
+	        this.nextId = source["nextId"];
+	    }
+	}
 	export class Session {
 	    project: Project;
 	    organization: Organization;
@@ -481,6 +497,7 @@ export namespace ipc {
 	export class GetDocumentsResponse {
 	    documents: entities.Document[];
 	    groups: entities.Group[];
+	    contextGroups: entities.SerializedLinkedProcessedArea[];
 	
 	    static createFrom(source: any = {}) {
 	        return new GetDocumentsResponse(source);
@@ -490,6 +507,7 @@ export namespace ipc {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.documents = this.convertValues(source["documents"], entities.Document);
 	        this.groups = this.convertValues(source["groups"], entities.Group);
+	        this.contextGroups = this.convertValues(source["contextGroups"], entities.SerializedLinkedProcessedArea);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

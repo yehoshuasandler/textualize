@@ -23,6 +23,8 @@ export function GetProcessedAreasByDocumentId(arg1:string):Promise<Array<entitie
 
 export function GetProjectByName(arg1:string):Promise<entities.Project>;
 
+export function GetSerializedContextGroups():Promise<Array<entities.SerializedLinkedProcessedArea>>;
+
 export function GetSupportedLanguages():Promise<Array<entities.Language>>;
 
 export function GetUserMarkdownByDocumentId(arg1:string):Promise<entities.UserMarkdown>;
@@ -43,13 +45,15 @@ export function RequestChangeSessionProjectByName(arg1:string):Promise<boolean>;
 
 export function RequestChooseUserAvatar():Promise<string>;
 
-export function RequestConnectAreaAsTailToNode(arg1:string,arg2:string):Promise<boolean>;
+export function RequestConnectProcessedAreas(arg1:string,arg2:string):Promise<boolean>;
 
 export function RequestDeleteAreaById(arg1:string):Promise<boolean>;
 
 export function RequestDeleteDocumentAndChildren(arg1:string):Promise<boolean>;
 
 export function RequestDeleteProcessedAreaById(arg1:string):Promise<boolean>;
+
+export function RequestSaveContextGroupCollection():Promise<boolean>;
 
 export function RequestSaveDocumentCollection():Promise<boolean>;
 

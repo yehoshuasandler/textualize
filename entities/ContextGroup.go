@@ -3,8 +3,6 @@ package entities
 import (
 	"errors"
 	"fmt"
-
-	"github.com/google/uuid"
 )
 
 type IndependentTranslatedWord struct {
@@ -15,43 +13,57 @@ type IndependentTranslatedWord struct {
 
 type LinkedProcessedArea struct {
 	Area     ProcessedArea
-	previous *LinkedProcessedArea
-	next     *LinkedProcessedArea
+	Previous *LinkedProcessedArea
+	Next     *LinkedProcessedArea
+}
+
+type SerializedLinkedProcessedArea struct {
+	AreaId     string `json:"areaId"`
+	PreviousId string `json:"previousId"`
+	NextId     string `json:"nextId"`
+}
+
+type ContextGroupCollection struct {
+	Groups []LinkedAreaList
 }
 
 type LinkedAreaList struct {
-	head *LinkedProcessedArea
-	tail *LinkedProcessedArea
+	Id              string
+	DocumentId      string
+	TranslationText string
+	Head            *LinkedProcessedArea
+	Tail            *LinkedProcessedArea
 }
 
 func (l *LinkedAreaList) First() *LinkedProcessedArea {
-	return l.head
+	return l.Head
 }
 
-func (linkedProcessedWord *LinkedProcessedArea) Next() *LinkedProcessedArea {
-	return linkedProcessedWord.next
+func (linkedProcessedWord *LinkedProcessedArea) GetNext() *LinkedProcessedArea {
+	return linkedProcessedWord.Next
 }
 
-func (linkedProcessedWord *LinkedProcessedArea) Prev() *LinkedProcessedArea {
-	return linkedProcessedWord.previous
+func (linkedProcessedWord *LinkedProcessedArea) GetPrevious() *LinkedProcessedArea {
+	return linkedProcessedWord.Previous
 }
 
 // Create new node with value
 func (l *LinkedAreaList) Push(processedArea ProcessedArea) *LinkedAreaList {
 	n := &LinkedProcessedArea{Area: processedArea}
-	if l.head == nil {
-		l.head = n // First node
+	if l.Head == nil {
+		l.Head = n // First node
 	} else {
-		l.tail.next = n     // Add after prev last node
-		n.previous = l.tail // Link back to prev last node
+		l.Tail.Next = n     // Add after prev last node
+		n.Previous = l.Tail // Link back to prev last node
 	}
-	l.tail = n // reset tail to newly added node
+	l.Tail = n // reset tail to newly added node
 	return l
 }
+
 func (l *LinkedAreaList) Find(id string) *LinkedProcessedArea {
 	found := false
 	var ret *LinkedProcessedArea = nil
-	for n := l.First(); n != nil && !found; n = n.Next() {
+	for n := l.First(); n != nil && !found; n = n.GetNext() {
 		if n.Area.Id == id {
 			found = true
 			ret = n
@@ -59,16 +71,17 @@ func (l *LinkedAreaList) Find(id string) *LinkedProcessedArea {
 	}
 	return ret
 }
+
 func (l *LinkedAreaList) Delete(id string) bool {
 	success := false
 	node2del := l.Find(id)
 	if node2del != nil {
 		fmt.Println("Delete - FOUND: ", id)
-		prev_node := node2del.previous
-		next_node := node2del.next
+		prev_node := node2del.Previous
+		next_node := node2del.Next
 		// Remove this node
-		prev_node.next = node2del.next
-		next_node.previous = node2del.previous
+		prev_node.Next = node2del.Next
+		next_node.Previous = node2del.Previous
 		success = true
 	}
 	return success
@@ -78,86 +91,83 @@ var errEmpty = errors.New("ERROR - List is empty")
 
 // Pop last item from list
 func (l *LinkedAreaList) Pop() (processedArea ProcessedArea, err error) {
-	if l.tail == nil {
+	if l.Tail == nil {
 		err = errEmpty
 	} else {
-		processedArea = l.tail.Area
-		l.tail = l.tail.previous
-		if l.tail == nil {
-			l.head = nil
+		processedArea = l.Tail.Area
+		l.Tail = l.Tail.Previous
+		if l.Tail == nil {
+			l.Head = nil
 		}
 	}
 	return processedArea, err
 }
 
-type ContextGroup struct { // TODO: possibly remove this and expand the LinkedAreaList struct instead
-	Id              string
-	DocumentId      string
-	LinkedAreaList  LinkedAreaList
-	TranslationText string
-}
-
-type ContextGroupCollection struct { // TODO: these methods should live in core not entitites
-	Groups []ContextGroup
-}
-
-var contextGroupCollectionInstance *ContextGroupCollection
-
-func GetContextGroupCollection() *ContextGroupCollection {
-	if contextGroupCollectionInstance == nil {
-		contextGroupCollectionInstance = &ContextGroupCollection{}
-	}
-
-	return contextGroupCollectionInstance
-}
-
-func SetContextGroupCollection(collection ContextGroupCollection) *ContextGroupCollection {
-	contextGroupCollectionInstance = &collection
-	return contextGroupCollectionInstance
-}
-
-func (collection *ContextGroupCollection) FindContextGroupByNodeId(id string) *ContextGroup {
-	var foundContextGroup *ContextGroup
-	for i, g := range collection.Groups {
-		if g.LinkedAreaList.Find(id) != nil {
-			foundContextGroup = &collection.Groups[i]
-			break
+func (l *LinkedAreaList) InsertAfter(id string, processedArea ProcessedArea) bool {
+	found := false
+	for n := l.First(); n != nil && !found; n = n.GetNext() {
+		if n.Area.Id == id {
+			found = true
+			newNode := &LinkedProcessedArea{Area: processedArea}
+			newNode.Next = n.Next
+			newNode.Previous = n
+			n.Next = newNode
 		}
 	}
-
-	return foundContextGroup
+	return found
 }
 
-func (collection *ContextGroupCollection) CreateContextGroupFromProcessedArea(area ProcessedArea) bool {
-	fmt.Println("CreateContextGroupFromProcessedArea")
-
-	newLinkedAreaList := LinkedAreaList{}
-	newLinkedAreaList.Push(area)
-
-	newContextGroup := ContextGroup{
-		Id:             uuid.NewString(),
-		DocumentId:     area.DocumentId,
-		LinkedAreaList: newLinkedAreaList,
+func (l *LinkedAreaList) InsertBefore(id string, processedArea ProcessedArea) bool {
+	found := false
+	for n := l.First(); n != nil && !found; n = n.GetNext() {
+		if n.Area.Id == id {
+			found = true
+			newNode := &LinkedProcessedArea{Area: processedArea}
+			newNode.Next = n
+			newNode.Previous = n.Previous
+			n.Previous = newNode
+		}
 	}
-
-	collection.Groups = append(collection.Groups, newContextGroup)
-	return true
+	return found
 }
 
-// TODO: completely rework this linked list and the collection
-func (collection *ContextGroupCollection) ConnectAreaAsTailToNode(tailArea ProcessedArea, headArea ProcessedArea) bool {
-	headNodeContextGroup := collection.FindContextGroupByNodeId(headArea.Id)
+func (l *LinkedAreaList) Serialize() []SerializedLinkedProcessedArea {
+	var serialized []SerializedLinkedProcessedArea
+	for n := l.First(); n != nil; n = n.GetNext() {
+		areaId := n.Area.Id
+		previousId := ""
+		if n.Previous != nil {
+			previousId = n.Previous.Area.Id
+		}
+		nextId := ""
+		if n.Next != nil {
+			nextId = n.Next.Area.Id
+		}
 
-	if headNodeContextGroup == nil {
-		collection.CreateContextGroupFromProcessedArea(headArea)
-		headNodeContextGroup = collection.FindContextGroupByNodeId(headArea.Id)
+		serialized = append(serialized, SerializedLinkedProcessedArea{
+			AreaId:     areaId,
+			PreviousId: previousId,
+			NextId:     nextId,
+		})
 	}
+	return serialized
+}
 
-	headNode := headNodeContextGroup.LinkedAreaList.Find(headArea.Id)
-	headNode.next = &LinkedProcessedArea{
-		Area:     tailArea,
-		previous: headNode,
+func DeserializeLinkedAreaList(serialized []SerializedLinkedProcessedArea) LinkedAreaList {
+	linkedAreaList := LinkedAreaList{}
+	for _, serializedLinkedProcessedArea := range serialized {
+		linkedAreaList.Push(ProcessedArea{
+			Id: serializedLinkedProcessedArea.AreaId,
+		})
 	}
-
-	return true
+	for _, serializedLinkedProcessedArea := range serialized {
+		linkedProcessedArea := linkedAreaList.Find(serializedLinkedProcessedArea.AreaId)
+		if serializedLinkedProcessedArea.PreviousId != "" {
+			linkedProcessedArea.Previous = linkedAreaList.Find(serializedLinkedProcessedArea.PreviousId)
+		}
+		if serializedLinkedProcessedArea.NextId != "" {
+			linkedProcessedArea.Next = linkedAreaList.Find(serializedLinkedProcessedArea.NextId)
+		}
+	}
+	return linkedAreaList
 }

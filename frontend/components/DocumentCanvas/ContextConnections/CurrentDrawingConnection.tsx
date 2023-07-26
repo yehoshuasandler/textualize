@@ -2,18 +2,19 @@
 
 import React from 'react'
 import { Line } from 'react-konva'
-import { StartingContextConnection } from '../context/types'
-import { entities } from '../../../wailsjs/wailsjs/go/models'
 import { Coordinates } from '../types'
+import { useStage } from '../context/provider'
+import { useProject } from '../../../context/Project/provider'
 
 type CurrentDrawingConnectionProps = {
-  startingContextConnection: StartingContextConnection | null
-  areas: entities.Area[],
-  scale: number,
   endDrawingPosition: Coordinates | null
 }
 const CurrentDrawingConnection = (props: CurrentDrawingConnectionProps) => {
-  const { startingContextConnection, areas, scale, endDrawingPosition } = props 
+  const { endDrawingPosition } = props 
+  const { startingContextConnection, scale } = useStage()
+  const { getSelectedDocument } = useProject()
+  const areas = getSelectedDocument()?.areas || []
+
   if (!startingContextConnection || !endDrawingPosition) return <></>
 
   const { areaId, isHead } = startingContextConnection

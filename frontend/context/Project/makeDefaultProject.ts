@@ -5,12 +5,13 @@ const makeDefaultProject = (): ProjectContextType => ({
   id: '',
   documents: [] as entities.Document[],
   groups: [] as entities.Group[],
+  contextGroups: [] as entities.SerializedLinkedProcessedArea[],
   selectedAreaId: '',
   selectedDocumentId: '',
   getSelectedDocument: () => new entities.Document(),
   getAreaById: (areaId) => undefined,
   getProcessedAreasByDocumentId: (documentId) => Promise.resolve([new entities.ProcessedArea()]),
-  requestAddProcessedArea: (processesArea) => Promise.resolve(new entities.ProcessedArea()),
+  requestAddProcessedArea: (processesArea) => Promise.resolve(false),
   requestAddArea: (documentId, area) => Promise.resolve(new entities.Area()),
   requestUpdateArea: (updatedArea) => Promise.resolve(false),
   requestDeleteAreaById: (areaId) => Promise.resolve(false),
@@ -33,6 +34,8 @@ const makeDefaultProject = (): ProjectContextType => ({
   requestUpdateProcessedWordById: (wordId, newTestValue) => Promise.resolve(false),
   getProcessedAreaById: (areaId) => Promise.resolve(undefined),
   requestUpdateProcessedArea: updatedProcessedArea => Promise.resolve(false),
+  requestConnectProcessedAreas: (headId, tailId) => Promise.resolve(false),
+  getSerializedContextGroups: () => Promise.resolve([]),
 })
 
 export default makeDefaultProject
