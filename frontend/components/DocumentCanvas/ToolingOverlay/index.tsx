@@ -1,19 +1,20 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { DocumentTextIcon, LanguageIcon, LinkIcon, MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon, SquaresPlusIcon } from '@heroicons/react/24/outline'
 import { useProject } from '../../../context/Project/provider'
 import { entities } from '../../../wailsjs/wailsjs/go/models'
 import LanguageSelect from '../../utils/LanguageSelect'
 import { useStage } from '../context/provider'
 import ToolToggleButton from './ToolToggleButton'
-import { useNotification } from '../../../context/Notification/provider'
 import processImageArea from '../../../useCases/processImageArea'
+import { pushNotification } from '../../../redux/features/notifications/notificationQueueSlice'
 
 
 const ToolingOverlay = () => {
+  const dispatch = useDispatch()
   const { getSelectedDocument, selectedAreaId, requestUpdateArea, requestUpdateDocument, updateDocuments } = useProject()
-  const { addNotificationToQueue } = useNotification()
   const {
     scale, scaleStep, maxScale, setScale,
     isLinkAreaContextsVisible, setIsLinkAreaContextsVisible,
@@ -36,22 +37,22 @@ const ToolingOverlay = () => {
     try {
       successfullyUpdatedLanguageOnArea = await requestUpdateArea({ ...selectedArea, ...{ language: selectedLanguage } })
     } catch (err) {
-      addNotificationToQueue({ message: 'Error updating area language', level: 'error' })
+      dispatch(pushNotification({ message: 'Error updating area language', level: 'error' }))
       return
     }
 
     const selectedDocumentId = getSelectedDocument()?.id
     if (!successfullyUpdatedLanguageOnArea || !selectedDocumentId) {
-      addNotificationToQueue({ message: 'Did not successfully update area language', level: 'warning' })
+      dispatch(pushNotification({ message: 'Did not successfully update area language', level: 'warning' }))
       return
     }
 
     try {
       await processImageArea(selectedDocumentId, selectedArea.id)
       await updateDocuments()
-      addNotificationToQueue({ message: 'Finished processing area', level: 'info' })
+      dispatch(pushNotification({ message: 'Finished processing area', level: 'info' }))
     } catch (err) {
-      addNotificationToQueue({ message: 'Error processing area', level: 'error' })
+      dispatch(pushNotification({ message: 'Error processing area', level: 'error' }))
     }
   }
 

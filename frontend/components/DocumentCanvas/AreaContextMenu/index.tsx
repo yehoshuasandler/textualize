@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { entities } from '../../../wailsjs/wailsjs/go/models'
 import { Html } from 'react-konva-utils'
 import { ClipboardIcon, ArrowPathIcon, TrashIcon, LanguageIcon } from '@heroicons/react/24/outline'
@@ -9,9 +9,10 @@ import { useProject } from '../../../context/Project/provider'
 import asyncClick from '../../../utils/asyncClick'
 import processImageArea from '../../../useCases/processImageArea'
 import classNames from '../../../utils/classNames'
-import { useNotification } from '../../../context/Notification/provider'
 import LanguageSelect from '../../utils/LanguageSelect'
 import { RequestTranslateArea } from '../../../wailsjs/wailsjs/go/ipc/Channel'
+import { useDispatch } from 'react-redux'
+import { pushNotification } from '../../../redux/features/notifications/notificationQueueSlice'
 
 type Props = {
   x: number,
@@ -23,9 +24,8 @@ type Props = {
 
 
 const AreaContextMenu = (props: Props) => {
+  const dispatch = useDispatch()
   const { getProcessedAreaById, requestDeleteAreaById, getSelectedDocument, requestUpdateArea } = useProject()
-  const { addNotificationToQueue } = useNotification()
-  const formRef = useRef<HTMLFormElement>(null)
   const [shouldShowProcessLanguageSelect, setShouldShowProcessLanguageSelect] = useState(false)
   const { area, setIsAreaContextMenuOpen, scale, x, y } = props
 
@@ -36,15 +36,15 @@ const AreaContextMenu = (props: Props) => {
     const wordsOfProcessedArea = processedArea?.lines.flatMap(l => l.words.map(w => w.fullText))
     const fullText = wordsOfProcessedArea?.join(' ')
     if (!fullText) {
-      addNotificationToQueue({ message: 'No text found to copy.', level: 'warning' })
+      dispatch(pushNotification({ message: 'No text found to copy.', level: 'warning' }))
       return
     }
 
     try {
       await navigator.clipboard.writeText(fullText)
-      addNotificationToQueue({ message: 'Copied area to clipboard' })
+      dispatch(pushNotification({ message: 'Copied area to clipboard' }))
     } catch (err) {
-      addNotificationToQueue({ message: 'Error copying area', level: 'error' })
+      dispatch(pushNotification({ message: 'Error copying area', level: 'error' }))
     }
   }
 
@@ -53,9 +53,9 @@ const AreaContextMenu = (props: Props) => {
 
     try {
       const response = await requestDeleteAreaById(area.id)
-      if (!response) addNotificationToQueue({ message: 'Could not delete area', level: 'warning' })
+      if (!response) dispatch(pushNotification({ message: 'Could not delete area', level: 'warning' }))
     } catch (err) {
-      addNotificationToQueue({ message: 'Error deleting area', level: 'error' })
+      dispatch(pushNotification({ message: 'Error deleting area', level: 'error' }))
     }
   }
 
@@ -64,17 +64,17 @@ const AreaContextMenu = (props: Props) => {
 
     const documentId = getSelectedDocument()?.id
     if (!documentId) {
-      addNotificationToQueue({ message: 'Issue finding selected document', level: 'warning' })
+      dispatch(pushNotification({ message: 'Issue finding selected document', level: 'warning' }))
       return
     }
 
     try {
-      addNotificationToQueue({ message: 'Processing test of area' })
+      dispatch(pushNotification({ message: 'Processing test of area' }))
       const response = await processImageArea(documentId, area.id)
-      if (response) addNotificationToQueue({ message: 'Area successfully processed' })
-      else addNotificationToQueue({ message: 'No text result from processing area', level: 'warning' })
+      if (response) dispatch(pushNotification({ message: 'Area successfully processed' }))
+      else dispatch(pushNotification({ message: 'No text result from processing area', level: 'warning' }))
     } catch (err) {
-      addNotificationToQueue({ message: 'Error processing area', level: 'error' })
+      dispatch(pushNotification({ message: 'Error processing area', level: 'error' }))
     }
   }
 
@@ -84,10 +84,10 @@ const AreaContextMenu = (props: Props) => {
 
     try {
       const wasSuccessful = await RequestTranslateArea(area.id)
-      if (wasSuccessful) addNotificationToQueue({ message: 'Successfully translated area' })
-      else addNotificationToQueue({ message: 'Issue translating area', level: 'warning' })
+      if (wasSuccessful) dispatch(pushNotification({ message: 'Successfully translated area' }))
+      else dispatch(pushNotification({ message: 'Issue translating area', level: 'warning' }))
     } catch (err) {
-      addNotificationToQueue({ message: 'Error translating area', level: 'error' })
+      dispatch(pushNotification({ message: 'Error translating area', level: 'error' }))
     }
   }
 
@@ -98,26 +98,25 @@ const AreaContextMenu = (props: Props) => {
     try {
       successfullyUpdatedLanguageOnArea = await requestUpdateArea({...area, ...{language: selectedLanguage}})
     } catch (err) {
-      addNotificationToQueue({ message: 'Error updating area language', level: 'error' })
+      dispatch(pushNotification({ message: 'Error updating area language', level: 'error' }))
       return
     }
 
     const selectedDocumentId = getSelectedDocument()?.id
     if (!successfullyUpdatedLanguageOnArea || !selectedDocumentId) {
-      addNotificationToQueue({ message: 'Did not successfully update area language', level: 'warning' })
+      dispatch(pushNotification({ message: 'Did not successfully update area language', level: 'warning' }))
       return
     }
 
     try {
       await processImageArea(selectedDocumentId, area.id)
-      addNotificationToQueue({ message: 'Finished processing area', level: 'info' })
+      dispatch(pushNotification({ message: 'Finished processing area', level: 'info' }))
     } catch (err) {
-      addNotificationToQueue({ message: 'Error processing area', level: 'error' })
+      dispatch(pushNotification({ message: 'Error processing area', level: 'error' }))
     }
   }
 
   const handleOnBlur = (e: React.FocusEvent) => {
-    console.log(e.relatedTarget)
     e.preventDefault()
     if (e.relatedTarget === null) setIsAreaContextMenuOpen(false)
   }

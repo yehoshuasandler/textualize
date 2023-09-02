@@ -8,6 +8,7 @@ import '../styles/globals.css'
 import { NavigationProvider } from '../context/Navigation/provider'
 import { mainPages, workspaces } from '../context/Navigation/types'
 import { NotificationProvider } from '../context/Notification/provider'
+import { Providers } from '../redux/provider'
 
 const initialProjectProps = {
   id: '',
@@ -25,7 +26,9 @@ export default function MainAppLayout({ Component, pageProps }: AppProps) {
     <NavigationProvider navigationProps={initialNavigationProps}>
       <ProjectProvider projectProps={initialProjectProps}>
         <NotificationProvider>
-          <Component {...pageProps} />
+          <Providers>
+            <Component {...pageProps} />
+          </Providers>
         </NotificationProvider>
       </ProjectProvider>
     </NavigationProvider>
