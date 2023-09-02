@@ -35,7 +35,7 @@ export function RequestAddDocument(arg1:string,arg2:string):Promise<entities.Doc
 
 export function RequestAddDocumentGroup(arg1:string):Promise<entities.Group>;
 
-export function RequestAddProcessedArea(arg1:entities.ProcessedArea):Promise<boolean>;
+export function RequestAddProcessedArea(arg1:entities.ProcessedArea):Promise<entities.ProcessedArea>;
 
 export function RequestChangeAreaOrder(arg1:string,arg2:number):Promise<entities.Document>;
 
@@ -52,6 +52,8 @@ export function RequestDeleteAreaById(arg1:string):Promise<boolean>;
 export function RequestDeleteDocumentAndChildren(arg1:string):Promise<boolean>;
 
 export function RequestDeleteProcessedAreaById(arg1:string):Promise<boolean>;
+
+export function RequestDisconnectProcessedAreas(arg1:string,arg2:string):Promise<boolean>;
 
 export function RequestSaveContextGroupCollection():Promise<boolean>;
 

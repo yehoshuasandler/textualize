@@ -32,6 +32,41 @@ func SetContextGroupCollectionBySerialized(serialized []entities.SerializedLinke
 	return &newInstance
 }
 
+func (collection *ContextGroupCollection) DoesGroupExistBetweenProcessedAreas(ancestorAreaId string, descendantAreaId string) bool {
+	ancestorGroup, _ := collection.FindGroupByLinkedProcessedAreaId(ancestorAreaId)
+	descendantGroup, _ := collection.FindGroupByLinkedProcessedAreaId(descendantAreaId)
+
+	isAncestorInAnyInGroup := ancestorGroup != nil
+	isDescendantInAnyInGroup := descendantGroup != nil
+	areBothInAnyInGroup := isAncestorInAnyInGroup && isDescendantInAnyInGroup
+	areBothInSameGroup := false
+	if areBothInAnyInGroup {
+		areBothInSameGroup = ancestorGroup.Id == descendantGroup.Id
+	}
+
+	return areBothInSameGroup
+}
+
+func (collection *ContextGroupCollection) DisconnectProcessedAreas(ancestorAreaId string, descendantAreaId string) bool {
+	doesConnectionExist := collection.DoesGroupExistBetweenProcessedAreas(ancestorAreaId, descendantAreaId)
+
+	if !doesConnectionExist {
+		return false
+	}
+
+	ancestorGroup, _ := collection.FindGroupByLinkedProcessedAreaId(ancestorAreaId)
+
+	wasRemoved := false
+	for i, group := range collection.Groups {
+		if group.Id == ancestorGroup.Id {
+			collection.Groups = append(collection.Groups[:i], collection.Groups[i+1:]...)
+			wasRemoved = true
+			break
+		}
+	}
+	return wasRemoved
+}
+
 func (collection *ContextGroupCollection) FindGroupById(id string) (*entities.LinkedAreaList, error) {
 	found := false
 	var foundGroup *entities.LinkedAreaList = nil

@@ -12,38 +12,21 @@ import { useStage } from './context/provider'
 type Props = {
   isActive: boolean,
   area: entities.Area,
-  setHoveredOverAreaIds: Function
-  setHoveredProcessedArea: Function
 }
 
 type coordinates = { x: number, y: number }
 
 const Area = (props: Props) => {
-  const { getProcessedAreaById, selectedAreaId, setSelectedAreaId } = useProject()
+  const { selectedAreaId, setSelectedAreaId } = useProject()
   const { scale } = useStage()
   const shapeRef = React.useRef<Konva.Rect>(null)
   const [isAreaContextMenuOpen, setIsAreaContextMenuOpen] = useState(false)
   const [areaContextMenuPosition, setAreaContextMenuPosition] = useState<coordinates>()
 
-  const { area, isActive, setHoveredOverAreaIds, setHoveredProcessedArea } = props
+  const { area, isActive } = props
   const a = area
   const width = (a.endX - a.startX)
   const height = (a.endY - a.startY)
-
-  const handleEnterOrLeave = (e: KonvaEventObject<MouseEvent>) => {
-    const stage = e.currentTarget.getStage()!
-    const currentMousePosition = stage.pointerPos
-    const intersectingNodes = stage.getAllIntersections(currentMousePosition)
-    const drawnAreas = intersectingNodes.filter(n => n.attrs?.isArea)
-    const drawnAreasIds = drawnAreas.map(d => d.attrs?.id)
-    setHoveredOverAreaIds(drawnAreasIds)
-
-    const processedAreaRequests = drawnAreasIds.map(a => getProcessedAreaById(a || ''))
-    Promise.all(processedAreaRequests).then(responses => {
-      const validResponses = responses.filter(r => r?.id) as entities.ProcessedArea[]
-      setHoveredProcessedArea(validResponses || [])
-    })
-  }
 
   const handleContextMenu = (e: KonvaEventObject<PointerEvent>) => {
     e.evt.preventDefault()
@@ -76,8 +59,6 @@ const Area = (props: Props) => {
       strokeWidth={1}
       strokeScaleEnabled={false}
       shadowForStrokeEnabled={false}
-      onMouseEnter={handleEnterOrLeave}
-      onMouseLeave={handleEnterOrLeave}
       onClick={() => handleAreaClick(a.id)}
       onContextMenu={handleContextMenu}
       isArea

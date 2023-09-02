@@ -15,13 +15,13 @@ const AreaLineItem = (props: { area: SidebarArea, documentId: string, index: num
     getAreaById,
     requestUpdateArea,
     setSelectedDocumentId,
-    setSelectedAreaId,
     requestChangeAreaOrder,
     requestDeleteAreaById,
+    selectedAreaId,
+    setSelectedAreaId,
   } = useProject()
 
   const {
-    selectedAreaId,
     isEditAreaNameInputShowing,
     setIsEditAreaNameInputShowing,
     dragOverAreaId,

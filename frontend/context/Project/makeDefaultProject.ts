@@ -1,4 +1,4 @@
-import { entities } from '../../wailsjs/wailsjs/go/models'
+import { entities, ipc } from '../../wailsjs/wailsjs/go/models'
 import { ProjectContextType, UserProps } from './types'
 
 const makeDefaultProject = (): ProjectContextType => ({
@@ -11,7 +11,7 @@ const makeDefaultProject = (): ProjectContextType => ({
   getSelectedDocument: () => new entities.Document(),
   getAreaById: (areaId) => undefined,
   getProcessedAreasByDocumentId: (documentId) => Promise.resolve([new entities.ProcessedArea()]),
-  requestAddProcessedArea: (processesArea) => Promise.resolve(false),
+  requestAddProcessedArea: (processesArea) => Promise.resolve(new entities.ProcessedArea()),
   requestAddArea: (documentId, area) => Promise.resolve(new entities.Area()),
   requestUpdateArea: (updatedArea) => Promise.resolve(false),
   requestDeleteAreaById: (areaId) => Promise.resolve(false),
@@ -36,6 +36,7 @@ const makeDefaultProject = (): ProjectContextType => ({
   requestUpdateProcessedArea: updatedProcessedArea => Promise.resolve(false),
   requestConnectProcessedAreas: (headId, tailId) => Promise.resolve(false),
   getSerializedContextGroups: () => Promise.resolve([]),
+  updateDocuments: () => Promise.resolve(new ipc.GetDocumentsResponse())
 })
 
 export default makeDefaultProject

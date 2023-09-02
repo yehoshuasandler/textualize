@@ -9,7 +9,7 @@ type Icon = (props: React.SVGProps<SVGSVGElement> & {
 }) => JSX.Element
 
 const ToolToggleButton = (props: { icon: Icon, hint: string, isActive: boolean, onClick?: React.MouseEventHandler<HTMLButtonElement> }) => {
-  return <div className="group flex relative pointer-events-auto">
+  return <div className="group flex relative">
     <button className='pointer-events-auto p-2 bg-white rounded-md block mt-3 shadow-lg hover:bg-slate-100 aria-pressed:bg-indigo-400 aria-pressed:text-white'
       aria-pressed={props.isActive}
       onClick={props.onClick}>

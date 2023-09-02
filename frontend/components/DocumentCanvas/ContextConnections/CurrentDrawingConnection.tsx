@@ -50,6 +50,7 @@ const CurrentDrawingConnection = (props: CurrentDrawingConnectionProps) => {
     strokeScaleEnabled={false}
     shadowForStrokeEnabled={false}
     tension={0.2}
+    listening={false}
   />
 }
 

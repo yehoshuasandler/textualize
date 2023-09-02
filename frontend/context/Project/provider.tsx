@@ -70,6 +70,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
     selectedDocumentId,
     setSelectedDocumentId,
     currentSession,
+    updateDocuments,
     ...areaMethods,
     ...documentMethods,
     ...sessionMethods,

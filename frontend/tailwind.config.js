@@ -16,4 +16,7 @@ module.exports = {
       },
     },
   },
+  colors: {
+    brandPrimary: '#dc8dec',
+  }
 }

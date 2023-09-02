@@ -9,15 +9,15 @@ import useImage from 'use-image'
 import { RectangleCoordinates } from './types'
 import DrawingArea from './DrawingArea'
 import getNormalizedRectToBounds from '../../utils/getNormalizedRectToBounds'
-import processImageArea from '../../useCases/processImageArea'
 import { useStage } from './context/provider'
 import ContextConnections from './ContextConnections'
+import processImageRect from '../../useCases/processImageRect'
 
 let downClickX: number
 let downClickY: number
 
 const CanvasStage = () => {
-  const { getSelectedDocument, requestAddArea, setSelectedAreaId } = useProject()
+  const { getSelectedDocument, updateDocuments, setSelectedAreaId } = useProject()
   const { scale, scaleStep, maxScale, size, setScale, isAreasVisible, isLinkAreaContextsVisible, isDrawingArea, setIsDrawingArea, startingContextConnection, setStartingContextConnection } = useStage()
   const [documentImage] = useImage(getSelectedDocument()?.path || '')
   const documentRef = useRef(null)
@@ -55,11 +55,12 @@ const CanvasStage = () => {
 
     const normalizedDrawnRect = getNormalizedRectToBounds(drawingAreaRect, documentWidth, documentHeight, scale)
     const selectedDocumentId = getSelectedDocument()!.id
-    requestAddArea(selectedDocumentId, normalizedDrawnRect).then(addedArea => {
-      setSelectedAreaId(addedArea.id)
-      processImageArea(selectedDocumentId, addedArea.id)
+    processImageRect(selectedDocumentId, normalizedDrawnRect).then(async addedAreas => {
+      updateDocuments().then(response => {
+        if (!addedAreas.length) return
+        setSelectedAreaId(addedAreas[0].id)
+      })
     })
-
     setDrawingAreaRect(null)
   }
 

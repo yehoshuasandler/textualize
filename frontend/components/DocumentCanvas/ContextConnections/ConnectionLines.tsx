@@ -60,6 +60,7 @@ const ConnectionLines = () => {
         strokeScaleEnabled={false}
         shadowForStrokeEnabled={false}
         tension={0.2}
+        listening={false}
       />
     })
     return lines.filter(l => !!l)

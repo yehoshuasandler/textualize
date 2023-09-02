@@ -102,6 +102,10 @@ export function RequestDeleteProcessedAreaById(arg1) {
   return window['go']['ipc']['Channel']['RequestDeleteProcessedAreaById'](arg1);
 }
 
+export function RequestDisconnectProcessedAreas(arg1, arg2) {
+  return window['go']['ipc']['Channel']['RequestDisconnectProcessedAreas'](arg1, arg2);
+}
+
 export function RequestSaveContextGroupCollection() {
   return window['go']['ipc']['Channel']['RequestSaveContextGroupCollection']();
 }

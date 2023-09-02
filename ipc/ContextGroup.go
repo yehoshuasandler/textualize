@@ -7,17 +7,39 @@ import (
 	"textualize/storage"
 )
 
+func (c *Channel) RequestDisconnectProcessedAreas(ancestorAreaId string, descendantAreaId string) bool {
+	contextGroupCollection := contextGroup.GetContextGroupCollection()
+
+	wasSuccessfulDisconnect := contextGroupCollection.DisconnectProcessedAreas(ancestorAreaId, descendantAreaId)
+	if wasSuccessfulDisconnect {
+		wasSuccessfulWrite := c.RequestSaveContextGroupCollection()
+		return wasSuccessfulWrite
+	}
+	return false
+}
+
+/*
+If a connection already exists, then this method will default to disconnecting the two areas.
+*/
 func (c *Channel) RequestConnectProcessedAreas(ancestorAreaId string, descendantAreaId string) bool {
+	contextGroupCollection := contextGroup.GetContextGroupCollection()
+
+	doesContextGroupAlreadyExist := contextGroupCollection.DoesGroupExistBetweenProcessedAreas(ancestorAreaId, descendantAreaId)
+	if doesContextGroupAlreadyExist {
+		return c.RequestDisconnectProcessedAreas(ancestorAreaId, descendantAreaId)
+	}
+
 	processedAreaCollection := document.GetProcessedAreaCollection()
 
 	ancestorArea := processedAreaCollection.GetAreaById(ancestorAreaId)
 	descendantArea := processedAreaCollection.GetAreaById(descendantAreaId)
 
-	wasSuccessfulConnect := contextGroup.GetContextGroupCollection().ConnectProcessedAreas(*ancestorArea, *descendantArea)
+	wasSuccessfulConnect := contextGroupCollection.ConnectProcessedAreas(*ancestorArea, *descendantArea)
 	if wasSuccessfulConnect {
 		wasSuccessfulWrite := c.RequestSaveContextGroupCollection()
 		return wasSuccessfulWrite
 	}
+
 	return false
 }
 
