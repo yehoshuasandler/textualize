@@ -4,6 +4,7 @@ export type ProjectProps = {
   id: string,
   documents: entities.Document[],
   groups: entities.Group[],
+  contextGroups: entities.SerializedLinkedProcessedArea[],
 }
 
 export type AddAreaProps = {
@@ -40,7 +41,7 @@ export type ProjectContextType = {
   getSelectedDocument: () => entities.Document | undefined
   getAreaById: (areaId: string) => entities.Area | undefined
   getProcessedAreasByDocumentId: (documentId: string) => Promise<entities.ProcessedArea[]>
-  requestAddProcessedArea: (processedArea: entities.ProcessedArea) => Promise<boolean>
+  requestAddProcessedArea: (processedArea: entities.ProcessedArea) => Promise<entities.ProcessedArea>
   requestAddArea: (documentId: string, area: AddAreaProps) => Promise<entities.Area>
   requestUpdateArea: (area: AreaProps) => Promise<boolean>
   requestDeleteAreaById: (areaId: string) => Promise<boolean>
@@ -65,4 +66,7 @@ export type ProjectContextType = {
   requestUpdateProcessedWordById: (wordId: string, newTextValue: string) => Promise<boolean>
   getProcessedAreaById: (areaId: string) => Promise<entities.ProcessedArea | undefined>
   requestUpdateProcessedArea: (updatedProcessedArea: entities.ProcessedArea) => Promise<boolean>
+  requestConnectProcessedAreas: (headId: string, tailId: string) => Promise<boolean>
+  getSerializedContextGroups: () => Promise<entities.SerializedLinkedProcessedArea[]>
+  updateDocuments: () => Promise<ipc.GetDocumentsResponse>
 } & ProjectProps

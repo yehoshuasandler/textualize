@@ -8,10 +8,11 @@ import Konva from 'konva'
 import { Coordinates } from '../types'
 import CurrentDrawingConnection from './CurrentDrawingConnection'
 import ConnectionPoints from './ConnectionPoints'
+import ConnectionLines from './ConnectionLines'
 
 const ContextConnections = () => {
   const { getSelectedDocument } = useProject()
-  const { isLinkAreaContextsVisible, startingContextConnection, setStartingContextConnection, scale } = useStage()
+  const { isLinkAreaContextsVisible, startingContextConnection, scale } = useStage()
   const areas = getSelectedDocument()?.areas || []
 
   const [endDrawingPosition, setEndDrawingPosition] = useState<Coordinates | null>(null)
@@ -34,7 +35,8 @@ const ContextConnections = () => {
 
   return <Group>
     <ConnectionPoints areas={areas} />
-    <CurrentDrawingConnection areas={areas} startingContextConnection={startingContextConnection} endDrawingPosition={endDrawingPosition} scale={scale} />
+    <ConnectionLines />
+    <CurrentDrawingConnection endDrawingPosition={endDrawingPosition} />
   </Group>
 }
 

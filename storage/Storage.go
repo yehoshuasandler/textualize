@@ -19,6 +19,8 @@ type Driver interface {
 	ReadProcessedTextCollection(string) entities.ProcessedTextCollection
 	WriteProcessedUserMarkdownCollection(entities.ProcessedUserMarkdownCollection, string) bool
 	ReadProcessedUserMarkdownCollection(string) entities.ProcessedUserMarkdownCollection
+	WriteContextGroupCollection([]entities.SerializedLinkedProcessedArea, string) bool
+	ReadContextGroupCollection(string) []entities.SerializedLinkedProcessedArea
 }
 
 var driverInstance Driver

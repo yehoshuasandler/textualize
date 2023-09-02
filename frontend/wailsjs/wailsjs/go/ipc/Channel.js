@@ -42,6 +42,10 @@ export function GetProjectByName(arg1) {
   return window['go']['ipc']['Channel']['GetProjectByName'](arg1);
 }
 
+export function GetSerializedContextGroups() {
+  return window['go']['ipc']['Channel']['GetSerializedContextGroups']();
+}
+
 export function GetSupportedLanguages() {
   return window['go']['ipc']['Channel']['GetSupportedLanguages']();
 }
@@ -82,8 +86,8 @@ export function RequestChooseUserAvatar() {
   return window['go']['ipc']['Channel']['RequestChooseUserAvatar']();
 }
 
-export function RequestConnectAreaAsTailToNode(arg1, arg2) {
-  return window['go']['ipc']['Channel']['RequestConnectAreaAsTailToNode'](arg1, arg2);
+export function RequestConnectProcessedAreas(arg1, arg2) {
+  return window['go']['ipc']['Channel']['RequestConnectProcessedAreas'](arg1, arg2);
 }
 
 export function RequestDeleteAreaById(arg1) {
@@ -96,6 +100,14 @@ export function RequestDeleteDocumentAndChildren(arg1) {
 
 export function RequestDeleteProcessedAreaById(arg1) {
   return window['go']['ipc']['Channel']['RequestDeleteProcessedAreaById'](arg1);
+}
+
+export function RequestDisconnectProcessedAreas(arg1, arg2) {
+  return window['go']['ipc']['Channel']['RequestDisconnectProcessedAreas'](arg1, arg2);
+}
+
+export function RequestSaveContextGroupCollection() {
+  return window['go']['ipc']['Channel']['RequestSaveContextGroupCollection']();
 }
 
 export function RequestSaveDocumentCollection() {

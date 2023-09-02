@@ -1,6 +1,6 @@
 import { saveUserProcessedMarkdown } from '../../useCases/saveData'
 import { GetUserMarkdownByDocumentId, RequestUpdateDocumentUserMarkdown } from '../../wailsjs/wailsjs/go/ipc/Channel'
-import { ipc, entities } from '../../wailsjs/wailsjs/go/models'
+import { entities } from '../../wailsjs/wailsjs/go/models'
 
 type Dependencies = {}
 

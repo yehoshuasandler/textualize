@@ -1,4 +1,4 @@
-import { createScheduler, createWorker } from 'tesseract.js'
+import { createScheduler, createWorker, PSM } from 'tesseract.js'
 import { GetAreaById, GetDocumentById, GetProcessedAreaById, RequestAddProcessedArea, RequestSaveProcessedTextCollection, RequestUpdateProcessedArea } from '../wailsjs/wailsjs/go/ipc/Channel'
 import { entities } from '../wailsjs/wailsjs/go/models'
 import loadImage from './loadImage'
@@ -79,11 +79,15 @@ const processImageArea = async (documentId: string, areaId: string) => {
 
 
   const existingProcessedArea = await GetProcessedAreaById(areaId)
-  let didSuccessfullyProcess = false
-  if (existingProcessedArea.id !== areaId) didSuccessfullyProcess = await RequestAddProcessedArea(newProcessedArea)
-  else await RequestUpdateProcessedArea(newProcessedArea)
-
-  saveProcessedText()
+  let didSuccessfullyProcess: boolean // TODO: fix this: this no longer is truthful, returns true or false if there was not a JS error
+  try {
+    if (existingProcessedArea.id !== areaId) await RequestAddProcessedArea(newProcessedArea)
+    else await RequestUpdateProcessedArea(newProcessedArea)
+    saveProcessedText()
+    didSuccessfullyProcess = true
+  } catch (err) {
+    didSuccessfullyProcess = false
+  }
   return didSuccessfullyProcess
 }
 

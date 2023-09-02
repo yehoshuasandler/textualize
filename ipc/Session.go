@@ -3,6 +3,7 @@ package ipc
 import (
 	app "textualize/core/App"
 	consts "textualize/core/Consts"
+	contextGroup "textualize/core/ContextGroup"
 	document "textualize/core/Document"
 	session "textualize/core/Session"
 	"textualize/entities"
@@ -144,6 +145,7 @@ func (c *Channel) RequestChangeSessionProjectByName(projectName string) bool {
 
 	session.GetInstance().Project = foundProject
 
+	// Documents
 	localDocumentCollection := storageDriver.ReadDocumentCollection(projectName)
 	documentCount := len(localDocumentCollection.Documents)
 	readableDocuments := make([]document.Entity, documentCount)
@@ -155,6 +157,7 @@ func (c *Channel) RequestChangeSessionProjectByName(projectName string) bool {
 		ProjectId: foundProject.Id,
 	})
 
+	// Groups
 	localGroupsCollection := storageDriver.ReadGroupCollection(projectName)
 	groupCount := len(localGroupsCollection.Groups)
 	readableGroups := make([]entities.Group, groupCount)
@@ -166,6 +169,10 @@ func (c *Channel) RequestChangeSessionProjectByName(projectName string) bool {
 		ProjectId: localGroupsCollection.ProjectId,
 		Groups:    readableGroups,
 	})
+
+	// Context Groups
+	localSerializedContextGroups := storageDriver.ReadContextGroupCollection(projectName)
+	contextGroup.SetContextGroupCollectionBySerialized(localSerializedContextGroups)
 
 	// Processed Texts
 	localProcessedAreaCollection := storageDriver.ReadProcessedTextCollection(projectName)

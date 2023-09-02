@@ -1,7 +1,6 @@
 package ipc
 
 import (
-	"fmt"
 	"sort"
 	document "textualize/core/Document"
 	"textualize/entities"
@@ -35,7 +34,7 @@ func (c *Channel) GetProcessedAreasByDocumentId(id string) []entities.ProcessedA
 	return sortedAreas
 }
 
-func (c *Channel) RequestAddProcessedArea(processedArea entities.ProcessedArea) bool {
+func (c *Channel) RequestAddProcessedArea(processedArea entities.ProcessedArea) entities.ProcessedArea {
 
 	for lineIndex, line := range processedArea.Lines {
 		for wordIndex, word := range line.Words {
@@ -46,7 +45,7 @@ func (c *Channel) RequestAddProcessedArea(processedArea entities.ProcessedArea) 
 	}
 
 	document.GetProcessedAreaCollection().AddProcessedArea(processedArea)
-	return true
+	return *document.GetProcessedAreaCollection().GetAreaById(processedArea.Id)
 }
 
 func (c *Channel) RequestDeleteProcessedAreaById(id string) bool {
@@ -75,9 +74,6 @@ func (c *Channel) RequestDeleteProcessedAreaById(id string) bool {
 }
 
 func (c *Channel) RequestUpdateProcessedArea(updatedProcessedArea entities.ProcessedArea) bool {
-	fmt.Println("updatedProcessedArea")
-	fmt.Println(&updatedProcessedArea)
-	fmt.Println()
 	if updatedProcessedArea.Id == "" {
 		return false
 	}
@@ -87,14 +83,13 @@ func (c *Channel) RequestUpdateProcessedArea(updatedProcessedArea entities.Proce
 		return false
 	}
 
-	successfulAdd := c.RequestAddProcessedArea(updatedProcessedArea)
-	if !successfulAdd {
-		return false
-	}
+	addedProcessedArea := c.RequestAddProcessedArea(updatedProcessedArea)
+	return addedProcessedArea.Id != ""
 
-	fmt.Println("document.GetProcessedAreaCollection().GetAreaById(updatedProcessedArea.Id)")
-	fmt.Println(document.GetProcessedAreaCollection().GetAreaById(updatedProcessedArea.Id))
-	return true
+	// if addedProcessedArea.Id != "" {
+	// 	return false
+	// }
+	// return true
 }
 
 func (c *Channel) RequestUpdateProcessedWordById(wordId string, newTextValue string) bool {

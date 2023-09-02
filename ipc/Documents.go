@@ -14,8 +14,9 @@ import (
 )
 
 type GetDocumentsResponse struct {
-	Documents []entities.Document `json:"documents"`
-	Groups    []entities.Group    `json:"groups"`
+	Documents     []entities.Document                      `json:"documents"`
+	Groups        []entities.Group                         `json:"groups"`
+	ContextGroups []entities.SerializedLinkedProcessedArea `json:"contextGroups"`
 }
 
 func (c *Channel) GetDocumentById(id string) entities.Document {
@@ -26,10 +27,12 @@ func (c *Channel) GetDocumentById(id string) entities.Document {
 func (c *Channel) GetDocuments() GetDocumentsResponse {
 	documents := document.GetDocumentCollection().Documents
 	groups := document.GetGroupCollection().Groups
+	contextGroups := c.GetSerializedContextGroups()
 
 	response := GetDocumentsResponse{
-		Groups:    make([]entities.Group, 0),
-		Documents: make([]entities.Document, 0),
+		Groups:        make([]entities.Group, 0),
+		Documents:     make([]entities.Document, 0),
+		ContextGroups: contextGroups,
 	}
 
 	for _, d := range documents {

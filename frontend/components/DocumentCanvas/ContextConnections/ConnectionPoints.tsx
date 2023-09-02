@@ -4,14 +4,14 @@ import { Circle, Group } from 'react-konva'
 import { useStage } from '../context/provider'
 import { entities } from '../../../wailsjs/wailsjs/go/models'
 import { KonvaEventObject } from 'konva/lib/Node'
-import { RequestConnectAreaAsTailToNode } from '../../../wailsjs/wailsjs/go/ipc/Channel'
+import { useProject } from '../../../context/Project/provider'
 
 type Props = { areas: entities.Area[] }
 const ConnectionPoints = (props: Props) => {
   const { isLinkAreaContextsVisible, scale, startingContextConnection, setStartingContextConnection } = useStage()
+  const { requestConnectProcessedAreas } = useProject()
 
-
-  const handleContextAreaMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+  const handleContextAreaMouseDown = async (e: KonvaEventObject<MouseEvent>) => {
     e.cancelBubble = true
     const clickedConnectionPoint = {
       isHead: e.currentTarget.attrs.isHead,
@@ -24,10 +24,15 @@ const ConnectionPoints = (props: Props) => {
       || clickedConnectionPoint.areaId === startingContextConnection.areaId)
       return setStartingContextConnection(null)
 
-    console.log('connected points', startingContextConnection, clickedConnectionPoint)
-    const headId = clickedConnectionPoint.isHead ? clickedConnectionPoint.areaId : startingContextConnection.areaId
-    const tailId = !clickedConnectionPoint.isHead ? startingContextConnection.areaId : clickedConnectionPoint.areaId
-    RequestConnectAreaAsTailToNode(headId, tailId).then(res => console.log(res)).catch(err => console.warn(err))
+    const headId = startingContextConnection.isHead ? startingContextConnection.areaId : clickedConnectionPoint.areaId
+    const tailId = !startingContextConnection.isHead ? startingContextConnection.areaId : clickedConnectionPoint.areaId
+    setStartingContextConnection(null)
+
+    try {
+      await requestConnectProcessedAreas(headId, tailId)
+    } catch (err) {
+      console.warn('RequestConnectProcessedAreas', err)
+    }
   }
 
   const renderConnectingPointsForArea = (a: entities.Area) => {
@@ -36,7 +41,7 @@ const ConnectionPoints = (props: Props) => {
     const headConnector = <Circle
       key={`head-${a.id}`}
       id={a.id}
-      radius={10}
+      radius={8}
       x={((a.startX + a.endX) * scale) / 2}
       y={a.startY * scale}
       strokeEnabled={false}
@@ -84,7 +89,7 @@ const ConnectionPoints = (props: Props) => {
       />)
     }
 
-    return <Group>
+    return <Group key={`group-${a.id}`}>
       {connectorsToRender}
     </Group>
   }

@@ -7,10 +7,13 @@ import { entities } from '../../../wailsjs/wailsjs/go/models'
 import LanguageSelect from '../../utils/LanguageSelect'
 import { useStage } from '../context/provider'
 import ToolToggleButton from './ToolToggleButton'
+import { useNotification } from '../../../context/Notification/provider'
+import processImageArea from '../../../useCases/processImageArea'
 
 
 const ToolingOverlay = () => {
-  const { getSelectedDocument, selectedAreaId, } = useProject()
+  const { getSelectedDocument, selectedAreaId, requestUpdateArea, requestUpdateDocument, updateDocuments } = useProject()
+  const { addNotificationToQueue } = useNotification()
   const {
     scale, scaleStep, maxScale, setScale,
     isLinkAreaContextsVisible, setIsLinkAreaContextsVisible,
@@ -24,7 +27,54 @@ const ToolingOverlay = () => {
 
   useEffect(() => {
     setSelectedArea(selectedDocument?.areas.find(a => a.id == selectedAreaId))
-  }, [selectedAreaId])
+  }, [selectedAreaId, selectedDocument, selectedArea])
+
+  const handleAreaProcessLanguageSelect = async (selectedLanguage: entities.Language) => {
+    if (!selectedArea) return
+
+    let successfullyUpdatedLanguageOnArea = false
+    try {
+      successfullyUpdatedLanguageOnArea = await requestUpdateArea({ ...selectedArea, ...{ language: selectedLanguage } })
+    } catch (err) {
+      addNotificationToQueue({ message: 'Error updating area language', level: 'error' })
+      return
+    }
+
+    const selectedDocumentId = getSelectedDocument()?.id
+    if (!successfullyUpdatedLanguageOnArea || !selectedDocumentId) {
+      addNotificationToQueue({ message: 'Did not successfully update area language', level: 'warning' })
+      return
+    }
+
+    try {
+      await processImageArea(selectedDocumentId, selectedArea.id)
+      await updateDocuments()
+      addNotificationToQueue({ message: 'Finished processing area', level: 'info' })
+    } catch (err) {
+      addNotificationToQueue({ message: 'Error processing area', level: 'error' })
+    }
+  }
+
+  const handleDocumentProcessLanguageSelect = async (selectedLanguage: entities.Language) => {
+    if (!selectedDocument) return
+
+    const currentDocument = selectedDocument
+    currentDocument.defaultLanguage = selectedLanguage
+    await requestUpdateDocument(currentDocument)
+    await updateDocuments()
+  }
+
+
+  const renderLanguageSelect = () => {
+    const defaultLanguage = selectedArea?.language.displayName ? selectedArea?.language : selectedDocument?.defaultLanguage
+    const onSelect = selectedArea ? handleAreaProcessLanguageSelect : handleDocumentProcessLanguageSelect
+
+    return <LanguageSelect
+      styles={{ fontSize: '16px', borderRadius: '2px' }}
+      defaultLanguage={defaultLanguage}
+      onSelect={onSelect}
+    />
+  }
 
   return <>
     {/* Top buttons */}
@@ -36,7 +86,8 @@ const ToolingOverlay = () => {
             : selectedDocument?.name
           }
         </h1>
-        <LanguageSelect styles={{ fontSize: '16px', borderRadius: '2px' }} defaultLanguage={selectedArea?.language || selectedDocument?.defaultLanguage} />
+        { renderLanguageSelect() }
+        {/* <LanguageSelect styles={{ fontSize: '16px', borderRadius: '2px' }} defaultLanguage={selectedArea?.language.displayName ? selectedArea?.language : selectedDocument?.defaultLanguage} /> */}
       </div>
       <div className='flex mt-4 justify-evenly align-top pointer-events-auto'>
         <MagnifyingGlassMinusIcon className='w-4 h-4' />

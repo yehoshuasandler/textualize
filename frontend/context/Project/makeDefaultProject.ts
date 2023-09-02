@@ -1,10 +1,11 @@
-import { entities } from '../../wailsjs/wailsjs/go/models'
+import { entities, ipc } from '../../wailsjs/wailsjs/go/models'
 import { ProjectContextType, UserProps } from './types'
 
 const makeDefaultProject = (): ProjectContextType => ({
   id: '',
   documents: [] as entities.Document[],
   groups: [] as entities.Group[],
+  contextGroups: [] as entities.SerializedLinkedProcessedArea[],
   selectedAreaId: '',
   selectedDocumentId: '',
   getSelectedDocument: () => new entities.Document(),
@@ -33,6 +34,9 @@ const makeDefaultProject = (): ProjectContextType => ({
   requestUpdateProcessedWordById: (wordId, newTestValue) => Promise.resolve(false),
   getProcessedAreaById: (areaId) => Promise.resolve(undefined),
   requestUpdateProcessedArea: updatedProcessedArea => Promise.resolve(false),
+  requestConnectProcessedAreas: (headId, tailId) => Promise.resolve(false),
+  getSerializedContextGroups: () => Promise.resolve([]),
+  updateDocuments: () => Promise.resolve(new ipc.GetDocumentsResponse())
 })
 
 export default makeDefaultProject

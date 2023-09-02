@@ -10,6 +10,7 @@ import createAreaProviderMethods from './createAreaProviderMethods'
 import createDocumentProviderMethods from './createDocumentMethods'
 import createSessionProviderMethods from './createSessionProviderMethods'
 import createUserMarkdownProviderMethods from './createUserMarkdownProviderMethods'
+import createContextGroupProviderMethods from './createContextGroupProviderMethods'
 
 const ProjectContext = createContext<ProjectContextType>(makeDefaultProject())
 
@@ -21,15 +22,17 @@ type Props = { children: ReactNode, projectProps: ProjectProps }
 export function ProjectProvider({ children, projectProps }: Props) {
   const [documents, setDocuments] = useState<entities.Document[]>(projectProps.documents)
   const [groups, setGroups] = useState<entities.Group[]>(projectProps.groups)
+  const [contextGroups, setContextGroups] = useState<entities.SerializedLinkedProcessedArea[]>(projectProps.contextGroups)
   const [selectedAreaId, setSelectedAreaId] = useState<string>('')
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>('')
   const [currentSession, setCurrentSession] = useState<entities.Session>(new entities.Session())
 
   const updateDocuments = async () => {
     const response = await GetDocuments()
-    const { documents, groups } = response
+    const { documents, groups, contextGroups } = response
     setDocuments(documents)
     setGroups(groups)
+    setContextGroups(contextGroups)
     return response
   }
 
@@ -43,6 +46,7 @@ export function ProjectProvider({ children, projectProps }: Props) {
   const areaMethods = createAreaProviderMethods({ documents, updateDocuments, selectedDocumentId })
   const sessionMethods = createSessionProviderMethods({ updateSession, updateDocuments })
   const userMarkDownMethods = createUserMarkdownProviderMethods()
+  const contextGroupMethods = createContextGroupProviderMethods({ updateDocuments })
 
 
   useEffect(() => {
@@ -60,15 +64,18 @@ export function ProjectProvider({ children, projectProps }: Props) {
     id: '',
     documents,
     groups,
+    contextGroups,
     selectedAreaId,
     setSelectedAreaId,
     selectedDocumentId,
     setSelectedDocumentId,
     currentSession,
+    updateDocuments,
     ...areaMethods,
     ...documentMethods,
     ...sessionMethods,
     ...userMarkDownMethods,
+    ...contextGroupMethods,
   }
 
   return <ProjectContext.Provider value={value}>
