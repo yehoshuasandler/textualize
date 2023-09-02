@@ -7,7 +7,6 @@ import { entities } from '../wailsjs/wailsjs/go/models'
 import '../styles/globals.css'
 import { NavigationProvider } from '../context/Navigation/provider'
 import { mainPages, workspaces } from '../context/Navigation/types'
-import { NotificationProvider } from '../context/Notification/provider'
 import { Providers } from '../redux/provider'
 
 const initialProjectProps = {
@@ -25,11 +24,9 @@ export default function MainAppLayout({ Component, pageProps }: AppProps) {
   return <div className='min-h-screen' >
     <NavigationProvider navigationProps={initialNavigationProps}>
       <ProjectProvider projectProps={initialProjectProps}>
-        <NotificationProvider>
           <Providers>
             <Component {...pageProps} />
           </Providers>
-        </NotificationProvider>
       </ProjectProvider>
     </NavigationProvider>
   </div>
