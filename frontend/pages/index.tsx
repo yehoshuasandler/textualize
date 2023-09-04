@@ -7,6 +7,7 @@ import Navigation from '../components/workspace/Navigation'
 import { useNavigation } from '../context/Navigation/provider'
 import { mainPages } from '../context/Navigation/types'
 import { useProject } from '../context/Project/provider'
+import Notification from '../components/Notifications'
 
 const Home: NextPage = () => {
   const { currentSession } = useProject()
@@ -27,6 +28,7 @@ const Home: NextPage = () => {
   return <>
     <MainHead />
     {renderSelectedMainPage()}
+    <Notification />
   </>
 }
 

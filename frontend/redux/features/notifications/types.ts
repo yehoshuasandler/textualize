@@ -9,6 +9,7 @@ export type NotificationProps = {
   level?: NotificationLevel,
 }
 
-export type NotificationContextType = {
-  addNotificationToQueue: (notificationProps: NotificationProps) => void
+export type NotificationQueueState = {
+  queue: NotificationProps[],
+  currentNotification?: NotificationProps
 }
