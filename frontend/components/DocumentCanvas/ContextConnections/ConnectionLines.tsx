@@ -1,17 +1,17 @@
 'use client'
 
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { Group, Line } from 'react-konva'
 import { useProject } from '../../../context/Project/provider'
-import { useStage } from '../context/provider'
+import { RootState } from '../../../redux/store'
 
 const ConnectionLines = () => {
-  const { scale } = useStage()
+  const { scale } = useSelector((state: RootState) => state.stage)
   const { getSelectedDocument, contextGroups } = useProject()
   const areas = getSelectedDocument()?.areas || []
 
   const renderLines = () => {
-    console.log('contextGroups', contextGroups)
     if (!contextGroups?.length) return <></>
 
     const linesAlreadyRendered = new Set<string>()

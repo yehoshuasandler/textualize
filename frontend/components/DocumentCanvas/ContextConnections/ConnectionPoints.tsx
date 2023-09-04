@@ -1,14 +1,18 @@
 'use client'
 
 import { Circle, Group } from 'react-konva'
-import { useStage } from '../context/provider'
+import { useDispatch, useSelector } from 'react-redux'
 import { entities } from '../../../wailsjs/wailsjs/go/models'
 import { KonvaEventObject } from 'konva/lib/Node'
 import { useProject } from '../../../context/Project/provider'
+import { RootState } from '../../../redux/store'
+import { setStartingContextConnectionPoint } from '../../../redux/features/stage/stageSlice'
 
 type Props = { areas: entities.Area[] }
 const ConnectionPoints = (props: Props) => {
-  const { isLinkAreaContextsVisible, scale, startingContextConnection, setStartingContextConnection } = useStage()
+  const dispatch = useDispatch()
+  const { scale, areLinkAreaContextsVisible, startingContextConnectionPoint } = useSelector((state: RootState) => state.stage)
+
   const { requestConnectProcessedAreas } = useProject()
 
   const handleContextAreaMouseDown = async (e: KonvaEventObject<MouseEvent>) => {
@@ -18,15 +22,15 @@ const ConnectionPoints = (props: Props) => {
       areaId: e.currentTarget.attrs.id
     }
 
-    if (!startingContextConnection) return setStartingContextConnection(clickedConnectionPoint)
+    if (!startingContextConnectionPoint) return dispatch(setStartingContextConnectionPoint(clickedConnectionPoint))
 
-    if (clickedConnectionPoint.isHead === startingContextConnection.isHead
-      || clickedConnectionPoint.areaId === startingContextConnection.areaId)
-      return setStartingContextConnection(null)
+    if (clickedConnectionPoint.isHead === startingContextConnectionPoint.isHead
+      || clickedConnectionPoint.areaId === startingContextConnectionPoint.areaId)
+      return dispatch(setStartingContextConnectionPoint(null))
 
-    const headId = startingContextConnection.isHead ? startingContextConnection.areaId : clickedConnectionPoint.areaId
-    const tailId = !startingContextConnection.isHead ? startingContextConnection.areaId : clickedConnectionPoint.areaId
-    setStartingContextConnection(null)
+    const headId = startingContextConnectionPoint.isHead ? startingContextConnectionPoint.areaId : clickedConnectionPoint.areaId
+    const tailId = !startingContextConnectionPoint.isHead ? startingContextConnectionPoint.areaId : clickedConnectionPoint.areaId
+    dispatch(setStartingContextConnectionPoint(null))
 
     try {
       await requestConnectProcessedAreas(headId, tailId)
@@ -36,7 +40,7 @@ const ConnectionPoints = (props: Props) => {
   }
 
   const renderConnectingPointsForArea = (a: entities.Area) => {
-    if (!isLinkAreaContextsVisible) return <></>
+    if (!areLinkAreaContextsVisible) return <></>
 
     const headConnector = <Circle
       key={`head-${a.id}`}
@@ -68,12 +72,12 @@ const ConnectionPoints = (props: Props) => {
 
     let connectorsToRender = []
 
-    if (!startingContextConnection) connectorsToRender = [headConnector, tailConnector]
-    else if (startingContextConnection.isHead) connectorsToRender = [tailConnector]
+    if (!startingContextConnectionPoint) connectorsToRender = [headConnector, tailConnector]
+    else if (startingContextConnectionPoint.isHead) connectorsToRender = [tailConnector]
     else connectorsToRender = [headConnector]
 
-    if (startingContextConnection?.areaId === a.id) {
-      let y = (startingContextConnection.isHead ? a.startY : a.endY) * scale
+    if (startingContextConnectionPoint?.areaId === a.id) {
+      let y = (startingContextConnectionPoint.isHead ? a.startY : a.endY) * scale
       connectorsToRender.push(<Circle
         key={`active-${a.id}`}
         id={a.id}
@@ -81,11 +85,11 @@ const ConnectionPoints = (props: Props) => {
         x={((a.startX + a.endX) * scale) / 2}
         y={y}
         strokeEnabled={false}
-        fill={startingContextConnection.isHead ? '#dc8dec' : '#1e1e1e'}
+        fill={startingContextConnectionPoint.isHead ? '#dc8dec' : '#1e1e1e'}
         strokeScaleEnabled={false}
         shadowForStrokeEnabled={false}
-        isHead={startingContextConnection.isHead}
-        onMouseDown={() => setStartingContextConnection(null)}
+        isHead={startingContextConnectionPoint.isHead}
+        onMouseDown={() => dispatch(setStartingContextConnectionPoint(null))}
       />)
     }
 

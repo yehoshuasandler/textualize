@@ -2,8 +2,8 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { ContextConnectionPoint, StageState } from './types'
 
-const maxScale = 4
-const scaleStep = 0.01
+export const maxScale = 4
+export const scaleStep = 0.01
 
 const initialState: StageState = {
   size: { width: 1, height: 1 },
@@ -46,7 +46,7 @@ export const stageSlice = createSlice({
     setIsDrawingArea: (state, action: PayloadAction<boolean>) => {
       state.isDrawingArea = action.payload
     },
-    setStartingContextConnectionPoint: (state, action: PayloadAction<ContextConnectionPoint>) => {
+    setStartingContextConnectionPoint: (state, action: PayloadAction<ContextConnectionPoint | null>) => {
       state.startingContextConnectionPoint = action.payload
     },
   }
