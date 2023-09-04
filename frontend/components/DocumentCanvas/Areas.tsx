@@ -1,19 +1,20 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Group } from 'react-konva'
 import { useProject } from '../../context/Project/provider'
 import { entities } from '../../wailsjs/wailsjs/go/models'
 import Area from './Area'
 import ProcessedWord from './ProcessedWord'
 import EditingWord from './EditingWord'
-import { useStage } from './context/provider'
+import { RootState } from '../../redux/store'
 
 type Props = { scale: number }
 
 const Areas = ({ scale }: Props) => {
+  const { areProcessedWordsVisible } = useSelector((state: RootState) => state.stage)
   const { getSelectedDocument, selectedAreaId, getProcessedAreaById } = useProject()
-  const { isProcessedWordsVisible } = useStage()
   const areas = getSelectedDocument()?.areas || []
   const [editingWord, setEditingWord] = useState<entities.ProcessedWord | null>(null)
   const [selectedProcessedArea, setSelectedProcessedArea] = useState<entities.ProcessedArea | null>(null)
@@ -59,8 +60,8 @@ const Areas = ({ scale }: Props) => {
 
   return <Group>
     {renderAreas(areas)}
-    {isProcessedWordsVisible ? renderProcessedWords() : <></>}
-    {isProcessedWordsVisible ? renderEditingWord() : <></>}
+    {areProcessedWordsVisible ? renderProcessedWords() : <></>}
+    {areProcessedWordsVisible ? renderEditingWord() : <></>}
   </Group>
 }
 

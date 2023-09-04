@@ -1,13 +1,14 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 import Konva from 'konva'
 import { Group, Rect } from 'react-konva'
 import { KonvaEventObject } from 'konva/lib/Node'
 import { entities } from '../../wailsjs/wailsjs/go/models'
 import { useProject } from '../../context/Project/provider'
 import AreaContextMenu from './AreaContextMenu'
-import { useStage } from './context/provider'
+import { RootState } from '../../redux/store'
 
 type Props = {
   isActive: boolean,
@@ -17,8 +18,8 @@ type Props = {
 type coordinates = { x: number, y: number }
 
 const Area = (props: Props) => {
+  const { scale } = useSelector((state: RootState) => state.stage)
   const { selectedAreaId, setSelectedAreaId } = useProject()
-  const { scale } = useStage()
   const shapeRef = React.useRef<Konva.Rect>(null)
   const [isAreaContextMenuOpen, setIsAreaContextMenuOpen] = useState(false)
   const [areaContextMenuPosition, setAreaContextMenuPosition] = useState<coordinates>()

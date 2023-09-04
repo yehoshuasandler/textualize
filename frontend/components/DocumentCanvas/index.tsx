@@ -2,19 +2,21 @@
 
 import dynamic from 'next/dynamic'
 import React, { useEffect, useRef } from 'react'
+import { useDispatch } from 'react-redux'
 import ToolingOverlay from './ToolingOverlay'
-import { useStage } from './context/provider'
+import { setSize } from '../../redux/features/stage/stageSlice'
 
 const CanvasStage = dynamic(() => import('./CanvasStage'), { ssr: false })
 
 const DocumentCanvas = () => {
-  const { setSize } = useStage()
+  const dispatch = useDispatch()
+
   const thisRef = useRef<HTMLDivElement>(null)
 
   const handleWindowResize = () => {
     const width = thisRef?.current?.clientWidth || 0
     const height = thisRef?.current?.clientHeight || 0
-    setSize({ width, height })
+    dispatch(setSize({ width, height }))
   }
 
   useEffect(() => {

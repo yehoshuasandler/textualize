@@ -1,24 +1,26 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Group } from 'react-konva'
-import { useStage } from '../context/provider'
 import { useProject } from '../../../context/Project/provider'
 import Konva from 'konva'
 import { Coordinates } from '../types'
 import CurrentDrawingConnection from './CurrentDrawingConnection'
 import ConnectionPoints from './ConnectionPoints'
 import ConnectionLines from './ConnectionLines'
+import { RootState } from '../../../redux/store'
 
 const ContextConnections = () => {
+  const { startingContextConnectionPoint, areLinkAreaContextsVisible } = useSelector((state: RootState) => state.stage)
+
   const { getSelectedDocument } = useProject()
-  const { isLinkAreaContextsVisible, startingContextConnection, scale } = useStage()
   const areas = getSelectedDocument()?.areas || []
 
   const [endDrawingPosition, setEndDrawingPosition] = useState<Coordinates | null>(null)
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (!isLinkAreaContextsVisible || !startingContextConnection) return
+    if (!areLinkAreaContextsVisible || !startingContextConnectionPoint) return
     setEndDrawingPosition(Konva.stages[0].getRelativePointerPosition())
   }
 
@@ -28,10 +30,10 @@ const ContextConnections = () => {
   })
 
   useEffect(() => {
-    if (!startingContextConnection) setEndDrawingPosition(null)
-  }, [startingContextConnection])
+    if (!startingContextConnectionPoint) setEndDrawingPosition(null)
+  }, [startingContextConnectionPoint])
 
-  if (!isLinkAreaContextsVisible) return <></>
+  if (!areLinkAreaContextsVisible) return <></>
 
   return <Group>
     <ConnectionPoints areas={areas} />

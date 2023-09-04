@@ -1,23 +1,24 @@
 'use client'
 
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { Line } from 'react-konva'
 import { Coordinates } from '../types'
-import { useStage } from '../context/provider'
 import { useProject } from '../../../context/Project/provider'
+import { RootState } from '../../../redux/store'
 
 type CurrentDrawingConnectionProps = {
   endDrawingPosition: Coordinates | null
 }
 const CurrentDrawingConnection = (props: CurrentDrawingConnectionProps) => {
+  const { scale, startingContextConnectionPoint } = useSelector((state: RootState) => state.stage)
   const { endDrawingPosition } = props 
-  const { startingContextConnection, scale } = useStage()
   const { getSelectedDocument } = useProject()
   const areas = getSelectedDocument()?.areas || []
 
-  if (!startingContextConnection || !endDrawingPosition) return <></>
+  if (!startingContextConnectionPoint || !endDrawingPosition) return <></>
 
-  const { areaId, isHead } = startingContextConnection
+  const { areaId, isHead } = startingContextConnectionPoint
 
   const area = areas.find(a => a.id === areaId)
   if (!area) return <></>

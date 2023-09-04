@@ -4,11 +4,11 @@ import { NotificationProps, NotificationQueueState } from './types'
 
 const initialState: NotificationQueueState = {
   currentNotification: undefined,
-  queue: []
+  queue: [],
 }
 
 export const notificationQueueSlice = createSlice({
-  name: 'propertyList',
+  name: 'notifications',
   initialState,
   reducers: {
     setNotifications: (state, action: PayloadAction<NotificationProps[]>) => {

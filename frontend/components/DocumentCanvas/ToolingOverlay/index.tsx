@@ -1,27 +1,29 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { DocumentTextIcon, LanguageIcon, LinkIcon, MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon, SquaresPlusIcon } from '@heroicons/react/24/outline'
 import { useProject } from '../../../context/Project/provider'
 import { entities } from '../../../wailsjs/wailsjs/go/models'
 import LanguageSelect from '../../utils/LanguageSelect'
-import { useStage } from '../context/provider'
 import ToolToggleButton from './ToolToggleButton'
 import processImageArea from '../../../useCases/processImageArea'
 import { pushNotification } from '../../../redux/features/notifications/notificationQueueSlice'
+import { RootState } from '../../../redux/store'
+import { maxScale, scaleStep, setAreAreasVisible, setAreLinkAreaContextsVisible, setAreProcessedWordsVisible, setAreTranslatedWordsVisible, setScale } from '../../../redux/features/stage/stageSlice'
 
 
 const ToolingOverlay = () => {
   const dispatch = useDispatch()
-  const { getSelectedDocument, selectedAreaId, requestUpdateArea, requestUpdateDocument, updateDocuments } = useProject()
   const {
-    scale, scaleStep, maxScale, setScale,
-    isLinkAreaContextsVisible, setIsLinkAreaContextsVisible,
-    isAreasVisible, setIsAreasVisible,
-    isProcessedWordsVisible, setIsProcessedWordsVisible,
-    isTranslatedWordsVisible, setIsTranslatedWordsVisible,
-  } = useStage()
+    scale,
+    areAreasVisible,
+    areLinkAreaContextsVisible,
+    areProcessedWordsVisible,
+    areTranslatedWordsVisible,
+  } = useSelector((state: RootState) => state.stage)
+
+  const { getSelectedDocument, selectedAreaId, requestUpdateArea, requestUpdateDocument, updateDocuments } = useProject()
 
   const selectedDocument = getSelectedDocument()
   const [selectedArea, setSelectedArea] = useState<entities.Area | undefined>()
@@ -95,7 +97,7 @@ const ToolingOverlay = () => {
         <input
           id="zoomRange" type="range" min={scaleStep} max={maxScale} step={scaleStep}
           value={scale} className="w-[calc(100%-50px)] h-2 bg-indigo-200 rounded-lg appearance-none cursor-pointer p-0"
-          onChange={(e) => { setScale(e.currentTarget.valueAsNumber) }}
+          onChange={(e) => { dispatch(setScale(e.currentTarget.valueAsNumber)) }}
         />
         <MagnifyingGlassPlusIcon className='w-4 h-4' />
       </div>
@@ -103,16 +105,16 @@ const ToolingOverlay = () => {
 
     {/* Right Buttons */}
     <div className='absolute bottom-6 right-3 pointer-events-none'>
-      {isAreasVisible
+      {areAreasVisible
         ? <>
-          <ToolToggleButton icon={LinkIcon} hint='Link Area Contexts' isActive={isLinkAreaContextsVisible} onClick={() => setIsLinkAreaContextsVisible(!isLinkAreaContextsVisible)} />
-          <ToolToggleButton icon={LanguageIcon} hint='Toggle Translations' isActive={isTranslatedWordsVisible} onClick={() => setIsTranslatedWordsVisible(!isTranslatedWordsVisible)} />
-          <ToolToggleButton icon={DocumentTextIcon} hint='Toggle Processed' isActive={isProcessedWordsVisible} onClick={() => setIsProcessedWordsVisible(!isProcessedWordsVisible)} />
+          <ToolToggleButton icon={LinkIcon} hint='Link Area Contexts' isActive={areLinkAreaContextsVisible} onClick={() => dispatch(setAreLinkAreaContextsVisible(!areLinkAreaContextsVisible))} />
+          <ToolToggleButton icon={LanguageIcon} hint='Toggle Translations' isActive={areTranslatedWordsVisible} onClick={() => dispatch(setAreTranslatedWordsVisible(!areTranslatedWordsVisible))} />
+          <ToolToggleButton icon={DocumentTextIcon} hint='Toggle Processed' isActive={areProcessedWordsVisible} onClick={() => dispatch(setAreProcessedWordsVisible(!areProcessedWordsVisible))} />
         </>
         : <></>
       }
 
-      <ToolToggleButton icon={SquaresPlusIcon} hint='Toggle Areas' isActive={isAreasVisible} onClick={() => setIsAreasVisible(!isAreasVisible)} />
+      <ToolToggleButton icon={SquaresPlusIcon} hint='Toggle Areas' isActive={areAreasVisible} onClick={() => dispatch(setAreAreasVisible(!areAreasVisible))} />
     </div>
   </>
 }

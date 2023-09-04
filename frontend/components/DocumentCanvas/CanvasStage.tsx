@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Stage, Layer, Image, } from 'react-konva'
 import { KonvaEventObject } from 'konva/lib/Node'
 import Areas from './Areas'
@@ -9,16 +10,25 @@ import useImage from 'use-image'
 import { RectangleCoordinates } from './types'
 import DrawingArea from './DrawingArea'
 import getNormalizedRectToBounds from '../../utils/getNormalizedRectToBounds'
-import { useStage } from './context/provider'
 import ContextConnections from './ContextConnections'
 import processImageRect from '../../useCases/processImageRect'
+import { RootState } from '../../redux/store'
+import { maxScale, scaleStep, setIsDrawingArea, setScale, setStartingContextConnectionPoint } from '../../redux/features/stage/stageSlice'
 
 let downClickX: number
 let downClickY: number
 
 const CanvasStage = () => {
+  const dispatch = useDispatch()
+  const {
+    scale, size,
+    isDrawingArea,
+    areAreasVisible,
+    areLinkAreaContextsVisible,
+    startingContextConnectionPoint
+  } = useSelector((state: RootState) => state.stage)
+
   const { getSelectedDocument, updateDocuments, setSelectedAreaId } = useProject()
-  const { scale, scaleStep, maxScale, size, setScale, isAreasVisible, isLinkAreaContextsVisible, isDrawingArea, setIsDrawingArea, startingContextConnection, setStartingContextConnection } = useStage()
   const [documentImage] = useImage(getSelectedDocument()?.path || '')
   const documentRef = useRef(null)
   const [drawingAreaRect, setDrawingAreaRect] = useState<RectangleCoordinates | null>(null)
@@ -27,13 +37,13 @@ const CanvasStage = () => {
   const documentHeight = documentImage?.naturalHeight || 0
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-    if (startingContextConnection) return setStartingContextConnection(null) // TODO: handle if clicking o connect
+    if (startingContextConnectionPoint) return dispatch(setStartingContextConnectionPoint(null)) // TODO: handle if clicking o connect
     if (!e.evt.shiftKey) return e.currentTarget.startDrag()
 
     const position = e.currentTarget.getRelativePointerPosition()
     downClickX = position.x
     downClickY = position.y
-    setIsDrawingArea(true)
+    dispatch(setIsDrawingArea(true))
   }
 
   const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
@@ -49,7 +59,7 @@ const CanvasStage = () => {
   const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
     const stage = e.currentTarget
     if (stage.isDragging()) stage.stopDrag()
-    else if (isDrawingArea) setIsDrawingArea(false)
+    else if (isDrawingArea) dispatch(setIsDrawingArea(false))
 
     if (!drawingAreaRect) return
 
@@ -70,8 +80,8 @@ const CanvasStage = () => {
     const wheelDelta = e.evt.deltaY
 
     const shouldAttemptScaleUp = (wheelDelta < 0) && scale < maxScale
-    if (shouldAttemptScaleUp) setScale(scale + scaleStep)
-    else if (scale > (scaleStep * 2)) setScale(scale - scaleStep)
+    if (shouldAttemptScaleUp) dispatch(setScale(scale + scaleStep))
+    else if (scale > (scaleStep * 2)) dispatch(setScale(scale - scaleStep))
   }
 
   return <Stage width={size.width} height={size.height} scale={{ x: scale, y: scale }} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onWheel={handleWheel}>
@@ -90,13 +100,13 @@ const CanvasStage = () => {
       />
       {(isDrawingArea && drawingAreaRect) ? <DrawingArea rect={drawingAreaRect} /> : <></>}
     </Layer>
-    {isAreasVisible
+    {areAreasVisible
       ? <Layer id='areaLayer'>
         <Areas scale={scale} />
       </Layer>
       : <></>
     }
-    {isAreasVisible && isLinkAreaContextsVisible
+    {areAreasVisible && areLinkAreaContextsVisible
       ? <Layer id='contextConnections'>
         <ContextConnections />
       </Layer>
