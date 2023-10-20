@@ -2,23 +2,28 @@
 
 import { Popover, Transition } from '@headlessui/react'
 import { ChevronDownIcon, FolderArrowDownIcon, FolderOpenIcon, FolderPlusIcon } from '@heroicons/react/20/solid'
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useNavigation } from '../../context/Navigation/provider'
 import { mainPages } from '../../context/Navigation/types'
-import { useProject } from '../../context/Project/provider'
+// import { useProject } from '../../context/Project/provider'
 import { GetAllLocalProjects } from '../../wailsjs/wailsjs/go/ipc/Channel'
 import { entities } from '../../wailsjs/wailsjs/go/models'
 import NewProjectModal from './NewProjectModal'
 import ProjectListModal from './ProjectListModal'
-
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../../redux/store'
+import { createNewProject, requestSelectProjectByName } from '../../redux/features/session/sessionSlice'
 
 const MainProject = () => {
+  const dispatch = useDispatch()
+  const { currentSession } = useSelector((state: RootState) => state.session)
+
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false)
   const [isProjectListModal, setIsProjectListModal] = useState(false)
   const [canPopoverBeOpen, setCanPopoverBeOpen] = useState(true)
 
   const [availableProjects, setAvailableProjects] = useState<entities.Project[]>([])
-  const { createNewProject, requestSelectProjectByName } = useProject()
+  // const { createNewProject, requestSelectProjectByName } = useProject()
   const { setSelectedMainPage } = useNavigation()
 
   const buttonOptions = [
@@ -57,17 +62,24 @@ const MainProject = () => {
   const onCreateNewProjectHandler = async (projectName: string) => {
     setIsNewProjectModalOpen(false)
     setCanPopoverBeOpen(true)
-    await createNewProject(projectName)
-    setSelectedMainPage(mainPages.WORKSPACE)
+    dispatch(createNewProject(projectName))
+    // setSelectedMainPage(mainPages.WORKSPACE)
   }
 
   const onSelectProjectHandler = async (name: string) => {
-    const successfulResponse = await requestSelectProjectByName(name)
+    // const successfulResponse = await requestSelectProjectByName(name)
+    dispatch(requestSelectProjectByName(name))
     setIsProjectListModal(false)
     setCanPopoverBeOpen(true)
 
-    if (successfulResponse) setSelectedMainPage(mainPages.WORKSPACE)
+    // if (successfulResponse) setSelectedMainPage(mainPages.WORKSPACE)
+    // setSelectedMainPage(mainPages.WORKSPACE)
   }
+
+  useEffect(() => {
+    console.log('useEffect: ', currentSession?.project?.id)
+    if (currentSession?.project?.id) setSelectedMainPage(mainPages.WORKSPACE)
+  }, [currentSession?.project?.id])
 
   return <main className=" text-gray-100 h-screen overflow-y-scroll">
 

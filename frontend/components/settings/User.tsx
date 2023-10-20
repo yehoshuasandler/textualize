@@ -1,13 +1,19 @@
 import Search from '../utils/Search'
-import { useProject } from '../../context/Project/provider'
+// import { useProject } from '../../context/Project/provider'
 import { EnvelopeIcon } from '@heroicons/react/24/outline'
 import UserAvatar from '../utils/UserAvatar'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigation } from '../../context/Navigation/provider'
 import { mainPages } from '../../context/Navigation/types'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../../redux/store'
+import { requestUpdateCurrentUser } from '../../redux/features/session/sessionSlice'
 
 const User = () => {
-  const { currentSession, requestUpdateCurrentUser, requestChooseUserAvatar } = useProject()
+  const dispatch = useDispatch()
+  const { currentSession } = useSelector((state: RootState) => state.session)
+
+  // const { requestUpdateCurrentUser, requestChooseUserAvatar } = useProject()
   const { setSelectedMainPage } = useNavigation()
 
   const firstNameRef = useRef<HTMLInputElement>(null)
@@ -16,19 +22,20 @@ const User = () => {
   const [avatarPath, setAvatarPath] = useState(currentSession?.user?.avatarPath || '')
 
   const onSaveButtonClickHandler = async () => {
-    await requestUpdateCurrentUser({
+    dispatch(requestUpdateCurrentUser({
       localId: currentSession?.user?.localId,
       firstName: firstNameRef?.current?.value,
       lastName: lastNameRef?.current?.value,
       email: emailRef?.current?.value,
       avatarPath: avatarPath || ''
-    })
+    }))
     setSelectedMainPage(mainPages.WORKSPACE)
   }
 
   const onAvatarSelectButtonClickHandler = async () => {
-    const chosenAvatarPath = await requestChooseUserAvatar()
-    setAvatarPath(chosenAvatarPath)
+    // TODO: needs to have requestChooseUserAvatar method made in the slice
+    // const chosenAvatarPath = await requestChooseUserAvatar()
+    // setAvatarPath(chosenAvatarPath)
   }
 
   const onAvatarRemoveButtonClickHandler = () => {

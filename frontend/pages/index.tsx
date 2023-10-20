@@ -14,6 +14,7 @@ const Home: NextPage = () => {
   const { selectedMainPage } = useNavigation()
 
   const renderSelectedMainPage = () => {
+    console.log('selectedMainPage: ', selectedMainPage)
     if (selectedMainPage === mainPages.SELECTPROJECT) return <MainProject />
     else if (selectedMainPage === mainPages.EDITUSER) return <User />
     else if ((selectedMainPage === mainPages.WORKSPACE) && currentSession?.project?.id) {
